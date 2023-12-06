@@ -1,0 +1,200 @@
+Interpreted systems are a standard semantics for describing multi-agent systems
+[Fagin et al., 1995b]. They provide a natural setup to interpret specifications
+in a variety of languages including temporal-epistemic logic and alternating
+temporal logic [Fagin et al., 1995a; Lomuscio and Raimondi, 2006].
+Parameterised interpreted systems is a parametric extension of interpreted
+systems put forward to reason about unbounded multi-agent
+systems~\cite{KouvarosLomuscio15b}. The parameter in a system of this kind
+denotes the number of agents composing the system, each homogeneously
+constructed from an agent template. We here extend parameterised interpreted
+systems to Parameterised Neural-symbolic Interpreted Systems (PNIS), where the
+template for the agents is not purely symbolic but it comprises a perception
+mechanism that is implemented via neural networks and which is coupled with a
+symbolic action mechanism. This neural-symbolic treatment of the agents follows
+the Neural Interpreted Systems (NIS) model from~\cite{Akintunde+20b}.
+Differently from NPIS however, NIS are limited to standard non-parametric
+systems with a pre-defined number of agents.
+
+A PNIS consists of the descriptions of an agent template, from which an
+unbounded number of concrete agents may be constructed, and an environment in
+which the agents operate. The agent template is defined by the following. 
+
+\begin{definition}[Agent template.]
+An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
+\acts t, \prot t, \tr t }$, where:
+\begin{itemize}
+  \item $\lstates t = \prvs t \times \pers t$ is a nonempty (possibly infinite)
+  set of local states.  Each local state  is a pair $\tuple{\prv t, \per t}$ of
+  a private state $\prv t \in \prvs t \subseteq \mathbb R^{m_{prv}}$ and a
+  percept $\per t \in \pers t \subseteq \mathbb R^{m_{per}}$ that encodes the
+  perception a agent has about the environment.  
+
+  \item $\init t \in \lstates t$ is the unique initial template state.
+  
+  \item $\obs t : \lstates t \times \lstates e \rightarrow \pers t$ is an
+  observation function that maps pairs of template local states $\lstates t
+  \subseteq \mathbb{R}^{m_{prv} + m_{per}}$ and environment states $\lstates e
+  \subseteq \mathbb{R}^{m_e}$ (defined below) to percepts $\pers t \subseteq
+  \mathbb{R}^{m_{per}}$. The observation function is implemented via a PWL FFNN $f :
+  \mathbb{R}^{m_{prv} + m_{per} + m_e} \rightarrow \mathbb{R}^{m_{per}}$.
+
+  \item $\acts t$ is a nonempty and finite set of actions.
+  
+  \item $\prot t : \lstates t \rightarrow 2^{\acts t} \setminus \set{\emptyset}$
+  is a local protocol function that selects which actions may be performed at a
+  given local state.
+
+  \item $\tr t: \lstates t \times \acts t \times 2^{\acts t \cup \acts e}
+  \rightarrow \prvs t$ is a local transition function  that determines the next
+  private state for a concrete agent given its current local state, its action
+  and the set of actions performed by all the other agents  and the environment.
+  
+\end{itemize}  
+\end{definition}
+
+An environment template has a similar description to an agent template but does
+not include a perception mechanism.
+
+\begin{definition}[Agent environment.]
+An {\em agent environment} is a tuple $\ag e = \tuple{\lstates e, \acts e, \prot
+e, \tr e }$, where $\lstates e  \subseteq \mathbb R^{m_e}$ is a nonempty
+(possibly) infinite set of local states, $\acts e$ is a nonempty and finite set
+of actions,  $\prot e : 2^{\acts e} \setminus \set{\emptyset}$ is a local
+protocol function, and $\tr e : \lstates e \times \acts e \times 2^{\acts t} 
+\rightarrow \lstates e$ is a local transition function.
+\end{definition}
+
+Agent and environment templates define the main formal structure we will be
+using in this paper.
+
+\begin{definition}[Parameterised Neural Interpreted System]
+  A {\em Parameterised Neural Interpreted System} (PNIS) is a tuple $\mathcal S
+  = \tuple{\ag t, \ag e, \ell}$, where $\tlabel{} : \lstates t \rightarrow 2^{AP}$ is
+  a labelling function on the agent  template states for a set $\it{AP}$ of
+  atomic propositions.
+\end{definition}
+
+A PNIS $\mathcal S$ gives a  parametric description of an unbounded collection
+of {\em concrete} NIS. In particular, for any value $n \geq 1$ of the parameter
+the concrete system $\sys n$ composes~$n$ copies $\ag 1, \ldots, \ag n$ of the
+agent template with the environment $\ag e$. We write $\agents$ for the set
+$\agents = \set{\ag 1, \ldots, \ag n}$ of concrete agents instantiated from $\ag
+t$.   A global state $q = \tuple{\lstate 1, \ldots, \lstate n, \lstate e}$ in
+$\sys n$ is a tuple of local states for all the agents and the environment in
+$\sys n$; it describes the system at a particular instant of time.  For a global
+state $g$ we write $\lprv{a}{q}$, $\lper{a}{q}$ and $\ls{a}{q}$ to denote the
+private part $\prv a$ and the perception part $\per a$ of the local state
+$\ls{a}{g} = \tuple{\prv a, \per a}$ of agent $\ag a$ in $g$.  The set
+$\globalstates n = \lstates 1 \times \ldots \times \lstates n \times L_e$ of all
+possible global states is the Cartesian product of the agents’ sets of local
+states.  A joint action $\alpha = \tuple{\alpha_1, \ldots, \alpha_n, \alpha_e}$
+in $\sys n$ is a tuple of local actions for all the agents and the environment.
+For a joint action $\alpha$ we write $\la{a}{\alpha}$ to denote the local action
+of agent $\ag a$ in $\alpha$.  The set $\actset n = \act 1 \times \ldots \act n
+\times \act e$ of all possible joint actions is the Cartesian product of the
+agents’ sets of local actions.  A concrete system's global states evolve over
+time in compliance with the following global transition relation.
+
+% , i.e., for each agent $a \in \set{1,\ldots,n}$ we have that $a =
+% \tuple{\lstates a, \init a, \obs a, \acts a, \prot a, \tr a} = \ag t$, 
+
+\begin{definition}[Concrete Neural Interpreted System]
+  \label{def:concreteystem}
+Given an NPIS $\mathcal S = \tuple{\ag t, \ag e, \ell_t}$ and $n \geq 1$, a
+concrete neural interepted system is a tuple $\sys n = \tuple{ \set{\ag 1,
+\ldots, \ag n, \ag e}, \globalinit n, \globallabel n}$, where $\globalinit n =
+\tuple{\init 1, \ldots, \init n, \init e}$ is the initial global state and
+$\globallabel n :  \globalstates n \rightarrow 2^{\prop \times \set{1, \ldots,
+n}}$ is the concrete labelling function satisfying $(p, a) \in \globallabel n
+(q)$ iff $p \in \tlabel a(\ls{a}{q})$.
+\end{definition}
+
+So the atomic propositions in a concrete system are indexed by each of the
+concrete agents: $(p, a)$ holds in a global state if the agent $a$ is at a local
+state labelled with $p$ by the template labelling function. This will enable us
+to construct specifications independently of the size of the concrete system on
+which they are evaluated.
+
+Given the current global state $\tuple{\lstate 1, \ldots, \lstate n, \lstate
+e}$, where $\lstate a = \tuple{\prv a, \per a}$ for $a \in \agents$, of the
+agents and the environment, the operational cycle of the agents is described as
+follows. First, every agent $\ag a \in \agents \cup \set{\ag e}$ selects an
+action $\act a$ that is permitted by its protocol, i.e., $\act a \in \prot
+a(\lstate a)$. Then, the agents synchronously perform the selected actions.
+Following  the execution of the actions each agent $\ag a \in \agents$ updates
+the private component of its local state as per its local transition function to
+$\pprv a = \tr a ( \lstate a, A, \act e)$, where $A = \set{ \act b \mid b \in
+\set{1, \ldots, n} \setminus \set{a}}$.  This generates an intermediate local
+state $\plstate{a} = \tuple{\pprv a, \per a}$ for each of the agents. Similarly,
+the  environment updates its local state to $\plstate e$. Finally, every agent
+$\ag a \in \agents$ observes the update on its local state and the update on the
+local state of the environment via its neural perception module $\obs a$, thus
+generating a percept $\pper a = \obs a(\plstate a, \plstate e)$, with which it
+updates its perception part thereby obtaining a new local state $\pplstate a =
+\tuple{ \pprv a, \pper{a}}$.
+
+
+Differently from the standard treatment of interpreted systems and NIS, the
+transition function of a concrete agent in PNIS  does not depend on the joint
+action performed in the system, but it depends on the local action performed by
+the  agent and on the on the set of actions performed by the rest of the agents
+and the environment.  Thus, the identities of the agents are abstracted away in
+a joint action, thereby reflecting the unbounded nature of PNIS. In other words,
+whereas  a concrete agent can observe which actions were performed in the system
+at a given time,  it cannot observe which agent or how many agents performed
+each action.
+
+We now formally define the temporal evolution of a concrete system
+$\sys n$.
+
+
+
+\begin{definition}[Global transition function] 
+  \label{def:globaltransition}
+  The {\em global transition function} $\globaltr n : \globalstates n
+  \times \actset n \rightarrow \globalstates n$ of a concrete system $\sys n$
+  satisfies $\globaltr n(q, \alpha) = q'$ iff the following hold:
+  \begin{itemize}
+    \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$ and $\tr e(\ls{e}{q},
+    \la{e}{q}, A) = q'$, where $A = \set{\la{a}{q} \mid a \in
+    \set{1,\ldots,n}}$; i.e., the environment’s action is protocol compliant and
+    its local state is updated as per its local transition function w.r.t. the
+    set of actions that were performed in the round. 
+
+    \item For all $a \in \set{1,\ldots,n}$, we have that $\la{a}{\alpha} \in
+    \prot{a}(\ls{a}{q})$, $\tr a (\ls{a}{q}, \la{i}{\alpha}, A) = \lprv{a}{q'}$,
+    where $A = \set{\la{b}{q} \mid j \in \set{1,\ldots,n} \setminus \set{a}}$,
+    and $\obs a((\lprv{a}{q'},\lper{a}{q}),\ls{e}{q'}) = \lper{a}{q'}$; i.e.,
+    the agent's action is protocol compliant, the private part of its local
+    state is updated as per its local transition function w.r.t to the set of
+    actions performed by the rest of the agents, and the perception part of its
+    local state is updated as per its observation function.
+  \end{itemize}
+\end{definition}
+
+
+Each concrete system is associated with a temporal model 
+that we will use  to interpret our specification language.
+
+\begin{definition}[Model]
+  Given a concrete NIS $\sys n$, the induced model of $\sys n$, or simply model,
+  is a tuple $\model  n = \tuple{\globalstates n, \actset n, \globaltr n,
+  \globallabel n}$, where $G(n)$ is the set of global states, $\actset n$ is the
+  set of joint actions, $\globaltr n$ is the global transition relation defined
+  as $(q, \alpha, q') \in \globalrel n$ iff $\globaltr n(q, \alpha) = q'$, and 
+  $\globallabel n$ is the labelling function as in
+  Definition~\ref{def:concreteystem}.
+  \end{definition}
+
+
+
+% \begin{definition}
+% Given a set $\set{\ag 1, \ldots, \ag n}$ of concrete agents, a set $\it{AP}$ of
+% atomic propositions, and a set $\it{VAR}$ of variables, the bICTLK formulae are
+% defined by the following BNF:
+% \[
+%   \varphi \;   ::= \; (p, v) \mid \varphi \lor \varphi \mid \varphi \land \varphi
+%   \mid EX^k \varphi \mid AX^K \varphi \mid \forall v : \phi,
+% \]
+% where  $p \in \it{AP}$, $v \in \it{VAR}$ and $k \geq  1$.
+% \end{definition}
