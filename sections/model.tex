@@ -42,7 +42,7 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
   
   \item $\prot t : \lstates t \rightarrow 2^{\acts t} \setminus \set{\emptyset}$
   is a local protocol function that selects which actions may be performed at a
-  given local state.
+  given local state.%%\nb{E: shouldn't the protocol take as input $\pers{t}$?}
 
   \item $\tr t: \lstates t \times \acts t \times 2^{\acts t \cup \acts e}
   \rightarrow \prvs t$ is a local transition function  that determines the next
@@ -297,3 +297,50 @@ verification problem} is to check whether this holds.
   % ment of ATL∗ follows the undecidability of the verification
   % problem for unbounded formulae (Akintunde et al. 2020a
 
+\begin{example}
+  We consider the example of a guarding game. In this game there is a colony of agents. The colony needs to be guarded by exactly one guard. Guarding duty costs the guard some health, while those who are resting improve their health. If no one is guarding the colony, then all the agents in the colony loose some health. When an agent does not have any health left, it ``dies''.
+
+  We formalise this game as follows.
+
+  $
+  \begin{array}{rl}
+    \lstates{t} = & \{(h,S) \mid h \in \mathbb{Z}, \ S \in \{G_s, R_s, E_s\} \\
+    \acts{t} = & \{G_a, R_a, E_a\}\\
+
+    \prot{t}(per) = & \left\{
+                      \begin{array}{rl}
+                        \{G_a, R_a\}, & \text{ if } h > G_p\\ 
+                        \{R_a\}, & \text{ if } 0 < h \leq G_p\\ 
+                        \{E_a\}, & \text{ if } h \leq 0\\
+                      \end{array}
+    \right.
+  \end{array}
+  $
+
+
+  $
+  \begin{array}{l@{~}l}
+    \tr{t}((h,G_s), G_a, A) = & (h - G_p, G_s) \text{ if }G_a\notin A \text{ and } h > G_p\\
+    \tr{t}((h,G_s), G_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq G_p\\
+    \tr{t}((h,G_s), R_a, A) = & (h + R_r, R_s) \text{ if }G_a\in A\\
+    \tr{t}((h,G_s), R_a, A) = & (h - U_p, R_s) \text{ if }G_a\notin A \text{ and } h > U_p\\
+    \tr{t}((h,G_s), R_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
+
+    \tr{t}((h,G_s), G_a, A) = & (h - G_p, G_s) \text{ if }G_a\notin A \text{ and } h > G_p\\
+    \tr{t}((h,G_s), G_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq G_p\\
+    \tr{t}((h,R_s), R_a, A) = & (h + R_r, R_s) \text{ if }G_a\in A\\
+    \tr{t}((h,G_s), R_a, A) = & (h - U_p, R_s) \text{ if }G_a\notin A \text{ and } h>U_p\\
+    \tr{t}((h,G_s), R_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
+    
+    \tr{t}((h,E_s), E_a, A) = & (h, E_s)\\
+
+\end{array}
+  $
+
+  
+\end{example}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End:
