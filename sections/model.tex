@@ -177,10 +177,11 @@ Each concrete system is associated with a temporal model
 that we will use  to interpret our specification language.
 
 \begin{definition}[Model]
+  \label{def:model}
   Given a concrete NIS $\sys n$, the induced model of $\sys n$, or simply model,
   is a tuple $\msys  n = \tuple{\globalstates n, \globalacts n, \globalrel n,
   \valuation n}$, where $G(n)$ is the set of global states, $\globalacts n$ is the
-  set of joint actions, $\globaltr n$ is the global transition relation defined
+  set of joint actions, $\globalrel n$ is the global transition relation defined
   as $(q, \alpha, q') \in \globalrel n$ iff $\globaltr n(q, \alpha) = q'$, and 
   $\valuation n$ is the labelling function as in
   Definition~\ref{def:concreteystem}.
@@ -224,7 +225,9 @@ until, prefixed by the universal operator, can be defined analogously.
 
 A $\bictl$ formula is said to be a sentence if every variable appearing the
 formula is in the scope of a universal quantifier. Hereafter we consider only
-indexed $\bictl$ sentences.
+indexed $\bictl$ sentences of the form $\forall v_1 \ldots \forall v_m :
+\varphi$, or, shortly, $\bictlspec$, where $v_i \in \atvar$ for $i \in
+\set{1,\ldots,m}$ and $\varphi$ does not contain any universal quantifier.
 
 We now define the satisfaction relation for $\bictl$ on the temporal models
 associated with the concrete systems.
@@ -232,7 +235,7 @@ associated with the concrete systems.
 \begin{definition}[Satisfaction]
   \label{def:sat} 
   Given a model $\msys n$, a global state~$q^0$ and a $\bictl$ sentence
-  $\varphi$, the \emph{satisfaction} of $\varphi$ at $q$, denoted $(\msys n, q)
+  $\bictlspec$ with $m \leq n$, the \emph{satisfaction} of $\varphi$ at $q$, denoted $(\msys n, q)
   \models\varphi$, or simply $q \models \varphi$ when $\msys n$ is clear from
   the context, is defined as follows:
   \begin{description}
@@ -246,22 +249,24 @@ associated with the concrete systems.
   that $\rho(k) \models \varphi$;
   \item[$q \models AX^k  \varphi$] \ iff for all $\rho \in \paths{q}$ we
   have that $\rho(k) \models \varphi$;
-  \item[$q \models \forall v : \varphi$] \ iff for all $\rho \in \paths{q}$ we
-  have that $\rho(k) \models \varphi[v \mapsto a]$ for all $a \in \agents n$;
-    \end{description}
+  \item[$q \models \bictlspec$] \ iff for all $h : \set{v_1, \ldots, v_m}
+  \rightarrow \set{\ag 1, \ldots,\ag n}$ we have that $q \models 
+  \varphi[v_1 \mapsto h(v_1), \ldots v_m \mapsto h(v_m)]$,
+ \end{description}
 \end{definition}
 
-A sentence $\varphi$ is said to be true in $\msys n$, denoted $\msys n \models
-\varphi$ if $(\msys n, \globalinit n) \models \varphi$. The sentence is said to
-be true in $\npis$, denoted $\npis \models \varphi$, if $\varphi$ is true in
-every model induced by every concrete system instantiated from $\npis$, i.e.,
-$\forall n \geq 1 : \msys n \models \varphi$. The {\em parameterised
-verification problem} is to check whether this holds.
+A sentence $\bictlspec$ is said to be true in $\msys n$, denoted $\msys n
+\models \bictlspec$ if $(\msys n, \globalinit n) \models \bictlspec$. The
+sentence is said to be true in $\npis$, denoted $\npis \models \bictlspec$, if
+$\bictlspec$ is true in every model induced by every concrete system
+instantiated from $\npis$ with at least $m$ agents, i.e., $\forall n \geq m :
+\msys n \models \bictlspec$.  The {\em parameterised verification problem} is to
+check whether this holds.
 
 
 \begin{definition}[Parameterised verification problem]
-  Given an NPIS $\npis$ and a $\bictl$ sentence $\varphi$, determine whether
-  $\npis \models \varphi$.
+  Given an NPIS $\npis$ and a $\bictl$ sentence $\bictlspec$, determine whether
+  $\npis \models \bictlspec$.
 \end{definition}
 
   
