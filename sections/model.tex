@@ -303,47 +303,99 @@ check whether this holds.
   % problem for unbounded formulae (Akintunde et al. 2020a
 
 \begin{example}
-  We consider the example of a guarding game. In this game there is a colony of agents. The colony needs to be guarded by exactly one guard. Guarding duty costs the guard some health, while those who are resting improve their health. If no one is guarding the colony, then all the agents in the colony loose some health. When an agent does not have any health left, it ``dies''.
+  \label{ex:agent-template}
+  We consider the example of a guarding game. In this game there is a colony of agents. The colony needs to be guarded by exactly one guard. Guarding duty costs the guard some health, $G_p$, while those who are resting improve their health by $R_r$. If no one is guarding the colony, then all the agents in the colony loose some health, $U_p$. When an agent does not have any health left, it ``dies''.
 
-  We formalise this game as follows.
+  We formalise the agent template
+  $\ag t = \tuple{\lstates{t}, \init{t}, \obs{t}, \acts{t}, \prot{t},
+    \tr{t} }$ in this game as follows.
 
   $
-  \begin{array}{rl}
+  \begin{array}{r@{~}l}
     \lstates{t} = & \{(h,S) \mid h \in \mathbb{Z}, \ S \in \{G_s, R_s, E_s\} \\
     \acts{t} = & \{G_a, R_a, E_a\}\\
 
+    \obs{t}((\lstate{t},\lstate{e})) = & \left\{
+                      \begin{array}{rl}
+                        2, & \text{ if } h > G_p\\ 
+                        1, & \text{ if } 0 < h \leq G_p\\ 
+                        0, & \text{ if } h \leq 0\\
+                      \end{array} \right.\\
+
+    
     \prot{t}(per) = & \left\{
                       \begin{array}{rl}
                         \{G_a, R_a\}, & \text{ if } h > G_p\\ 
                         \{R_a\}, & \text{ if } 0 < h \leq G_p\\ 
                         \{E_a\}, & \text{ if } h \leq 0\\
-                      \end{array}
-    \right.
+                      \end{array} \right.\\
   \end{array}
   $
 
+  $G_a$, $R_a$ and
+  $E_a$ stand for \emph{G}uarding, \emph{R}esting and \emph{E}xpired
+  \emph{a}ctions, respectively. %
+  % 
+  $G_s$, $R_s$ and
+  $E_s$ stand for \emph{G}uarding, \emph{R}esting and \emph{E}xpired
+  \emph{s}tates, respectively.
+  %
+  $G_p$ and
+  $U_p$ for \emph{G}uarded and \emph{U}nguarded \emph{p}enalties.
 
+
+  For $S \in \{G_s,R_s\}$:
+  
   $
   \begin{array}{l@{~}l}
-    \tr{t}((h,G_s), G_a, A) = & (h - G_p, G_s) \text{ if }G_a\notin A \text{ and } h > G_p\\
-    \tr{t}((h,G_s), G_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq G_p\\
-    \tr{t}((h,G_s), R_a, A) = & (h + R_r, R_s) \text{ if }G_a\in A\\
-    \tr{t}((h,G_s), R_a, A) = & (h - U_p, R_s) \text{ if }G_a\notin A \text{ and } h > U_p\\
-    \tr{t}((h,G_s), R_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
 
-    \tr{t}((h,G_s), G_a, A) = & (h - G_p, G_s) \text{ if }G_a\notin A \text{ and } h > G_p\\
-    \tr{t}((h,G_s), G_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq G_p\\
-    \tr{t}((h,R_s), R_a, A) = & (h + R_r, R_s) \text{ if }G_a\in A\\
-    \tr{t}((h,G_s), R_a, A) = & (h - U_p, R_s) \text{ if }G_a\notin A \text{ and } h>U_p\\
-    \tr{t}((h,G_s), R_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
-    
+    \tr{t}((h,S), G_a, A) = & (h - G_p, G_s) \text{ if }G_a\notin A \text{ and } h > G_p\\
+    \tr{t}((h,S), G_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq G_p\\
+    \tr{t}((h,S), R_a, A) = & (h + R_r, R_s) \text{ if }G_a\in A\\
+    \tr{t}((h,S), R_a, A) = & (h - U_p, R_s) \text{ if }G_a\notin A \text{ and } h > U_p\\
+    \tr{t}((h,S), R_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
+
+    % \tr{t}((h,R_s), G_a, A) = & (h - G_p, G_s) \text{ if }G_a\notin A \text{ and } h > G_p\\
+    % \tr{t}((h,R_s), G_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq G_p\\
+    % \tr{t}((h,R_s), R_a, A) = & (h + R_r, R_s) \text{ if }G_a\in A\\
+    % \tr{t}((h,R_s), R_a, A) = & (h - U_p, R_s) \text{ if }G_a\notin A \text{ and } h>U_p\\
+    % \tr{t}((h,R_s), R_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
+
     \tr{t}((h,E_s), E_a, A) = & (h, E_s)\\
-
 \end{array}
-  $
-
-  
+  $  
 \end{example}
+
+\begin{example}
+  Consider a concrete neural interpreted system
+  $\sys{2}=\tuple{\set{1,2,e}, \globalinit{2}, \valuation{2}}$ for the
+  agent template in Example~\ref{ex:agent-template}, where
+  $\globalinit{2} = \tuple{\init{1},\init{2}}$ and $\init{i} = (2, R_s)$.
+
+  A model of $\sys{2}$ can be depicted as follows.
+
+  \begin{tikzpicture}
+
+    \foreach \a/\lab/\x/\y in { %
+      s22r/{(2,R_s),\ (2,R_s)}/0/1,%
+      s00/{(0,E_s),\ (0,E_s)}/-3/0,%
+      s31/{(3,R_s),\ (1,G_s)}/0/0,%
+      s13/{(1,G_s),\ (3,R_s)}/3/0,%
+      s10/{(1,R_s),\ (0,E_s)}/-3/-1,%
+      s22gr/{(2,G_s),\ (2,R_s)}/0/-1,%
+      s40/{(4,R_s),\ (0,E_s)}/3/-1%
+    }{ %
+      \node[scale=0.8] (\a) at (\x,\y) {$\lab$};
+      }
+
+      \foreach \from/\to/\lab/\wh in { %
+        s22r/s00/{R_a,R_a}/left, s22r/s31/{G_a,R_a}/left, s22r/s13/{R_a,G_a}/right, %
+        s31/s10/{R_a,R_a}/left, s31/s22gr/{R_a,G_a}/left, s31/s40/{G_a,R_a}/right%
+      }{ \draw[-latex] (\from) -- node[\wh, scale=0.7] {$\lab$} (\to);
+      }
+    \end{tikzpicture}
+\end{example}
+
 
 %%% Local Variables:
 %%% mode: latex
