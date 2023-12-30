@@ -44,10 +44,11 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
   is a local protocol function that selects which actions may be performed at a
   given local state.%%\nb{E: shouldn't the protocol take as input $\pers{t}$?}
 
-  \item $\tr t: \lstates t \times \acts t \times 2^{\acts t \cup \acts e}
+  \item $\tr t: \lstates t \times \acts t \times 2^{\acts t} \times \acts e 
   \rightarrow \prvs t$ is a local transition function  that determines the next
-  private state for a concrete agent given its current local state, its action
-  and the set of actions performed by all the other agents  and the environment.
+  private state for a concrete agent given its current local state, its action, 
+  the set of actions performed by all the agents  and the action of the
+  environment.
   
 \end{itemize}  
 \end{definition}
@@ -123,15 +124,15 @@ action $\act a$ that is permitted by its protocol, i.e., $\act a \in \prot
 a(\lstate a)$. Then, the agents synchronously perform the selected actions.
 Following  the execution of the actions each agent $\ag a \in \agents n$ updates
 the private component of its local state as per its local transition function to
-$\pprv a = \tr a ( \lstate a, A, \act e)$, where $A = \set{ \act b \mid b \in
-\set{1, \ldots, n} \setminus \set{a}}$.  This generates an intermediate local
-state $\plstate{a} = \tuple{\pprv a, \per a}$ for each of the agents. Similarly,
-the  environment updates its local state to $\plstate e$. Finally, every agent
-$\ag a \in \agents n$ observes the update on its local state and the update on the
-local state of the environment via its neural perception module $\obs a$, thus
-generating a percept $\pper a = \obs a(\plstate a, \plstate e)$, with which it
-updates its perception part thereby obtaining a new local state $\pplstate a =
-\tuple{ \pprv a, \pper{a}}$.
+$\pprv a = \tr a ( \lstate a, \act a, A, \act e)$, where $A = \set{ \act b \mid
+b  \in \set{1, \ldots, n}}$.  This generates an intermediate local state $\plstate{a} =
+\tuple{\pprv a, \per a}$ for each of the agents. Similarly, the  environment
+updates its local state to $\plstate e$. Finally, every agent $\ag a \in \agents
+n$ observes the update on its local state and the update on the local state of
+the environment via its neural perception module $\obs a$, thus generating a
+percept $\pper a = \obs a(\plstate a, \plstate e)$, with which it updates its
+perception part thereby obtaining a new local state $\pplstate a = \tuple{ \pprv
+a, \pper{a}}$.
 
 
 Differently from the standard treatment of interpreted systems and NIS, the
@@ -157,17 +158,17 @@ $\sys n$.
   \begin{itemize}
     \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$ and $\tr e(\ls{e}{q},
     \la{e}{q}, A) = q'$, where $A = \set{\la{a}{q} \mid a \in
-    \set{1,\ldots,n}}$; i.e., the environment’s action is protocol compliant and
-    its local state is updated as per its local transition function w.r.t. the
-    set of actions that were performed in the round. 
+    \set{1,\ldots,n}}$; i.e., the environment’s action is protocol compliant
+    andA its local state is updated as per its local transition function w.r.t.
+    the set of actions that were performed in the round. 
 
     \item For all $a \in \set{1,\ldots,n}$, we have that $\la{a}{\alpha} \in
-    \prot{a}(\ls{a}{q})$, $\tr a (\ls{a}{q}, \la{i}{\alpha}, A) = \lprv{a}{q'}$,
-    where $A = \set{\la{b}{q} \mid j \in \set{1,\ldots,n} \setminus \set{a}}$,
+    \prot{a}(\ls{a}{q})$, $\tr a (\ls{a}{q}, \la{i}{\alpha}, A, \la{e}{\alpha}) = \lprv{a}{q'}$,
+    where $A = \set{\la{b}{q} \mid b \in \set{1,\ldots,n}}$,
     and $\obs a((\lprv{a}{q'},\lper{a}{q}),\ls{e}{q'}) = \lper{a}{q'}$; i.e.,
     the agent's action is protocol compliant, the private part of its local
     state is updated as per its local transition function w.r.t to the set of
-    actions performed by the rest of the agents, and the perception part of its
+    actions performed by all the agents, and the perception part of its
     local state is updated as per its observation function.
   \end{itemize}
 \end{definition}
@@ -207,21 +208,21 @@ Given a  set $\atprop$ of atomic propositions and a set $\atvar$ of variables,
 the $\bictl$  formulae are defined by the following BNF:
 \[
   \varphi \;   ::= \; (p, v) \mid \varphi \lor \varphi \mid \varphi \land \varphi
-  \mid EX^k \varphi \mid AX^K \varphi \mid \forall v : \phi,
+  \mid AX^K \varphi \mid \forall v : \phi,
 \]
 where  $p \in \atprop$, $v \in \atvar$ and $k \geq  1$.
 \end{definition}
 
 The formula $AX^k \varphi$ is read as ``for all paths, $\varphi$ holds at the
-$k$-th step'' and the formula $EX^k \varphi$ stands for ``there is a path for
-which $\varphi$ holds at the $k$-th step''. We inductively abbreviate bounded until as
+$k$-th step''. We inductively abbreviate bounded until as
 \begin{align*}
- E(\varphi U^1 \psi) &\triangleq \psi \lor (\varphi \land EX^1 \psi) \\
- E(\varphi U^k \psi) &\triangleq \psi \lor (\varphi \land EX^1 (E (\varphi U^{k-1} \psi)).
+ A(\varphi U^1 \psi) &\triangleq \psi \lor (\varphi \land AX^1 \psi) \\
+ A(\varphi U^k \psi) &\triangleq \psi \lor (\varphi \land AX^1 (A (\varphi U^{k-1} \psi)).
 \end{align*}
 with the meaning ``there is a path in which $\psi$ holds at some point in the
-$k$ following steps and before then $\varphi$ is true along the path'. The dual
-until, prefixed by the universal operator, can be defined analogously.
+$k$ following steps and before then $\varphi$ is true along the path'. 
+% The dual
+% until, prefixed by the universal operator, can be defined analogously.
 
 A $\bictl$ formula is said to be a sentence if every variable appearing the
 formula is in the scope of a universal quantifier. Hereafter we consider only

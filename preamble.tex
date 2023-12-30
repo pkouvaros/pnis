@@ -5,7 +5,6 @@
 \newcommand{\lstates}[1]{L_{#1}}
 \newcommand{\lstate}[1]{l_{#1}}
 \newcommand{\init}[1]{\iota_{#1}}
-\newcommand{\globalinit}[1]{\iota^{({#1})}}
 \newcommand{\plstate}[1]{l'_{#1}}
 \newcommand{\pplstate}[1]{l''_{#1}}
 \newcommand{\prvs}[1]{\it{Prv}_{#1}}
@@ -17,25 +16,34 @@
 \newcommand{\prot}[1]{\it{prot}_{#1}}
 \newcommand{\obs}[1]{\it{obs}_{#1}}
 \newcommand{\tr}[1]{\it{tr}_{#1}}
-\newcommand{\sys}[1]{\mathcal{S}(#1)}
+\newcommand{\sys}[1]{\mathcal{S}^{(#1)}}
 \newcommand{\npis}{\mathcal{S}}
 \newcommand{\agents}[1]{\it{Ag}^{(n)}}
 \newcommand{\ls}[2]{\it{ls}_{#1}(#2)}
 \newcommand{\lprv}[2]{\it{lprv}_{#1}(#2)}
 \newcommand{\lper}[2]{\it{lper}_{#1}(#2)}
 \newcommand{\globalacts}[1]{\it{ACT}^{(#1)}}
+\newcommand{\aglobalacts}[1]{\it{ACT}^{(#1)}_{zo}}
 \newcommand{\acts}[1]{\it{Act}_{#1}}
 \newcommand{\act}[1]{\it{\alpha}_{#1}}
 \newcommand{\la}[2]{\it{la}_{#1}({#2})}
-\newcommand{\msys}[1]{\mathcal{M}_{\mathcal{S}(#1)}}
+\newcommand{\msys}[1]{\mathcal{M}_{\sys{#1}}}
+\newcommand{\masys}[1]{\mathcal{M}_{\mathcal{S}_{zo}^{(#1)}}}
 \newcommand{\globalstates}[1]{G^{(#1)}}
+\newcommand{\globalinit}[1]{\iota^{({#1})}}
 \newcommand{\globaltr}[1]{\it{tr}^{(#1)}}
 \newcommand{\globalrel}[1]{T^{(#1)}}
 \newcommand{\valuation}[1]{\ell^{(#1)}}
+\newcommand{\aglobalstates}[1]{G^{(#1)}_{zo}}
+\newcommand{\aglobaltr}[1]{\it{tr}^{(#1)}_{zo}}
+\newcommand{\aglobalrel}[1]{T^{(#1)}_{zo}}
+\newcommand{\aglobalinit}[1]{\iota^{({#1})}_{zo}}
+\newcommand{\avaluation}[1]{\ell^{(#1)}_{zo}}
 \newcommand{\tlabel}[1]{\ell_{#1}}
 \newcommand{\prop}[0]{\it{AP}}
-\newcommand{\ctl}[0]{\sf{bICTL}}
-\newcommand{\bictl}[0]{\sf{bICTL}}
+\newcommand{\ctl}[0]{\sf{CTL}}
+\newcommand{\bctl}[0]{\sf{bCTL}}
+\newcommand{\bictl}[0]{\sf{bIACTL}}
 \newcommand{\bictlspec}[0]{\forall_{v1_,\ldots,v_m} \varphi}
 \newcommand{\atprop}{\it{AP}}
 \newcommand{\atvar}{\it{VAR}}
@@ -46,5 +54,11 @@
 \newcommand{\aact}{\overline{ACT}}
 \newcommand{\atr}{\overline{\it{tr}}}
 \newcommand{\alabel}{\overline{{\ell}}}
+\newcommand{\abstate}{q_{ab}}
+\newcommand{\abstatep}{q_{ab}'}
+\newcommand{\abaction}{\alpha_{ab}}
+\newcommand{\abactionp}{\alpha_{ab}'}
+\newcommand{\abpath}{\rho_{ab}}
+
 
 

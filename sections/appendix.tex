@@ -1,0 +1,201 @@
+\subsection*{Proof of Lemma 1} 
+We prove the symmetry reduction Lemma which we restate here for convenience:
+\begin{customlemma}{1}
+$\pnis \models \bictlspec$ iff $\pnis \models \varphi[v_1 \mapsto 1, \ldots, v_m
+\mapsto m]$.
+\end{customlemma}
+\begin{proof}
+Let $n \in \mathbb N$ such that $n \geq m$ be arbitrary. We show that $\msys n
+\models \bictlspec$ iff $\msys n \models \varphi[v_1 \mapsto 1, \ldots, v_m
+\mapsto m]$. The Lemma then follows.
+
+$\boldsymbol{(\Longleftarrow)}$ For the right to left direction assume that $\msys n \models
+\bictlspec$. Then, by the definition of satisfaction of $\bictl$
+(Definition~\ref{def:sat}), we have that for all $h: \set{v_1, \ldots, v_m}
+\rightarrow \set{1,\ldots,n}$,  it holds that $\msys n \models \varphi[v_1
+\mapsto h(v_1), \ldots, v_m \mapsto h(v_m)]$.  Hence, $\msys n \models
+\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.
+
+
+$\boldsymbol{(\Longrightarrow)}$ For the left to right direction assume that $\msys n \models
+\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$. Let $I = \set{i_1, \ldots, i_m}
+\in \set{1, \ldots, n}^m$ be an arbitrary set of $m$ distinct integers within
+$\set{1,\ldots,n}$.  Consider $\sigma : \set{1, \ldots, n} \rightarrow \set{1,
+\ldots, n}$ be a bijective mapping such that $\sigma(j) = i_j$ for all $j$ with
+$1 \leq j \leq m$. For a global state $q$, denote by $\pi(q)$ the global state
+obtained by replacing every $i$-th local state in $q$ with the $\sigma(i)$-th
+local state in $q$. Similarly, for a joint action $\alpha$, denote by
+$\pi(\alpha)$ the joint action obtained by replacing every $i$-th local action
+in $\alpha$ with the $\sigma(i)$-th local action in $\alpha$. Then, by the
+definition of the global transition function
+(Definition~\ref{def:globaltransition}), we have that $\globaltr n(q, \alpha) =
+q'$  iff $\globalrel n(\pi(q), \pi(\alpha)) = \pi(q')$.  Hence,  $(q, \alpha,
+q') \in \globalrel n$ iff $(\pi(q), \pi(\alpha), \pi(q')) \in \globalrel n$.
+Therefore, ($\msys n, q) \models  \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$
+iff ($\msys n, \pi(q)) \models  \varphi[v_1 \mapsto \pi(1), \ldots, v_m \mapsto
+\pi(m)]$. So, by the initial assumption,  it follows that ($\msys n,
+\pi(\globalinit{n})) \models  \varphi[v_1 \mapsto \pi(1), \ldots, v_m \mapsto
+\pi(m)]$. As $\pi(\globalinit{n}) = \globalinit{n}$, we have that ($\msys n,
+\globalinit{n}) \models  \varphi[v_1 \mapsto \pi(1), \ldots, v_m \mapsto
+\pi(m)]$. Since the set of indices $I$ was arbitrary, we conclude that $\msys n
+\models \bictlspec$.  \end{proof}
+
+
+\subsection*{Formal defintion of the abstract global transition function} In the
+following we give the full formal definition of the abstract transition function.
+\begin{definition}
+  \label{def:globaltransition}
+  The {\em global transition function} $\globaltr{m}_{zo} : \globalstates{m}_{zo}
+  \times \globalacts{m}_{zo} \rightarrow \globalstates{m}_{zo}$ of the zero-one
+  system $\sys{m}_{zo}$ satisfies $\globaltr{m}_{zo}(q, \alpha) = q'$ iff the
+  following hold:
+  \begin{itemize}
+    \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$ and $\tr e(\ls{e}{q},
+    \la{e}{q}, A) = q'$, where
+    $A = \set{\la{a}{q} \mid a \in \set{1,\ldots,n}} \cup
+\la{zo}{q}$.
+    \item For all $a \in \set{1,\ldots,m, \it{zo}}$, we have that
+    $\la{a}{\alpha} \in \prot{a}(\ls{a}{q})$, $\tr a (\ls{a}{q}, \la{i}{\alpha},
+    A, \la{e}{\alpha}) = \lprv{a}{q'}$, where  $A = \set{\la{a}{q} \mid a \in
+    \set{1,\ldots,n}} \cup \la{zo}{q}$, and $\obs
+    a((\lprv{a}{q'},\lper{a}{q}),\ls{e}{q'}) = \lper{a}{q'}$.
+  \end{itemize}
+\end{definition}
+
+
+\subsection*{Proof of Theorem 1}
+We prove the $\bictl$ preservation Theorem which we restate here for
+convenience:
+\begin{customthm}{1}
+$\masys m \models \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ iff 
+$\pnis \models  \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.
+\end{customthm}
+
+\begin{proof}
+We first prove the left to right direction and then the right to left direction.
+
+$\boldsymbol{(\Longrightarrow)}$ For the left to right direction assume that  $\masys m \models
+\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.  To establish the preservation
+of $\bictl$ formulae from the abstract model to the concrete models we show that
+$\masys m$ simulates every concrete model $\msys n$ for $n \geq m$. Intuitively
+a model simulates another if every behaviour exhibited by the simulated model is
+also exhibited by the simulating model.  Since a $\bictl$ formula may only
+quantify over all paths, every formula satisfied by the simulating model is also
+satisfied by the simulated model.  Formally,  a relation $\sim \subseteq
+\globalstates n \times \aglobalstates m$ is a simulation between $\msys n$ and
+$\masys m$ if the following conditions hold:
+\begin{enumerate}
+  \item $(\globalinit n, \aglobalinit m) \in \sim$.
+  \item Whenever $(q, \abstate) \in \sim$, then
+  \begin{enumerate}
+    \item If $q \in \valuation n(p,a)$, for some $p \in \atprop$ and $a \in
+    \set{1,\ldots,m}$, then $\abstate \in \avaluation m(p, a)$.
+    \item If $(q, \alpha, q') \in \globalrel n$ for a joint action $\alpha$ and
+    global state $q'$, then there is an abstract joint action
+    $\abaction$ and an abstract global state $\abstatep$ such that
+    $(\abstate, \abaction, \abstatep) \in \aglobalrel m$ and
+    $(q', \abstatep) \in \sim$. 
+    \end{enumerate}
+\end{enumerate}
+If there is a simulation relation between $\msys n$ and $\masys n$, then we say
+that $\masys m$ simulates $\msys n$. If $\masys m$ simulates $\msys n$, then
+$\masys n \models \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ implies that
+$\msys n \models \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto
+m]$~\cite{ClarkeGrumbergLong94} (the result in the cited work is shown w.r.t. 
+arbitrary Kripke structures and unbounded $\ctl$ formulae).
+
+In the following we show that $\masys m$ simulates $\msys n$. Define $\gamma_n
+\colon \globalstates n \rightarrow \aglobalstates m$ to map concrete states in
+$\msys n$ to abstract states in $\masys m$ as follows:
+\begin{align*}
+  \gamma_n(q) =  \langle &\ls{1}{q}, \ldots, \ls{m}{q}, \\
+  &\set{\ls{i}{q} \mid i \in \set{m + 1, \ldots, n}}, \\
+  &\ls{e}{q}  \rangle.
+\end{align*}
+We show that $\sim = \set{(q, \gamma_n(q)) \mid q \in \globalstates n }$ is a
+simulation relation between $\msys n$ and $\masys m$. By the definitions of the
+initial global states of abstract and concrete models the relation satisfies the
+first condition of the simulation. 
+
+To show that it satisfies the second condition, let $(q, \abstate) \in \sim$ by
+arbitrary. As $\gamma_n$ preserves the local states of the agents $1, \ldots,
+m$, we have that $q \in \valuation n(p, a)$ iff $\abstate \in \avaluation(p, a)$
+for any $p \in \atprop$ and $a \in \set{1, \ldots, m}$, thus the first clause of
+the second condition is satisfied. 
+
+For the second clause,  assume that $(q,
+\alpha, q') \in \globalrel n$ for some joint action $\alpha$ and global state
+$q'$. We need to show that there is an abstract joint action $\abaction$ and
+an abstract global state $\abstatep$ such that $(\abstate, \abaction, \abstatep) \in
+\aglobalrel m$ and $(q', \abstatep) \in \sim$.  Define $\delta_n \colon
+\globalacts n \rightarrow \aglobalacts m$ to map joint actions in $\msys n$ to
+joint actions in $\masys m$ as follows:
+\begin{align*}
+  \delta_n(\alpha) =  \langle &\la{1}{q}, \ldots, \la{m}{q}, \\
+  &\set{\la{i}{q} \mid i \in \set{m + 1, \ldots, n}}, \\
+  &\la{e}{q}  \rangle.
+\end{align*}
+Let $\abaction = \delta_n(\alpha)$. By the definition of the abstract protocol
+function we have that $\abaction \in \prot{zo}(\abstate)$. So $(\abstate,
+\abaction, \abstatep) \in \aglobalrel m$, where $\abstatep = \aglobaltr m
+(\abstate, \abaction)$. By the definition of the concrete and abstract local
+transition functions, and since the set $\set{\la{i}{\alpha} \mid i \in
+\set{1,\ldots,n}}$ of actions in $\alpha$ equals the set $\set{\la{i}{q} \mid i
+\in \set{1,\ldots,m}} \cup \set{\alpha_t \mid \exists l_t \colon (l_t, \alpha_t)
+\in \la{zo}{\abaction}}$ of actions in $\abaction$, we have that $\ls{i}{q'} =
+\ls{i}{\abstate}$ for $i \in \set{1,\ldots,m}$, and $\set{\ls{i}{q'} \mid i \in
+\set{m+1,\ldots,n}} = \ls{zo}{\abstate'}$. Therefore $(q', \abstatep) \in \sim$
+as required.
+
+
+
+$\boldsymbol{(\Longleftarrow)}$  For the right to left direction  assume that
+$\pnis \models  \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$. For
+contradiction assume that $\masys m \not \models \varphi[v_1 \mapsto 1, \ldots,
+v_m \mapsto m]$.  Then, there is a finite path $\abpath$
+of evidencing the dissatisfaction of the formula. 
+
+We construct by induction on the length $len(\abpath)$ of $\abpath$ a concrete
+path $\rho$ in $\masys n$, $n \geq m$, such that $\gamma_n(\abpath(j)) =
+\rho(j)$ for $j \in \set{1,\ldots,len(\abpath)}$.  For the base case of
+$len(\abpath)=1$, let $\rho = \globalinit n$ for any $n > m$.  We have that
+$\gamma_n{\abpath(1)} = \rho{1}$, thus the
+base case is satisfied.
+
+For the inductive case assume that $len(\rho) = x$ and that we have constructed
+a concrete path $\rho$ in $\masys n$, $n > m$, of the same length such that
+$\gamma_n(\abpath(j)) = \rho(j)$ for $j \in \set{1,\ldots,x}$. We show that a
+similar path can be constructed for $len(\abpath) = x+1$.  
+
+Let $\abaction$ be the joint abstract action for which $(\abpath(l), \abaction,
+\abpath(x+1)) \in \aglobalrel m$. For any template local state $l_t$ let
+$\#(\abaction, l_t)$ denote the number of state-action pairs involving $l_t$ in
+$\la{zo}{\abaction}$, i.e., $\#(\abaction, l_t) = \set{\alpha_t \mid (l_t,
+\alpha_t) \in \la{zo}{\abaction}}$. Consider $\it{diff}(l_t)$ to be the
+difference between $\#(\abaction, l_t)$ and the number of agents from $\set{m+1,
+\ldots, n}$ that are in local state $l_t$ in $\rho(x)$, i.e.,  $\it{diff}(l_t) =
+\#(\abaction, l_t) - \#\set{i \mid i \in \set{m+1,\ldots,m} \text{ and }
+\ls{i}{\rho(x)} = l_t}$. 
+
+
+Let $n' = \sum_{l_t} \max( \it{diff}(l_t), 0) + n$.  We construct a concrete
+path $\rho'$ in $\msys{n'}$ by specifying the sequence of actions of each of the
+agents.  The first $n$ agents perform the exact sequence of actions of the
+agents in $\masys n$. For each $l_t$ with $\it{diff}(l_t) > 0$, the next
+$\it{diff}(l_t)$ agents perform the same sequence of actions as the first agent
+that is in state $l_t$ in $\rho(x)$ (by the inductive hypothesis there is at
+least one agent in every $l_t$ with $\#(\abaction, l_t) \geq 1$). By
+construction the agents $\set{m+1, \ldots, n'}$ in $\rho'(x)$ can collectively
+perform the set of actions $\la{zo}{\abpath(x)}$ performed by the zero-one agent
+in $\abpath(x)$. This transitions the system to a state $\rho'(x+1)$ such that
+$\gamma_n(\abpath(x+1)) = \rho'(x+1)$ as required.
+
+We therefore have that $\msys n'  \not \models \varphi[v_1 \mapsto 1, \ldots,
+v_m \mapsto m]$, thus $\pnis \not \models \varphi[v_1 \mapsto 1, \ldots,
+v_m \mapsto m]$, concluding the Theorem.
+
+\end{proof}
+
+
+
+
