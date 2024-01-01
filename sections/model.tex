@@ -53,6 +53,80 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 \end{itemize}  
 \end{definition}
 
+\begin{example}
+  \label{ex:agent-template}
+  We consider the example of a guarding game, an instance of social dilemma
+  games \ref{}. In this game there is a colony of agents. The colony needs to
+  be guarded by exactly one guard. Guarding duty costs the guard some health,
+  $G_p$, while those who are resting improve their health by $R_r$. If no one
+  is guarding the colony, then all the agents in the colony loose some health,
+  $U_p$. When an agent does not have any health left, it \emph{expires}.
+
+  We formalise the agent template
+  $\ag t = \tuple{\lstates{t}, \init{t}, \obs{t}, \acts{t}, \prot{t}, \tr{t} }$
+  in this game as follows.
+
+ 
+  \begin{itemize}[$\bullet$]
+  \item
+    $\lstates{t} = \{(h,\per{}) \mid h \in \mathbb{Z}, \ \per{} \in \{G_s, R_s,
+    E_s\}$, where $h$ stands for the health of the agent, while percepts $G_s$,
+    $R_s$ and $E_s$ indicate what actions are available to the agent depending
+    on its health.
+    % stand for \emph{G}uarding, \emph{R}esting and \emph{E}xpired
+    % \emph{s}tates, respectively.
+
+  \item $\init{t} = (G_p + 1, G_s)$, i.e., at the start each agent has enough
+    of health to be able to guard at least once without expiring.
+    
+  \item $\acts{t} = \{G_a, R_a, E_a\}$, where $G_a$, $R_a$ and $E_a$ stand for
+    \emph{G}uarding, \emph{R}esting and \emph{E}xpired \emph{a}ctions,
+    respectively.
+  
+
+  \item Normally, we assume that the observation function is given as a
+    FFNN. But for the sake of illustration, we define here the observation
+    function of a perfectly altruistic agent:
+
+    $\obs{t}((h,\per{}), \ \lstate{e}) = \left\{
+      \begin{array}{rl}
+        G_s, & \text{ if } h > G_p\\ 
+        R_s, & \text{ if } 0 < h \leq G_p\\ 
+        E_s, & \text{ if } h \leq 0\\
+      \end{array} \right.$
+    
+    Intuitively, if health is good enough, then the agent is in a position to
+    guard, if health is still positive, the agent can only rest, otherwise the
+    agent is ``expired''. In this example, the environment state is ignored by
+    the observation function.
+    
+  \item $\prot{t}(h,\per{}) = \left\{
+      \begin{array}{rl}
+        \{G_a, R_a\}, & \text{ if } \per{} = G_s\\ 
+        \{R_a\}, & \text{ if } \per{} = R_s\\ 
+        \{E_a\}, & \text{ if } \per{} = E_s\\
+      \end{array} \right.$
+
+    If the percept is $G_s$, then the agent can both guard and rest. If the
+    percept is $R_s$ or $E_s$, the only available actions are resting and the
+    dummy action $E_a$, respectively.
+    
+  \item The local transition function ensures that at most one agent guards at
+    any moment. Formally, for $S \in \{G_s,R_s\}$:
+
+    $\begin{array}{@{}l@{}l}\small
+       \tr{t}((h,S), G_a, A) = (h - G_p, S) &\text{ if }G_a\notin A \text{ and } h > G_p\\
+       \tr{t}((h,S), G_a, A) = (0, E_s)     &\text{ if }G_a\notin A \text{ and } h \leq G_p\\[2mm]
+       \tr{t}((h,S), R_a, A) = (h + R_r, S) &\text{ if }G_a\in A\\
+       \tr{t}((h,S), R_a, A) = (h - U_p, S) &\text{ if }G_a\notin A \text{ and } h > U_p\\
+       \tr{t}((h,S), R_a, A) = (0, E_s)     &\text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
+       
+       \tr{t}((h,E_s), E_a, A) = (h, E_s)\\
+     \end{array}$
+  \end{itemize}
+
+\end{example}
+
 An environment template has a similar description to an agent template but does
 not include a perception mechanism.
 
@@ -65,6 +139,7 @@ protocol function, and $\tr e : \lstates e \times \acts e \times 2^{\acts t}
 \rightarrow \lstates e$ is a local transition function.
 \end{definition}
 
+
 Agent and environment templates define the main formal structure we will be
 using in this paper.
 
@@ -74,6 +149,18 @@ using in this paper.
   2^{\lstates t}$ is a labelling function on the agent  template states for a set
   $\atprop$ of atomic propositions.
 \end{definition}
+
+\begin{example}
+  \label{ex:pnis}
+  Consider the agent template in Example~\ref{ex:agent-template}.
+
+  Assume that $e$ is.. %any environment (it is irrelevant for this example).
+  
+  Suppose $\atprop = \{\mathsf{a}, \mathsf{d}\}$, where $\mathsf{a}$ stands for
+  alive and $\mathsf{d}$ for dead. Then we can define the labelling function
+  $\ell$ as $\ell(\mathsf{a}) = \{(h,S) \mid h > 0 \text{ and }S \neq E_s\}$
+  and $\ell(\mathsf{d}) = \lstates{t} \setminus \ell(\mathsf{a})$.
+\end{example}
 
 A PNIS $\mathcal S$ gives a  parametric description of an unbounded collection
 of {\em concrete} NIS. In particular, for any value $n \geq 1$ of the parameter
@@ -124,15 +211,16 @@ action $\act a$ that is permitted by its protocol, i.e., $\act a \in \prot
 a(\lstate a)$. Then, the agents synchronously perform the selected actions.
 Following  the execution of the actions each agent $\ag a \in \agents n$ updates
 the private component of its local state as per its local transition function to
-$\pprv a = \tr a ( \lstate a, \act a, A, \act e)$, where $A = \set{ \act b \mid
-b  \in \set{1, \ldots, n}}$.  This generates an intermediate local state $\plstate{a} =
-\tuple{\pprv a, \per a}$ for each of the agents. Similarly, the  environment
-updates its local state to $\plstate e$. Finally, every agent $\ag a \in \agents
-n$ observes the update on its local state and the update on the local state of
-the environment via its neural perception module $\obs a$, thus generating a
-percept $\pper a = \obs a(\plstate a, \plstate e)$, with which it updates its
-perception part thereby obtaining a new local state $\pplstate a = \tuple{ \pprv
-a, \pper{a}}$.
+$\pprv a = \tr{a}( \lstate{a}, \act{a}, A, \act{e})$, where
+$A = \set{ \act b \mid b \in \set{1, \ldots, n} \setminus \set{a}}$.  This
+generates an intermediate local state $\plstate{a} = \tuple{\pprv a, \per a}$
+for each of the agents. Similarly, the environment updates its local state to
+$\plstate e$. Finally, every agent $\ag a \in \agents n$ observes the update on
+its local state and the update on the local state of the environment via its
+neural perception module $\obs a$, thus generating a percept
+$\pper a = \obs a(\plstate a, \plstate e)$, with which it updates its
+perception part thereby obtaining a new local state
+$\pplstate a = \tuple{ \pprv a, \pper{a}}$.
 
 
 Differently from the standard treatment of interpreted systems and NIS, the
@@ -187,6 +275,78 @@ that we will use  to interpret our specification language.
   $\valuation n$ is the labelling function as in
   Definition~\ref{def:concreteystem}.
 \end{definition}
+
+We now illustrate Definitions~\ref{def:concreteystem}-\ref{def:model} on our running
+example.
+
+\begin{example}
+  Consider a concrete neural interpreted system
+  $\sys{2}=\tuple{\set{1,2,e}, \globalinit{2}, \valuation{2}}$ for the agent
+  template in Example~\ref{ex:agent-template} and PNIS in
+  Example~\ref{ex:pnis}, where
+  $\globalinit{2} = \tuple{\init{1},\init{2}, \init{e}}$ and
+  $\init{i} = (G_p+1, G_s)$. Moreover, assume that $\valuation{2}$ is defined
+  from $\ell$.
+
+  Let us assume that $G_p=R_r=1$, $U_p=2$. For brevity we omit the environment
+  local state $\lstate{e}$.  The model $\msys{2}$ of $\sys{2}$ can be depicted
+  as follows.
+
+  \begin{center}
+    \begin{tikzpicture}[yscale=1.2, %
+      gr/.style={green!50!blue}, %
+      rg/.style={red!50!blue}, %
+      rr/.style={blue}, %
+      re/.style={green!50!orange}, %
+      er/.style={red!50!orange}, %
+      ee/.style={orange}, %
+      ]
+
+    \foreach \a/\lab/\prop/\x/\y in { %
+      s22gg/{(2,G_s),\ (2,G_s)}/{a,a}/0/1,%
+      s00/  {(0,E_s),\ (0,E_s)}/{d,d}/0/0,%
+      s31/  {(3,G_s),\ (1,G_s)}/{a,a}/-2.4/0,%
+      s13/  {(1,G_s),\ (3,G_s)}/{a,a}/2.4/0,%
+      s10/  {(1,G_s),\ (0,E_s)}/{a,d}/-1.1/-1,%
+      s22gr/{(2,G_s),\ (2,R_s)}/{a,a}/-3.3/-1,%
+      s01/  {(0,E_s),\ (1,G_s)}/{d,a}/1.1/-1,%
+      s22rg/{(2,R_s),\ (2,G_s)}/{a,a}/3.3/-1%
+    }{ %
+      \node[scale=0.7, outer sep=1mm,draw, very thick, rounded corners] (\a) at (\x,\y) {$\lab$};
+
+      \node[fill=black, text=white, rounded corners, inner sep=1mm, scale=0.7, xshift=0.3mm, yshift=-2mm] at (\a.north east) {$\mathsf{\prop}$};
+      }
+
+      \foreach \from/\to/\lab/\wh in { %
+        s22gg/s00/{rr}/left, s22gg/s31/{rg}/left, s22gg/s13/{gr}/right, %
+        s31/s10/{rr}/left, s31/s22gr/{gr}/left, %
+        s13/s01/{rr}/left, s13/s22rg/{rg}/right,%
+        s10/s00/{re}/left,%
+        s01/s00/{er}/right,%
+        s22gr/s00/{rr}/right,%
+        s22rg/s00/{rr}/right%
+      }{ \draw[-latex,thick,\lab] (\from) -- (\to);
+      }
+
+      \foreach \from/\to/\out/\in/\loose/\lab/\wh in { %
+        s00.40/s00.30/120/60/8/{ee}/above,%
+        s22gr.160/s31.west/80/200/1.2/{rg}/right,%
+        s22rg.20/s13.east/100/340/1.2/{gr}/left%
+      }{%
+        \draw[-latex,thick,\lab] (\from) to[out=\out,in=\in, looseness=\loose]  (\to); %
+      }
+
+      \begin{scope}[yshift=1.3cm]
+      \foreach \col/\y/\lab in { %
+        gr/1/{G_a,R_a}, rg/2/{R_a,G_a}, rr/3/{R_a,R_a}, %
+        re/4/{R_a,E_a}, er/5/{E_a,R_a}, ee/6/{E_a,E_a}%
+      }{ \draw[-latex, semithick, \col] (2,-0.15*\y) -- ++(1,0) node[right, scale=0.6] {$\lab$}; }
+    \end{scope}
+    \end{tikzpicture}
+  \end{center}
+ 
+\end{example}
+
 
 A path in a model $\msys n$ is an infinite sequence of global states anc joint
 actions $q^0\alpha^0q^1\alpha1\ldots$ such that $(q^i,\alpha^i,q^{i+1}) \in
@@ -303,102 +463,11 @@ check whether this holds.
   % ment of ATL∗ follows the undecidability of the verification
   % problem for unbounded formulae (Akintunde et al. 2020a
 
-\begin{example}
-  \label{ex:agent-template}
-  We consider the example of a guarding game. In this game there is a colony of agents. The colony needs to be guarded by exactly one guard. Guarding duty costs the guard some health, $G_p$, while those who are resting improve their health by $R_r$. If no one is guarding the colony, then all the agents in the colony loose some health, $U_p$. When an agent does not have any health left, it ``dies''.
 
-  We formalise the agent template
-  $\ag t = \tuple{\lstates{t}, \init{t}, \obs{t}, \acts{t}, \prot{t},
-    \tr{t} }$ in this game as follows.
-
-  $
-  \begin{array}{r@{~}l}
-    \lstates{t} = & \{(h,S) \mid h \in \mathbb{Z}, \ S \in \{G_s, R_s, E_s\} \\
-    \acts{t} = & \{G_a, R_a, E_a\}\\
-
-    \obs{t}((\lstate{t},\lstate{e})) = & \left\{
-                      \begin{array}{rl}
-                        2, & \text{ if } h > G_p\\ 
-                        1, & \text{ if } 0 < h \leq G_p\\ 
-                        0, & \text{ if } h \leq 0\\
-                      \end{array} \right.\\
-
-    
-    \prot{t}(per) = & \left\{
-                      \begin{array}{rl}
-                        \{G_a, R_a\}, & \text{ if } h > G_p\\ 
-                        \{R_a\}, & \text{ if } 0 < h \leq G_p\\ 
-                        \{E_a\}, & \text{ if } h \leq 0\\
-                      \end{array} \right.\\
-  \end{array}
-  $
-
-  $G_a$, $R_a$ and
-  $E_a$ stand for \emph{G}uarding, \emph{R}esting and \emph{E}xpired
-  \emph{a}ctions, respectively. %
-  % 
-  $G_s$, $R_s$ and
-  $E_s$ stand for \emph{G}uarding, \emph{R}esting and \emph{E}xpired
-  \emph{s}tates, respectively.
-  %
-  $G_p$ and
-  $U_p$ for \emph{G}uarded and \emph{U}nguarded \emph{p}enalties.
-
-
-  For $S \in \{G_s,R_s\}$:
-  
-  $
-  \begin{array}{l@{~}l}
-
-    \tr{t}((h,S), G_a, A) = & (h - G_p, G_s) \text{ if }G_a\notin A \text{ and } h > G_p\\
-    \tr{t}((h,S), G_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq G_p\\
-    \tr{t}((h,S), R_a, A) = & (h + R_r, R_s) \text{ if }G_a\in A\\
-    \tr{t}((h,S), R_a, A) = & (h - U_p, R_s) \text{ if }G_a\notin A \text{ and } h > U_p\\
-    \tr{t}((h,S), R_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
-
-    % \tr{t}((h,R_s), G_a, A) = & (h - G_p, G_s) \text{ if }G_a\notin A \text{ and } h > G_p\\
-    % \tr{t}((h,R_s), G_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq G_p\\
-    % \tr{t}((h,R_s), R_a, A) = & (h + R_r, R_s) \text{ if }G_a\in A\\
-    % \tr{t}((h,R_s), R_a, A) = & (h - U_p, R_s) \text{ if }G_a\notin A \text{ and } h>U_p\\
-    % \tr{t}((h,R_s), R_a, A) = & (0, E_s) \text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
-
-    \tr{t}((h,E_s), E_a, A) = & (h, E_s)\\
-\end{array}
-  $  
-\end{example}
-
-\begin{example}
-  Consider a concrete neural interpreted system
-  $\sys{2}=\tuple{\set{1,2,e}, \globalinit{2}, \valuation{2}}$ for the
-  agent template in Example~\ref{ex:agent-template}, where
-  $\globalinit{2} = \tuple{\init{1},\init{2}}$ and $\init{i} = (2, R_s)$.
-
-  A model of $\sys{2}$ can be depicted as follows.
-
-  \begin{tikzpicture}
-
-    \foreach \a/\lab/\x/\y in { %
-      s22r/{(2,R_s),\ (2,R_s)}/0/1,%
-      s00/{(0,E_s),\ (0,E_s)}/-3/0,%
-      s31/{(3,R_s),\ (1,G_s)}/0/0,%
-      s13/{(1,G_s),\ (3,R_s)}/3/0,%
-      s10/{(1,R_s),\ (0,E_s)}/-3/-1,%
-      s22gr/{(2,G_s),\ (2,R_s)}/0/-1,%
-      s40/{(4,R_s),\ (0,E_s)}/3/-1%
-    }{ %
-      \node[scale=0.8] (\a) at (\x,\y) {$\lab$};
-      }
-
-      \foreach \from/\to/\lab/\wh in { %
-        s22r/s00/{R_a,R_a}/left, s22r/s31/{G_a,R_a}/left, s22r/s13/{R_a,G_a}/right, %
-        s31/s10/{R_a,R_a}/left, s31/s22gr/{R_a,G_a}/left, s31/s40/{G_a,R_a}/right%
-      }{ \draw[-latex] (\from) -- node[\wh, scale=0.7] {$\lab$} (\to);
-      }
-    \end{tikzpicture}
-\end{example}
 
 
 %%% Local Variables:
 %%% mode: latex
+%%% fill-column: 79
 %%% TeX-master: "../main"
 %%% End:
