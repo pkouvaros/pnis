@@ -55,12 +55,14 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 
 \begin{example}
   \label{ex:agent-template}
-  We consider the example of a guarding game, an instance of social dilemma
-  games \ref{}. In this game there is a colony of agents. The colony needs to
-  be guarded by exactly one guard. Guarding duty costs the guard some health,
-  $G_p$, while those who are resting improve their health by $R_r$. If no one
-  is guarding the colony, then all the agents in the colony loose some health,
-  $U_p$. When an agent does not have any health left, it \emph{expires}.
+  We consider the example of a guarding game, an instance of sequential social
+  dilemma games \cite{LeiboZLMG17}.\nb{E: check if this is really an SSD} In this game there is a colony of
+  agents. The colony needs to be guarded by exactly one guard. Guarding duty
+  costs the guard some health, $G_p$, while those who are resting improve their
+  health by $R_r$, where the health is limited by a maximum value $M_h$. If no
+  one is guarding the colony, then all the agents in the colony lose some
+  health, $U_p$. When an agent does not have any health left, it
+  \emph{expires}.
 
   We formalise the agent template
   $\ag t = \tuple{\lstates{t}, \init{t}, \obs{t}, \acts{t}, \prot{t}, \tr{t} }$
@@ -69,10 +71,10 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
  
   \begin{itemize}[$\bullet$]
   \item
-    $\lstates{t} = \{(h,\per{}) \mid h \in \mathbb{Z}, \ \per{} \in \{G_s, R_s,
-    E_s\}$, where $h$ stands for the health of the agent, while percepts $G_s$,
-    $R_s$ and $E_s$ indicate what actions are available to the agent depending
-    on its health.
+    $\lstates{t} = \{(h,\per{}) \mid h \in \{0,\dots,M_h\}, \ \per{} \in \{G_s,
+    R_s, E_s\}$, where $h$ is an integer between 0 and $M_h$, denoting the
+    health of the agent, while percepts $G_s$, $R_s$ and $E_s$ indicate what
+    actions are available to the agent depending on its health.
     % stand for \emph{G}uarding, \emph{R}esting and \emph{E}xpired
     % \emph{s}tates, respectively.
 
@@ -114,14 +116,14 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
   \item The local transition function ensures that at most one agent guards at
     any moment. Formally, for $S \in \{G_s,R_s\}$:
 
-    $\begin{array}{@{}l@{}l}\small
-       \tr{t}((h,S), G_a, A) = (h - G_p, S) &\text{ if }G_a\notin A \text{ and } h > G_p\\
-       \tr{t}((h,S), G_a, A) = (0, E_s)     &\text{ if }G_a\notin A \text{ and } h \leq G_p\\[2mm]
-       \tr{t}((h,S), R_a, A) = (h + R_r, S) &\text{ if }G_a\in A\\
-       \tr{t}((h,S), R_a, A) = (h - U_p, S) &\text{ if }G_a\notin A \text{ and } h > U_p\\
-       \tr{t}((h,S), R_a, A) = (0, E_s)     &\text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
+    $\begin{array}{@{}l@{\quad}l}\small
+       \tr{t}((h,S), G_a, A) = \max(h - G_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > G_p\\
+       % \tr{t}((h,S), G_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq G_p\\[2mm]
+       \tr{t}((h,S), R_a, A) = \min(h + R_r, M_h) &\text{ if }G_a\in A\\
+       \tr{t}((h,S), R_a, A) = \max(h - U_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > U_p\\
+       % \tr{t}((h,S), R_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
        
-       \tr{t}((h,E_s), E_a, A) = (h, E_s)\\
+       \tr{t}((h,E_s), E_a, A) = h\\
      \end{array}$
   \end{itemize}
 
@@ -302,17 +304,20 @@ example.
       ee/.style={orange}, %
       ]
 
-    \foreach \a/\lab/\prop/\x/\y in { %
-      s22gg/{(2,G_s),\ (2,G_s)}/{a,a}/0/1,%
-      s00/  {(0,E_s),\ (0,E_s)}/{d,d}/0/0,%
-      s31/  {(3,G_s),\ (1,G_s)}/{a,a}/-2.4/0,%
-      s13/  {(1,G_s),\ (3,G_s)}/{a,a}/2.4/0,%
-      s10/  {(1,G_s),\ (0,E_s)}/{a,d}/-1.1/-1,%
-      s22gr/{(2,G_s),\ (2,R_s)}/{a,a}/-3.3/-1,%
-      s01/  {(0,E_s),\ (1,G_s)}/{d,a}/1.1/-1,%
-      s22rg/{(2,R_s),\ (2,G_s)}/{a,a}/3.3/-1%
+    \foreach \a/\hone/\perone/\htwo/\pertwo/\prop/\x/\y in { %
+      s22gg/2/G_s/2/G_s/{a,a}/0/1,%
+      s00/  0/G_s/0/G_s/{d,d}/0/0,%
+      s31/  3/G_s/1/G_s/{a,a}/-2.4/0,%
+      s13/  1/G_s/3/G_s/{a,a}/2.4/0,%
+      s10/  1/G_s/0/R_s/{a,d}/-1.1/-1,%
+      s22gr/2/G_s/2/R_s/{a,a}/-3.3/-1,%
+      s01/  0/R_s/1/G_s/{d,a}/1.1/-1,%
+      s22rg/2/R_s/2/G_s/{a,a}/3.3/-1,%
+      s00re/0/R_s/0/E_s/{d,d}/-1.1/-2,%
+      s00er/0/E_s/0/R_s/{d,d}/1.1/-2,%
+      s00ee/0/E_s/0/E_s/{d,d}/0/-3%
     }{ %
-      \node[scale=0.7, outer sep=1mm,draw, very thick, rounded corners] (\a) at (\x,\y) {$\lab$};
+      \node[scale=0.7, outer sep=1mm,draw, very thick, rounded corners] (\a) at (\x,\y) {$(\hone,\perone), (\htwo,\pertwo)$};
 
       \node[fill=black, text=white, rounded corners, inner sep=1mm, scale=0.7, xshift=0.3mm, yshift=-2mm] at (\a.north east) {$\mathsf{\prop}$};
       }
@@ -321,15 +326,20 @@ example.
         s22gg/s00/{rr}/left, s22gg/s31/{rg}/left, s22gg/s13/{gr}/right, %
         s31/s10/{rr}/left, s31/s22gr/{gr}/left, %
         s13/s01/{rr}/left, s13/s22rg/{rg}/right,%
-        s10/s00/{re}/left,%
-        s01/s00/{er}/right,%
         s22gr/s00/{rr}/right,%
-        s22rg/s00/{rr}/right%
+        s22rg/s00/{rr}/right,%
+        % s10/s00/{re}/left,%
+        % s01/s00/{er}/right,%
+        s10/s00re/{re}/right,%
+        s01/s00er/{er}/right,%
+        s00re/s00ee/{ee}/right,%
+        s00er/s00ee/{ee}/right,%
+        s00/s00ee/{ee}/right%
       }{ \draw[-latex,thick,\lab] (\from) -- (\to);
       }
 
       \foreach \from/\to/\out/\in/\loose/\lab/\wh in { %
-        s00.40/s00.30/120/60/8/{ee}/above,%
+        %s00.40/s00.30/120/60/8/{ee}/above,%
         s22gr.160/s31.west/80/200/1.2/{rg}/right,%
         s22rg.20/s13.east/100/340/1.2/{gr}/left%
       }{%

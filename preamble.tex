@@ -1,3 +1,34 @@
+%\ifdraft
+\makeatletter
+\if@twocolumn
+  \setlength{\marginparwidth}{12mm}
+  \newcommand{\nb}[1]
+  {%
+   \begingroup%
+   \ifodd\value{page}
+     \if@firstcolumn\reversemarginpar\fi
+   \else
+     \if@firstcolumn\else\reversemarginpar\fi
+   \fi
+   \textcolor{red}{\bf!!}%{\color{red}\it\par[[#1]]\par}
+   \marginnote[%\parbox{\marginparwidth}
+{\scriptsize\textcolor{red}{#1}}]%
+   {%\parbox{\marginparwidth}
+{\scriptsize\textcolor{red}{#1}}}%
+   \endgroup%
+  }
+\else
+  \setlength{\marginparwidth}{48mm}
+  \newcommand{\nb}[1]{\textcolor{red}{\bf!}%
+    \reversemarginpar
+    \marginpar[\parbox{\marginparwidth}{\scriptsize\textcolor{red}{\raggedleft #1}}]%
+    {\parbox{\marginparwidth}{\scriptsize\textcolor{red}{\raggedright #1}}}}
+\fi
+\makeatother
+%\else
+%  \newcommand{\nb}[1]{}
+%\fi
+
 \newcommand{\tuple}[1]{\left \langle #1  \right \rangle}
 \newcommand{\set}[1]{\left \{ #1  \right \}}
 \newcommand{\ags}[0]{\it{Ag}}
