@@ -219,7 +219,7 @@ action~$\act{a}$ that is permitted by its protocol, i.e., $\act{a} \in \prot{a}
 Following  the execution of the actions each agent $\ag a \in \agents n$ updates
 the private component of its local state as per its local transition function to
 $\pprv a = \tr{a}( \lstate{a}, \act{a}, A, \act{e})$, where
-$A = \set{ \act b \mid b \in \set{1, \ldots, n} \setminus \set{a}}$.  This
+$A = \set{ \act b \mid b \in \set{1, \ldots, n}}$.  This
 generates an intermediate local state $\plstate{a} = \tuple{\pprv a, \per a}$
 for each of the agents. Similarly, the environment updates its local state to
 $\plstate e$. Finally, every agent $\ag a \in \agents n$ observes the update on
