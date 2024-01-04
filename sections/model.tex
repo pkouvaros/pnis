@@ -164,26 +164,31 @@ using in this paper.
   and $\ell(\mathsf{d}) = \lstates{t} \setminus \ell(\mathsf{a})$.
 \end{example}
 
-A PNIS $\mathcal S$ gives a  parametric description of an unbounded collection
+A PNIS $\mathcal S$ gives a parametric description of an unbounded collection
 of {\em concrete} NIS. In particular, for any value $n \geq 1$ of the parameter
 the concrete system $\sys n$ composes~$n$ copies $\ag 1, \ldots, \ag n$ of the
 agent template with the environment $\ag e$. We write $\agents n$ for the set
-$\agents n = \set{\ag 1, \ldots, \ag n}$ of concrete agents instantiated from $\ag
-t$.   A global state $q = \tuple{\lstate 1, \ldots, \lstate n, \lstate e}$ in
+$\agents n = \set{\ag 1, \ldots, \ag n}$ of concrete agents instantiated from
+$\ag t$.
+%
+A \emph{global state} $q = \tuple{\lstate 1, \ldots, \lstate n, \lstate e}$ in
 $\sys n$ is a tuple of local states for all the agents and the environment in
-$\sys n$; it describes the system at a particular instant of time.  For a global
-state $g$ we write $\lprv{a}{q}$, $\lper{a}{q}$ and $\ls{a}{q}$ to denote the
-private part $\prv a$ and the perception part $\per a$ of the local state
-$\ls{a}{g} = \tuple{\prv a, \per a}$ of agent $\ag a$ in $g$.  The set
-$\globalstates n = \lstates 1 \times \ldots \times \lstates n \times L_e$ of all
-possible global states is the Cartesian product of the agents’ sets of local
-states.  A joint action $\alpha = \tuple{\alpha_1, \ldots, \alpha_n, \alpha_e}$
+$\sys n$; it describes the system at a particular instant of time.  For a
+global state $g$, we write $\lprv{a}{q}$, $\lper{a}{q}$ and $\ls{a}{q}$ to
+denote the \emph{private part} $\prv a$ and the \emph{perception part} $\per a$
+of the local state $\ls{a}{g} = \tuple{\prv a, \per a}$ of agent $\ag a$ in
+$g$.  The set $\globalstates{n}=\lstates{1}\times\dots\times\lstates{n}\times L_e$
+of all possible global states is the Cartesian product of the agents' sets of
+local states.
+% 
+A \emph{joint action} $\alpha = \tuple{\alpha_1, \ldots, \alpha_n, \alpha_e}$
 in $\sys n$ is a tuple of local actions for all the agents and the environment.
-For a joint action $\alpha$ we write $\la{a}{\alpha}$ to denote the local action
-of agent $\ag a$ in $\alpha$.  The set $\globalacts n = \act 1 \times \ldots \act n
-\times \act e$ of all possible joint actions is the Cartesian product of the
-agents’ sets of local actions.  A concrete system's global states evolve over
-time in compliance with the following global transition relation.
+For a joint action $\alpha$, we write $\la{a}{\alpha}$ to denote the
+\emph{local action} of agent $\ag a$ in~$\alpha$.  The set
+$\globalacts{n} = \acts{1}\times\dots\times\acts{n}\times\acts{e}$ of all
+possible joint actions is the Cartesian product of the agents' sets of local
+actions.  A concrete system's global states evolve over time in compliance with
+the following global transition relation.
 
 % , i.e., for each agent $a \in \set{1,\ldots,n}$ we have that $a =
 % \tuple{\lstates a, \init a, \obs a, \acts a, \prot a, \tr a} = \ag t$, 
@@ -191,7 +196,7 @@ time in compliance with the following global transition relation.
 \begin{definition}[Concrete Neural Interpreted System]
   \label{def:concreteystem}
 Given an NPIS $\mathcal S = \tuple{\ag t, \ag e, \ell_t}$ and $n \geq 1$, a
-concrete neural interepted system is a tuple $\sys n = \tuple{ \set{\ag 1,
+\emph{concrete neural interpreted system} is a tuple $\sys n = \tuple{ \set{\ag 1,
 \ldots, \ag n, \ag e}, \globalinit n, \valuation n}$, where $\globalinit n =
 \tuple{\init 1, \ldots, \init n, \init e}$ is the initial global state and
 $\valuation n :  \atprop \times \set{1, \ldots, n } \rightarrow 2^{\globalstates
@@ -209,8 +214,8 @@ Given the current global state $\tuple{\lstate 1, \ldots, \lstate n, \lstate
 e}$, where $\lstate a = \tuple{\prv a, \per a}$ for $a \in \agents n$, of the
 agents and the environment, the operational cycle of the agents is described as
 follows. First, every agent $\ag a \in \agents n \cup \set{\ag e}$ selects an
-action $\act a$ that is permitted by its protocol, i.e., $\act a \in \prot
-a(\lstate a)$. Then, the agents synchronously perform the selected actions.
+action~$\act{a}$ that is permitted by its protocol, i.e., $\act{a} \in \prot{a}
+(\lstate a)$. Then, the agents synchronously perform the selected actions.
 Following  the execution of the actions each agent $\ag a \in \agents n$ updates
 the private component of its local state as per its local transition function to
 $\pprv a = \tr{a}( \lstate{a}, \act{a}, A, \act{e})$, where
@@ -246,20 +251,22 @@ $\sys n$.
   \times \globalacts n \rightarrow \globalstates n$ of a concrete system $\sys n$
   satisfies $\globaltr n(q, \alpha) = q'$ iff the following hold:
   \begin{itemize}
-    \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$ and $\tr e(\ls{e}{q},
-    \la{e}{q}, A) = q'$, where $A = \set{\la{a}{q} \mid a \in
-    \set{1,\ldots,n}}$; i.e., the environment’s action is protocol compliant
-    andA its local state is updated as per its local transition function w.r.t.
-    the set of actions that were performed in the round. 
+  \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$ and
+    $\tr e(\ls{e}{q}, \la{e}{q}, A) = q'$, where
+    $A = \set{\la{a}{q} \mid a \in \set{1,\ldots,n}}$; i.e., the environment’s
+    action is protocol compliant and its local state is updated as per its
+    local transition function w.r.t.\ the set of actions that were performed in
+    the round.
 
-    \item For all $a \in \set{1,\ldots,n}$, we have that $\la{a}{\alpha} \in
-    \prot{a}(\ls{a}{q})$, $\tr a (\ls{a}{q}, \la{i}{\alpha}, A, \la{e}{\alpha}) = \lprv{a}{q'}$,
-    where $A = \set{\la{b}{q} \mid b \in \set{1,\ldots,n}}$,
-    and $\obs a((\lprv{a}{q'},\lper{a}{q}),\ls{e}{q'}) = \lper{a}{q'}$; i.e.,
-    the agent's action is protocol compliant, the private part of its local
-    state is updated as per its local transition function w.r.t to the set of
-    actions performed by all the agents, and the perception part of its
-    local state is updated as per its observation function.
+  \item For all $a \in \set{1,\ldots,n}$, we have that
+    $\la{a}{\alpha} \in \prot{a}(\ls{a}{q})$,
+    $\tr a (\ls{a}{q}, \la{i}{\alpha}, A, \la{e}{\alpha}) = \lprv{a}{q'}$,
+    where $A = \set{\la{b}{q} \mid b \in \set{1,\ldots,n}}$, and
+    $\obs a((\lprv{a}{q'},\lper{a}{q}),\ls{e}{q'}) = \lper{a}{q'}$; i.e., the
+    agent's action is protocol compliant, the private part of its local state
+    is updated as per its local transition function w.r.t to the set of actions
+    performed by all the agents, and the perception part of its local state is
+    updated as per its observation function.
   \end{itemize}
 \end{definition}
 
@@ -305,17 +312,12 @@ example.
       ]
 
     \foreach \a/\hone/\perone/\htwo/\pertwo/\prop/\x/\y in { %
-      s22gg/2/G_s/2/G_s/{a,a}/0/1,%
-      s00/  0/G_s/0/G_s/{d,d}/0/0,%
-      s31/  3/G_s/1/G_s/{a,a}/-2.4/0,%
-      s13/  1/G_s/3/G_s/{a,a}/2.4/0,%
-      s10/  1/G_s/0/R_s/{a,d}/-1.1/-1,%
-      s22gr/2/G_s/2/R_s/{a,a}/-3.3/-1,%
-      s01/  0/R_s/1/G_s/{d,a}/1.1/-1,%
-      s22rg/2/R_s/2/G_s/{a,a}/3.3/-1,%
-      s00re/0/R_s/0/E_s/{d,d}/-1.1/-2,%
-      s00er/0/E_s/0/R_s/{d,d}/1.1/-2,%
-      s00ee/0/E_s/0/E_s/{d,d}/0/-3%
+      s22gg/2/G_s/2/G_s/{a,a}/0/1.1,%
+      s00/  0/E_s/0/E_s/{d,d}/0/0,%
+      s31/  3/G_s/1/R_s/{a,a}/-2.5/0,%
+      s13/  1/R_s/3/G_s/{a,a}/2.5/0,%
+      s10/  1/R_s/0/E_s/{a,d}/-1.2/-0.9,%
+      s01/  0/E_s/1/R_s/{d,a}/1.2/-0.9%
     }{ %
       \node[scale=0.7, outer sep=1mm,draw, very thick, rounded corners] (\a) at (\x,\y) {$(\hone,\perone), (\htwo,\pertwo)$};
 
@@ -324,33 +326,26 @@ example.
 
       \foreach \from/\to/\lab/\wh in { %
         s22gg/s00/{rr}/left, s22gg/s31/{rg}/left, s22gg/s13/{gr}/right, %
-        s31/s10/{rr}/left, s31/s22gr/{gr}/left, %
-        s13/s01/{rr}/left, s13/s22rg/{rg}/right,%
-        s22gr/s00/{rr}/right,%
-        s22rg/s00/{rr}/right,%
-        % s10/s00/{re}/left,%
-        % s01/s00/{er}/right,%
-        s10/s00re/{re}/right,%
-        s01/s00er/{er}/right,%
-        s00re/s00ee/{ee}/right,%
-        s00er/s00ee/{ee}/right,%
-        s00/s00ee/{ee}/right%
+        s31/s10/{rr}/left, %
+        s13/s01/{rr}/left, %
+        s10/s00/{re}/left,%
+        s01/s00/{er}/right%
       }{ \draw[-latex,thick,\lab] (\from) -- (\to);
       }
 
       \foreach \from/\to/\out/\in/\loose/\lab/\wh in { %
-        %s00.40/s00.30/120/60/8/{ee}/above,%
-        s22gr.160/s31.west/80/200/1.2/{rg}/right,%
-        s22rg.20/s13.east/100/340/1.2/{gr}/left%
+        s00.40/s00.30/120/60/8/{ee}/above,%
+        s31.120/s22gg.190/40/190/1.2/{gr}/right,%
+        s13.60/s22gg.350/140/350/1.2/{rg}/left%
       }{%
         \draw[-latex,thick,\lab] (\from) to[out=\out,in=\in, looseness=\loose]  (\to); %
       }
 
-      \begin{scope}[yshift=1.3cm]
+      \begin{scope}[yshift=1.4cm]
       \foreach \col/\y/\lab in { %
         gr/1/{G_a,R_a}, rg/2/{R_a,G_a}, rr/3/{R_a,R_a}, %
         re/4/{R_a,E_a}, er/5/{E_a,R_a}, ee/6/{E_a,E_a}%
-      }{ \draw[-latex, semithick, \col] (2,-0.15*\y) -- ++(1,0) node[right, scale=0.6] {$\lab$}; }
+      }{ \draw[-latex, semithick, \col] (3.2,-0.18*\y) -- ++(1,0) node[right, scale=0.6] {$\lab$}; }
     \end{scope}
     \end{tikzpicture}
   \end{center}
@@ -390,7 +385,7 @@ $k$-th step''. We inductively abbreviate bounded until as
  A(\varphi U^k \psi) &\triangleq \psi \lor (\varphi \land AX^1 (A (\varphi U^{k-1} \psi)).
 \end{align*}
 with the meaning ``there is a path in which $\psi$ holds at some point in the
-$k$ following steps and before then $\varphi$ is true along the path'. 
+$k$ following steps and before then $\varphi$ is true along the path. 
 % The dual
 % until, prefixed by the universal operator, can be defined analogously.
 
@@ -406,9 +401,9 @@ associated with the concrete systems.
 \begin{definition}[Satisfaction]
   \label{def:sat} 
   Given a model $\msys n$, a global state~$q^0$ and a $\bictl$ sentence
-  $\bictlspec$ with $m \leq n$, the \emph{satisfaction} of $\varphi$ at $q$, denoted $(\msys n, q)
-  \models\varphi$, or simply $q \models \varphi$ when $\msys n$ is clear from
-  the context, is defined as follows:
+  $\bictlspec$ with $m \leq n$, the \emph{satisfaction} of $\varphi$ at $q$\nb{E: $q$ or $q^0$?},
+  denoted $(\msys n, q) \models\varphi$, or simply $q \models \varphi$ when
+  $\msys n$ is clear from the context, is defined as follows:
   \begin{description}
   \item[$q \models (p, a)$] \ iff \ $q^o \in \valuation n((p, a))$, for $p \in
   \atprop$ and $a \in \agents n$; 
@@ -422,8 +417,8 @@ associated with the concrete systems.
   have that $\rho(k) \models \varphi$;
   \item[$q \models \bictlspec$] \ iff for all $h : \set{v_1, \ldots, v_m}
   \rightarrow \set{\ag 1, \ldots,\ag n}$ we have that $q \models 
-  \varphi[v_1 \mapsto h(v_1), \ldots v_m \mapsto h(v_m)]$,
- \end{description}
+  \varphi[v_1 \mapsto h(v_1), \ldots v_m \mapsto h(v_m)]$\nb{E: what is $h$? Would be good to explain it}
+\end{description}
 \end{definition}
 
 A sentence $\bictlspec$ is said to be true in $\msys n$, denoted $\msys n

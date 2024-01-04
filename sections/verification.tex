@@ -32,7 +32,7 @@ homogeneous agents. The Appendix includes the full proof.
 We next construct the zero-one abstraction of the systems generated from
 $\pnis$. The zero-one abstraction is a NIS comprising a zero-one agent, which is
 an abstraction for arbitrarily many concrete agents, $m$ concrete agents, whose
-local states determines the satisfaction status of the atomic propositions in
+local states determine the satisfaction status of the atomic propositions in
 $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ (see
 Definition~\ref{def:concreteystem}), and the environment. In other words, the
 zero-one agent defined below encodes how an arbitrary number of agents may
@@ -41,7 +41,7 @@ interfere with the temporal evolution of the concrete agents $1, \ldots, m$.
 \begin{definition}[Zero-one agent]
 Given an agent template $\ag t = \tuple{\lstates t, \init t, \obs t,  \acts t,
 \prot t, \tr t }$ over a set $\pers t$ of percepts and a set $\prvs t$ of
-private states, its associated zero-one agent is a tuple $\ag{zo} =
+private states, its associated \emph{zero-one agent} is a tuple $\ag{zo} =
 \tuple{\lstates{zo}, \init{zo}, \obs{zo}, \acts{zo}, \prot{zo}, \tr{zo}}$ over
 sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
 2^{\prvs t} \setminus \set{\emptyset}$ of percepts and private states, where:
@@ -55,7 +55,7 @@ sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
     \item $\obs{zo} : \lstates{zo} \times \lstates e \rightarrow \per{zo}$ is
     abstract observation function. It maps pairs of abstract and environment
     states to sets of percepts, where each set includes the percepts that would
-    be collectively generate in a global state represented by the abstract
+    be collectively generated in a global state represented by the abstract
     state. Formally, the observation function satisfies $\obs{zo}(l_{zo}, l_e) =
     \per{zo}$ if:
     \begin{itemize}
@@ -121,7 +121,7 @@ direction  assume that $\masys m \not \models \varphi[v_1 \mapsto 1, \ldots, v_m
 \mapsto m]$l. Then, $\masys m  \models \neg \varphi[v_1 \mapsto 1, \ldots, v_m
 \mapsto m]$. As $\neg \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ includes
 only existential path quantification, there is a path evidencing the
-satisfaction of the formula. The Theorem can be proved by inductively
+satisfaction of the formula. The theorem can be proved by induction
 constructing a similar concrete path that also evidences the satisfaction of
 said formula. This implies that $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$
 is not satisfied by the underlying concrete system and thus it is neither
@@ -129,3 +129,8 @@ satisfied by the parameterised system. The Appendix includes the full proof.
 \end{proof}
 
 
+%%% Local Variables:
+%%% mode: latex
+%%% fill-column: 79
+%%% TeX-master: "../main"
+%%% End:
