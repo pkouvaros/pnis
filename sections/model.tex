@@ -129,6 +129,107 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 
 \end{example}
 
+\begin{example}
+  \label{ex:penguin-agent-template}
+  We consider the example of a penguin colony, an instance of sequential social
+  dilemma games \cite{LeiboZLMG17}.\nb{E: check if this is really an SSD} In
+  this scenario, there is a colony of penguins living in a very cold
+  environment. For a penguin to survive, it needs to maintain its body
+  temperature within a certain interval: if the body temperature drops too low
+  and raises too high, the penguin dies. We assume that penguins live on a
+  hexagonal grid. Given the cell where a penguin is located, there are 6
+  neighbouring cells. The penguin radiates some heat in each of the 6
+  directions where there are no neighbours, while for each direction where
+  there is a neighbour the penguin gains/preserves some heat.
+
+
+  \def\r{4}
+  \def\d{8}
+  \def\w{6.93} % r * sqrt(3)
+  \begin{center}
+    \begin{tikzpicture}[%
+      hexagon/.style={draw=gray,  regular polygon, regular polygon
+        sides=6, minimum height=\d{}mm, rotate=30}]
+
+      
+      \foreach \x in {1,2,...,6} { %
+        \foreach \y in {1,2,3} { %
+          \node[hexagon] at (\x*\w mm,\y*3*\r mm) {};
+          
+          \node[hexagon] at (0.5*\w mm + \x*\w mm,1.5*\r mm+\y*3*\r mm) {};
+          % 
+        }}
+    \end{tikzpicture}
+  \end{center}
+
+
+  We formalise the agent template
+  $\ag t = \tuple{\lstates{t}, \init{t}, \obs{t}, \acts{t}, \prot{t}, \tr{t} }$
+  in this scenario as follows.
+
+ 
+  \begin{itemize}[$\bullet$]
+  \item
+    $\lstates{t} = \{(h,\per{}) \mid h \in \{0,\dots,M_h\}, \ \per{} \in \{G_s,
+    R_s, E_s\}$, where $h$ is an integer between 0 and $M_h$, denoting the
+    health of the agent, while percepts $G_s$, $R_s$ and $E_s$ indicate what
+    actions are available to the agent depending on its health.
+    % stand for \emph{G}uarding, \emph{R}esting and \emph{E}xpired
+    % \emph{s}tates, respectively.
+
+  \item $\init{t} = (G_p + 1, G_s)$, i.e., at the start each agent has enough
+    of health to be able to guard at least once without expiring.
+    
+  \item $\acts{t} = \{G_a, R_a, E_a\}$, where $G_a$, $R_a$ and $E_a$ stand for
+    \emph{G}uarding, \emph{R}esting and \emph{E}xpired \emph{a}ctions,
+    respectively.
+  
+
+  \item Normally, we assume that the observation function is given as a
+    FFNN. But for the sake of illustration, we define here the observation
+    function of a perfectly altruistic agent:
+
+    $\obs{t}((h,\per{}), \ \lstate{e}) = \left\{
+      \begin{array}{rl}
+        G_s, & \text{ if } h > G_p\\ 
+        R_s, & \text{ if } 0 < h \leq G_p\\ 
+        E_s, & \text{ if } h \leq 0\\
+      \end{array} \right.$
+    
+    Intuitively, if health is good enough, then the agent is in a position to
+    guard, if health is still positive, the agent can only rest, otherwise the
+    agent is ``expired''. In this example, the environment state is ignored by
+    the observation function.
+    
+  \item $\prot{t}(h,\per{}) = \left\{
+      \begin{array}{rl}
+        \{G_a, R_a\}, & \text{ if } \per{} = G_s\\ 
+        \{R_a\}, & \text{ if } \per{} = R_s\\ 
+        \{E_a\}, & \text{ if } \per{} = E_s\\
+      \end{array} \right.$
+
+    If the percept is $G_s$, then the agent can both guard and rest. If the
+    percept is $R_s$ or $E_s$, the only available actions are resting and the
+    dummy action $E_a$, respectively.
+    
+  \item The local transition function ensures that at most one agent guards at
+    any moment. Formally, for $S \in \{G_s,R_s\}$:
+
+    $\begin{array}{@{}l@{\quad}l}\small
+       \tr{t}((h,S), G_a, A) = \max(h - G_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > G_p\\
+       % \tr{t}((h,S), G_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq G_p\\[2mm]
+       \tr{t}((h,S), R_a, A) = \min(h + R_r, M_h) &\text{ if }G_a\in A\\
+       \tr{t}((h,S), R_a, A) = \max(h - U_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > U_p\\
+       % \tr{t}((h,S), R_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
+       
+       \tr{t}((h,E_s), E_a, A) = h\\
+     \end{array}$
+  \end{itemize}
+
+\end{example}
+
+
+
 An environment template has a similar description to an agent template but does
 not include a perception mechanism.
 
