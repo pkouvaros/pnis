@@ -123,7 +123,7 @@ class DQNStrategy(AbstractStrategy):
         return model
     
     def act(self, normalised_hp: float) -> int:
-        if normalised_hp >= 0:
+        if normalised_hp > 0:
             if np.random.rand() <= self.epsilon:
                 return rand.choice([AbstractStrategy.REGEN_ACTION, AbstractStrategy.GUARD_ACTION])
             actions = {0: AbstractStrategy.REGEN_ACTION, 1: AbstractStrategy.GUARD_ACTION}
