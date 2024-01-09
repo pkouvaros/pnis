@@ -99,34 +99,32 @@ class Simulation:
             new_agent_hp == 0)
 
     def run(self, train: bool = False) -> None:
-        iteration = 0
-        while iteration < self.max_episode_length:
-            round_hps: dict[int, list[float]] = {}
+        for _ in range(self.max_episode_length):
+            round_hps: dict[int, list[int]] = {}
 
             # get actions
             actions = [self.agents[idx].act() # TODO: change to dictionary
                        for idx in range(len(self.agents))]
             game_over = all(
                 action == AbstractStrategy.EXPIRE_ACTION for action in actions)
-            if not game_over:
-                transitions = self.step(actions)
-            else:
-                break
+
+            transitions = self.step(actions)
 
             # update agent states
             for idx, transition in enumerate(transitions):
                 self.agents[idx].update_state(transition)
                 # the agent will only remember one final transition, not looping in the final state
                 if train and not transition.state.hp == 0:
-                    self.agents[idx].remember(transition, iteration)
+                    self.agents[idx].remember(transition)
 
-                round_hps[idx] = [transition.next_state.hp]
+                round_hps[idx] = [transition.state.hp]
 
             # update scores dataframe
             self.scores = pd.concat(
                 [self.scores, pd.DataFrame(round_hps)], ignore_index=True)
-
-            iteration += 1
+            
+            if game_over:
+                return
 
     def train(self, n_episodes: int = DQNStrategy.DEFAULT_TRAINING_EPISODES):
         def reset_agents():

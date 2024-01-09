@@ -68,7 +68,7 @@ class DefectorStrategy(AbstractStrategy):
         pass
 
 class DQNStrategy(AbstractStrategy):
-    DEFAULT_TRAINING_EPISODES: int = 10000
+    DEFAULT_TRAINING_EPISODES: int = 1000
 
     DEFAULT_POLICY_TRAIN_FREQ: int = 1
     DEFAULT_TARGET_NET_UPDATE_FREQ: int = 5
@@ -112,6 +112,8 @@ class DQNStrategy(AbstractStrategy):
         self.target_net = self._build_model()
         self.update_target_network()
 
+        self.training_counter = 0
+
     def _build_model(self):
         model = Sequential()
         model.add(InputLayer(input_shape=(1,))) # type: ignore
@@ -133,11 +135,17 @@ class DQNStrategy(AbstractStrategy):
             action = AbstractStrategy.EXPIRE_ACTION
         return action
 
-    def remember(self, transition: Transition, *, iteration: int):
+    def remember(self, transition: Transition):
         self.memory.append(transition)
+        
+        if self.training_counter != 0 and self.training_counter % self.policy_net_train_freq == 0:
+            self.train()
+        if self.training_counter != 0 and self.training_counter % self.target_net_update_freq == 0:
+            self.update_target_network()
+        if self.training_counter % self.policy_net_train_freq == 0 and self.training_counter % self.target_net_update_freq == 0:
+            self.training_counter = 0
 
-        if iteration != 0 and iteration % self.policy_net_train_freq == 0:
-            self.train(iteration=iteration)
+        self.training_counter += 1
 
     def train(self, *args: Any, **kwargs: Any) -> None:
         self.replay(*args, **kwargs)
@@ -145,7 +153,7 @@ class DQNStrategy(AbstractStrategy):
     def update_target_network(self):
         self.target_net.set_weights(self.policy_net.get_weights()) # type: ignore
 
-    def replay(self, *, iteration: int):
+    def replay(self):
         if len(self.memory) < self.batch_size:
             return
         minibatch = rand.sample(self.memory, self.batch_size)
@@ -172,9 +180,6 @@ class DQNStrategy(AbstractStrategy):
             self.epsilon *= self.epsilon_decay
         else:
             self.epsilon = self.epsilon_min
-        
-        if iteration != 0 and iteration % self.target_net_update_freq == 0:
-            self.update_target_network()
 
     def save(self, path: str) -> None:
         self.policy_net.save(path) # type: ignore

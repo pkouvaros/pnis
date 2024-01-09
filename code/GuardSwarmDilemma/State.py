@@ -13,6 +13,3 @@ class Transition(NamedTuple):
     reward: float
     next_state: State
     final: bool
-
-    # def normalise_hp(self, max_hp: int) -> None:
-    #     self.state.hp = self.state.hp / max_hp

@@ -15,8 +15,8 @@ class Agent:
     def act(self) -> int:
         return self.strategy.act(normalised_hp=self.hp/self.max_hp)
     
-    def remember(self, transition: Transition, iteration: int) -> None:
-        self.strategy.remember(transition, iteration=iteration)
+    def remember(self, transition: Transition) -> None:
+        self.strategy.remember(transition)
 
     def update_state(self, transition: Transition) -> None:
         self.hp = transition.next_state.hp
