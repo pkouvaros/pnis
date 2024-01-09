@@ -1,6 +1,6 @@
 from typing import List
 from .Template import TemplateAgent
-from .Strategy import AbstractStrategy, DQNStrategy, RandomStrategy
+from .Strategy import AbstractStrategy, DQNStrategy
 from .Agent import Agent
 from .State import State, Transition
 import pandas as pd
@@ -31,35 +31,14 @@ class Simulation:
         self.template_agent = template_agent
 
         # initialise scores dataframe for easy access
-        self.scores: pd.DataFrame = pd.DataFrame(
-            {k: [self.template_agent.initial_hp] for k in range(self.number_of_agents)})
+        self.scores: pd.DataFrame = pd.DataFrame()
 
         # initialise agents
         self.agents: list[Agent] = [
             Agent(
                 self.template_agent.max_hp,
-                self.template_agent.initial_hp,
-                strategy=template_agent.strategy)
+                self.template_agent.initial_hp)
             for _ in range(self.number_of_agents)]
-
-    def step(self, actions: List[int]) -> List[Transition]:
-        # arbitrarily choose a random subset of guard actions and revert other guard actions to regen actions
-        guard_actions = [idx for idx, action in enumerate(
-            actions) if action == AbstractStrategy.GUARD_ACTION]
-        chosen_guard = random.sample(
-            guard_actions, k=random.choice(range(len(guard_actions))) + 1) if guard_actions else None
-        unguarded = chosen_guard is None
-        for idx in range(len(actions)):
-            if not unguarded and actions[idx] == AbstractStrategy.GUARD_ACTION and idx in chosen_guard:
-                actions[idx] = AbstractStrategy.REGEN_ACTION
-        # feedback new state to agents
-        transitions = []
-        for agent_idx in range(len(self.agents)):
-            transition = self.step_agent(
-                agent_idx, actions[agent_idx], unguarded)
-            transitions.append(transition)
-
-        return transitions
 
     def step_agent(self, agent_idx: int, action: int, unguarded: bool) -> Transition:
         def valid_hp(hp) -> int:
@@ -96,14 +75,34 @@ class Simulation:
             action,
             reward / self.template_agent.max_hp,
             State(new_agent_hp, new_agent_hp/self.template_agent.max_hp, new_state_label),
-            new_agent_hp == 0)
+            new_agent_hp <= 0)
 
+    def step(self, actions: List[int]) -> List[Transition]:
+        # arbitrarily choose a random subset of guard actions and revert other guard actions to regen actions
+        guard_actions = [idx for idx, action in enumerate(
+            actions) if action == AbstractStrategy.GUARD_ACTION]
+        chosen_guard = random.sample(
+            guard_actions, k=random.choice(range(len(guard_actions))) + 1) if guard_actions else None
+        unguarded = chosen_guard is None
+        if not unguarded:
+            for idx in range(len(actions)):
+                if actions[idx] == AbstractStrategy.GUARD_ACTION and idx not in chosen_guard:
+                    actions[idx] = AbstractStrategy.REGEN_ACTION
+        # feedback new state to agents
+        transitions = []
+        for agent_idx in range(len(self.agents)):
+            transition = self.step_agent(
+                agent_idx, actions[agent_idx], unguarded)
+            transitions.append(transition)
+
+        return transitions
+    
     def run(self, train: bool = False) -> None:
         for _ in range(self.max_episode_length):
             round_hps: dict[int, list[int]] = {}
 
             # get actions
-            actions = [self.agents[idx].act() # TODO: change to dictionary
+            actions = [self.template_agent.strategy.act(self.agents[idx].hp / self.template_agent.max_hp) # TODO: change to dictionary
                        for idx in range(len(self.agents))]
             game_over = all(
                 action == AbstractStrategy.EXPIRE_ACTION for action in actions)
@@ -113,11 +112,12 @@ class Simulation:
             # update agent states
             for idx, transition in enumerate(transitions):
                 self.agents[idx].update_state(transition)
-                # the agent will only remember one final transition, not looping in the final state
-                if train and not transition.state.hp == 0:
-                    self.agents[idx].remember(transition)
-
                 round_hps[idx] = [transition.state.hp]
+            
+            # the agent will only remember one final transition, not looping in the final state
+            if train:
+                train_transitions = [t for t in transitions if t.state.hp > 0]
+                self.template_agent.strategy.remember(train_transitions)
 
             # update scores dataframe
             self.scores = pd.concat(

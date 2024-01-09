@@ -4,7 +4,7 @@ import random as rand
 from .State import Transition
 from collections import deque
 from tensorflow.keras.layers import Dense, InputLayer
-from typing import Any
+from typing import Any, List
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.optimizers import RMSprop
 
@@ -135,8 +135,9 @@ class DQNStrategy(AbstractStrategy):
             action = AbstractStrategy.EXPIRE_ACTION
         return action
 
-    def remember(self, transition: Transition):
-        self.memory.append(transition)
+    def remember(self, transitions: List[Transition]):
+        for transition in transitions:
+            self.memory.append(transition)
         
         if self.training_counter != 0 and self.training_counter % self.policy_net_train_freq == 0:
             self.train()
@@ -159,12 +160,12 @@ class DQNStrategy(AbstractStrategy):
         minibatch = rand.sample(self.memory, self.batch_size)
 
         states = np.array([t.state.normalised_hp for t in minibatch])
-        targets = self.policy_net.predict(states) # type: ignore
+        targets = self.policy_net.predict(np.array(states)) # type: ignore
 
         for i, (_, action, reward, next_state, final) in enumerate(minibatch):
             action_target = reward
             if not final:
-                action_target += self.discount_factor * np.amax(self.target_net.predict([next_state.normalised_hp])[0]) # type: ignore
+                action_target += self.discount_factor * np.amax(self.target_net.predict(np.array([next_state.normalised_hp]))[0]) # type: ignore
             targets[i][action - 1] = action_target # action - 1 conforms action code AbstractStrategy constants to prediction array subindices
 
         self.policy_net.fit(states, targets, batch_size=len(minibatch)) # type: ignore

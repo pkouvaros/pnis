@@ -1,3 +1,4 @@
+from typing import List
 from .Strategy import RandomStrategy, AbstractStrategy
 from .State import Transition
 
@@ -6,17 +7,10 @@ class Agent:
     REGEN_STATE: int = 1
     EXPIRE_STATE: int = 0
 
-    def __init__(self, max_hp: int, initial_hp: int, strategy: AbstractStrategy = RandomStrategy()) -> None:
+    def __init__(self, max_hp: int, initial_hp: int) -> None:
         self.max_hp: int = max_hp
         self.hp: int = initial_hp
-        self.strategy: AbstractStrategy = strategy
         self.state_label: int = Agent.REGEN_STATE
-
-    def act(self) -> int:
-        return self.strategy.act(normalised_hp=self.hp/self.max_hp)
-    
-    def remember(self, transition: Transition) -> None:
-        self.strategy.remember(transition)
 
     def update_state(self, transition: Transition) -> None:
         self.hp = transition.next_state.hp
