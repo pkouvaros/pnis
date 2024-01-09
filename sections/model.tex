@@ -136,9 +136,12 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
   this scenario, there is a colony of penguins living in a very cold
   environment. For a penguin to survive, it needs to maintain its body
   temperature within a certain interval: if the body temperature drops too low
-  and raises too high, the penguin dies. We assume that penguins live on a
+  and raises too high, the penguin dies (here we assume a simplification of the
+  real-life dynamics).
+
+  We assume that penguins live on a
   hexagonal grid. Given the cell where a penguin is located, there are 6
-  neighbouring cells. 
+  neighbouring cells (thus, there can be at most 6 neighbours). 
 
   \def\r{3}%4}
   \def\d{6}%8}
@@ -187,13 +190,14 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
   for instance, given a current location $c$ and a vector of movement $a$, we
   can compute the resulting location as $c+a$ (although in the example we
   abstract away the exact coordinates). Assume that
-  $\mathit{loc} \subseteq \mathbb{Z}^3$ is the arena, a set of connected
-  locations.
+  $\mathit{Loc} \subseteq \mathbb{Z}^3$ is the arena, a set of connected
+  locations each identified by a 3d coordinate.
 
-  The penguin radiates some heat in each of the 6 directions where there are no
+  Penguins radiate heat in each of the 6 directions where there are no
   neighbours, while for each direction where there is a neighbour the penguin
-  gains/preserves some heat. Let $r$ be some number. We assume the following
-  update function for the temperature of a penguin with $n$ neighbours:
+  gains/preserves some heat. Let $r$ be the amount of heat radiated in one
+  direction. We assume the following update function for the temperature of a
+  penguin with $n$ neighbours:
   $\mathit{upd}(t,n) = t - (6-n)\cdot r + n\cdot\frac{r}{2}$.
   %
   We number the directions 1 to 6 as in the figure
@@ -208,14 +212,16 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
  
   \begin{itemize}[$\bullet$]
   \item
-    $\lstates{t} = \{(c,t,f) \mid c \in \mathbb{Z}^3, t \in \mathbb{Z}, \ f \in
-    2^D$, where $c$ is a 3d coordinate, $t$ an integer between 0 and $M_t$,
+    $\lstates{t} = \{(c,t,f) \mid c \in \mathit{Loc}, \ t \in \mathbb{Z}, \ f
+    \in 2^D$, where $c$ is a 3d coordinate, $t$ an integer between 0 and $M_t$,
     denoting the temperature of the penguin, while $f$ is a percept that is a
-    set of directions indicating what neighbouring cells are empty.
+    set of \emph{free} directions, indicating what neighbouring cells are
+    empty.
 
   \item $\init{t} = ((0,0,0),t_0, D)$, the penguin has no neighbours.
     
-  \item $\acts{t} = \mathit{loc}$ % $\cup \{s\}$, where $m_l$
+  \item $\acts{t} = \mathit{Loc}$, the actions encode the new location of a
+    penguin. % $\cup \{s\}$, where $m_l$
     % is the action for moving to the location $l$ and $s$ for not moving.
 
   \item $\obs{t}((c,t,f), \ \lstate{e}) = freedir(c,\lstate{e})$ (we will
@@ -230,7 +236,8 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 
     
   \item $\tr{t}((c,t, f), a, A, \act{e}) = (a, \mathit{upd}(t,n))$, where
-    $n = 6 - |f|$.
+    $n = 6 - |f|$, i.e., the transition function updates the location and the
+    temperature of the penguin.
   \end{itemize}
 
 \end{example}
@@ -253,14 +260,15 @@ protocol function, and $\tr e : \lstates e \times \acts e \times 2^{\acts t}
   For the penguin scenario, the environment $e$ is defined as
   $\tuple{\lstates{e}, \acts{e}, \prot{e}, \tr{e}}$, where
   \begin{itemize}[$\bullet$]
-  \item $\lstates{e} = \{(c,b) \mid c \in \mathit{loc}, b\in\{0,1\}\}$. Thus
+  \item $\lstates{e} = \{(c,b) \mid c \in \mathit{Loc}, b\in\{0,1\}\}$. Thus
     every state is a map indicating whether there is at least one or no
     penguins at a location.
   \item $\acts{e} = \{0\}$
-  \item $\prot{e}$
+  \item $\prot{e} = ..$
   \item
     $\tr{e}(\mathit{map}, \act{e}, A) = A \times \{1\} \ \cup \
-    (\mathit{loc}\setminus A) \times \{0\}$
+    (\mathit{Loc}\setminus A) \times \{0\}$ the transition function computes
+    the new map, given the set of penguin actions.
   \end{itemize}
 \end{example}
 
