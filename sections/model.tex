@@ -129,7 +129,7 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 
 \end{example}
 
-\begin{example}
+\begin{example}\em
   \label{ex:penguin-agent-template}
   We consider the example of a penguin colony, an instance of sequential social
   dilemma games \cite{LeiboZLMG17}.\nb{E: check if this is really an SSD} In
@@ -138,29 +138,67 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
   temperature within a certain interval: if the body temperature drops too low
   and raises too high, the penguin dies. We assume that penguins live on a
   hexagonal grid. Given the cell where a penguin is located, there are 6
-  neighbouring cells. The penguin radiates some heat in each of the 6
-  directions where there are no neighbours, while for each direction where
-  there is a neighbour the penguin gains/preserves some heat.
+  neighbouring cells. 
 
-
-  \def\r{4}
-  \def\d{8}
-  \def\w{6.93} % r * sqrt(3)
+  \def\r{3}%4}
+  \def\d{6}%8}
+  \def\w{5.2}%6.93} % r * sqrt(3)
+  \newcommand{\coord}[3]{\textcolor{purple}{#1},\! \textcolor{teal}{#2},\! \textcolor{violet}{#3}}
   \begin{center}
     \begin{tikzpicture}[%
       hexagon/.style={draw=gray,  regular polygon, regular polygon
-        sides=6, minimum height=\d{}mm, rotate=30}]
+        sides=6, minimum height=#1, rotate=30},
+      hexagon/.default={6mm}]
 
       
-      \foreach \x in {1,2,...,6} { %
-        \foreach \y in {1,2,3} { %
+      \foreach \x in {1,2,...,4} { %
+        \foreach \y in {1,2} { %
           \node[hexagon] at (\x*\w mm,\y*3*\r mm) {};
           
           \node[hexagon] at (0.5*\w mm + \x*\w mm,1.5*\r mm+\y*3*\r mm) {};
           % 
         }}
+
+      \begin{scope}[xshift=5cm, yshift=1.5cm]
+        \node[hexagon=8mm] {};
+
+        % \node[scale=0.5] {\coord{0}{0}{0}};
+
+        \foreach \a/\n/\q/\r/\s in {%
+          60 /1/ 1/-1/ 0,%
+          0  /2/ 1/ 0/-1,%
+          300/3/ 0/ 1/-1,%
+          240/4/-1/ 1/ 0, %
+          180/5/-1/ 0/ 1, %
+          120/6/ 0/-1/ 1%
+        } {%
+          \node[hexagon=8mm] at (\a:6.93 mm) {};
+          
+          \node[scale=0.5] at (\a:7.7 mm) {\n};%\coord{\q}{\r}{\s}};
+          
+          \draw[-latex] (\a:0.25cm) -- (\a:0.55cm);%
+        }
+      \end{scope}
     \end{tikzpicture}
   \end{center}
+
+  We assume cube coordinates \cite{Patel21} for encoding the locations on the
+  hexagonal grid. Such coordinate system allows for standard vector operations,
+  for instance, given a current location $c$ and a vector of movement $a$, we
+  can compute the resulting location as $c+a$ (although in the example we
+  abstract away the exact coordinates). Assume that
+  $\mathit{loc} \subseteq \mathbb{Z}^3$ is the arena, a set of connected
+  locations.
+
+  The penguin radiates some heat in each of the 6 directions where there are no
+  neighbours, while for each direction where there is a neighbour the penguin
+  gains/preserves some heat. Let $r$ be some number. We assume the following
+  update function for the temperature of a penguin with $n$ neighbours:
+  $\mathit{upd}(t,n) = t - (6-n)\cdot r + n\cdot\frac{r}{2}$.
+  %
+  We number the directions 1 to 6 as in the figure
+  above, and denote the corresponding vectors as $v_1,\dots,v_6$. Let
+  $D = \{1,\dots,6\}$ be the set of all 6 directions.
 
 
   We formalise the agent template
@@ -170,60 +208,29 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
  
   \begin{itemize}[$\bullet$]
   \item
-    $\lstates{t} = \{(h,\per{}) \mid h \in \{0,\dots,M_h\}, \ \per{} \in \{G_s,
-    R_s, E_s\}$, where $h$ is an integer between 0 and $M_h$, denoting the
-    health of the agent, while percepts $G_s$, $R_s$ and $E_s$ indicate what
-    actions are available to the agent depending on its health.
-    % stand for \emph{G}uarding, \emph{R}esting and \emph{E}xpired
-    % \emph{s}tates, respectively.
+    $\lstates{t} = \{(c,t,f) \mid c \in \mathbb{Z}^3, t \in \mathbb{Z}, \ f \in
+    2^D$, where $c$ is a 3d coordinate, $t$ an integer between 0 and $M_t$,
+    denoting the temperature of the penguin, while $f$ is a percept that is a
+    set of directions indicating what neighbouring cells are empty.
 
-  \item $\init{t} = (G_p + 1, G_s)$, i.e., at the start each agent has enough
-    of health to be able to guard at least once without expiring.
+  \item $\init{t} = ((0,0,0),t_0, D)$, the penguin has no neighbours.
     
-  \item $\acts{t} = \{G_a, R_a, E_a\}$, where $G_a$, $R_a$ and $E_a$ stand for
-    \emph{G}uarding, \emph{R}esting and \emph{E}xpired \emph{a}ctions,
-    respectively.
-  
+  \item $\acts{t} = \mathit{loc}$ % $\cup \{s\}$, where $m_l$
+    % is the action for moving to the location $l$ and $s$ for not moving.
 
-  \item Normally, we assume that the observation function is given as a
-    FFNN. But for the sake of illustration, we define here the observation
-    function of a perfectly altruistic agent:
-
-    $\obs{t}((h,\per{}), \ \lstate{e}) = \left\{
+  \item $\obs{t}((c,t,f), \ \lstate{e}) = freedir(c,\lstate{e})$ (we will
+    define the environment state the function below)..
+    
+    
+  \item $\prot{t}(c,t,f) = \left\{
       \begin{array}{rl}
-        G_s, & \text{ if } h > G_p\\ 
-        R_s, & \text{ if } 0 < h \leq G_p\\ 
-        E_s, & \text{ if } h \leq 0\\
-      \end{array} \right.$
-    
-    Intuitively, if health is good enough, then the agent is in a position to
-    guard, if health is still positive, the agent can only rest, otherwise the
-    agent is ``expired''. In this example, the environment state is ignored by
-    the observation function.
-    
-  \item $\prot{t}(h,\per{}) = \left\{
-      \begin{array}{rl}
-        \{G_a, R_a\}, & \text{ if } \per{} = G_s\\ 
-        \{R_a\}, & \text{ if } \per{} = R_s\\ 
-        \{E_a\}, & \text{ if } \per{} = E_s\\
+        \{c + v_i \mid i \in f\}, & \text{ if } f \neq \emptyset\\ 
+        \{c\}, & \text{ if } f = \emptyset\\ 
       \end{array} \right.$
 
-    If the percept is $G_s$, then the agent can both guard and rest. If the
-    percept is $R_s$ or $E_s$, the only available actions are resting and the
-    dummy action $E_a$, respectively.
     
-  \item The local transition function ensures that at most one agent guards at
-    any moment. Formally, for $S \in \{G_s,R_s\}$:
-
-    $\begin{array}{@{}l@{\quad}l}\small
-       \tr{t}((h,S), G_a, A) = \max(h - G_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > G_p\\
-       % \tr{t}((h,S), G_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq G_p\\[2mm]
-       \tr{t}((h,S), R_a, A) = \min(h + R_r, M_h) &\text{ if }G_a\in A\\
-       \tr{t}((h,S), R_a, A) = \max(h - U_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > U_p\\
-       % \tr{t}((h,S), R_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
-       
-       \tr{t}((h,E_s), E_a, A) = h\\
-     \end{array}$
+  \item $\tr{t}((c,t, f), a, A, \act{e}) = (a, \mathit{upd}(t,n))$, where
+    $n = 6 - |f|$.
   \end{itemize}
 
 \end{example}
@@ -242,6 +249,20 @@ protocol function, and $\tr e : \lstates e \times \acts e \times 2^{\acts t}
 \rightarrow \lstates e$ is a local transition function.
 \end{definition}
 
+\begin{example}
+  For the penguin scenario, the environment $e$ is defined as
+  $\tuple{\lstates{e}, \acts{e}, \prot{e}, \tr{e}}$, where
+  \begin{itemize}[$\bullet$]
+  \item $\lstates{e} = \{(c,b) \mid c \in \mathit{loc}, b\in\{0,1\}\}$. Thus
+    every state is a map indicating whether there is at least one or no
+    penguins at a location.
+  \item $\acts{e} = \{0\}$
+  \item $\prot{e}$
+  \item
+    $\tr{e}(\mathit{map}, \act{e}, A) = A \times \{1\} \ \cup \
+    (\mathit{loc}\setminus A) \times \{0\}$
+  \end{itemize}
+\end{example}
 
 Agent and environment templates define the main formal structure we will be
 using in this paper.
