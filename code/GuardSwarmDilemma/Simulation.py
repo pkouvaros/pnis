@@ -10,10 +10,10 @@ from tqdm import tqdm
 
 class Simulation:
     DEFAULT_NUMBER_OF_AGENTS: int = 3
-    DEFAULT_MAX_EPISODE_LENGTH: int = 25
-    DEFAULT_GUARD_VALUE: int = -4
-    DEFAULT_REGEN_VALUE: int = 2
-    DEFAULT_UNGUARDED_VALUE: int = -10
+    DEFAULT_MAX_EPISODE_LENGTH: int = 32
+    DEFAULT_GUARD_VALUE: int = -8
+    DEFAULT_REGEN_VALUE: int = 4
+    DEFAULT_UNGUARDED_VALUE: int = -32
 
     def __init__(self,
                  number_of_agents: int = DEFAULT_NUMBER_OF_AGENTS,

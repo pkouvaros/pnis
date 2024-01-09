@@ -1,8 +1,8 @@
 from .Strategy import RandomStrategy, AbstractStrategy
 
 class TemplateAgent:
-    DEFAULT_INITIAL_HP: int = 10
-    DEFAULT_MAX_HP: int = 10
+    DEFAULT_INITIAL_HP: int = 32
+    DEFAULT_MAX_HP: int = 32
 
     def __init__(self, max_hp: int = DEFAULT_MAX_HP, initial_hp: int = DEFAULT_INITIAL_HP, strategy: AbstractStrategy = RandomStrategy()) -> None:
         self.max_hp: int = max_hp
