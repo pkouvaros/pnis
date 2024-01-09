@@ -3,7 +3,7 @@ import numpy as np
 import random as rand
 from .State import Transition
 from collections import deque
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dense, InputLayer
 from typing import Any
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.optimizers import RMSprop
@@ -28,10 +28,6 @@ class AbstractStrategy(ABC):
     def remember(self, *args: Any, **kwargs: Any) -> None:
         pass
 
-    # @abstractmethod
-    # def train(self, *args: Any, **kwargs: Any) -> None:
-    #     pass
-
 class RandomStrategy(AbstractStrategy):
     def __init__(self) -> None:
         super().__init__('Random')
@@ -44,9 +40,6 @@ class RandomStrategy(AbstractStrategy):
         
     def remember(self, *args: Any, **kwargs: Any) -> None:
         pass
-
-    # def train(self, *args: Any, **kwargs: Any) -> None:
-    #     pass
         
 class CooperatorStrategy(AbstractStrategy):
     def __init__(self) -> None:
@@ -61,9 +54,6 @@ class CooperatorStrategy(AbstractStrategy):
     def remember(self, *args: Any, **kwargs: Any) -> None:
         pass
 
-    # def train(self, *args: Any, **kwargs: Any) -> None:
-    #     pass
-
 class DefectorStrategy(AbstractStrategy):
     def __init__(self) -> None:
         super().__init__('Defector')
@@ -77,23 +67,20 @@ class DefectorStrategy(AbstractStrategy):
     def remember(self, *args: Any, **kwargs: Any) -> None:
         pass
 
-    # def train(self, *args: Any, **kwargs: Any) -> None:
-    #     pass
-
 class DQNStrategy(AbstractStrategy):
     DEFAULT_TRAINING_EPISODES: int = 10000
 
-    DEFAULT_POLICY_TRAIN_FREQ: int = 10
-    DEFAULT_TARGET_NET_UPDATE_FREQ: int = 100
-    DEFAULT_REPLAY_BUFFER_SIZE: int = 10000
-    DEFAULT_BATCH_SIZE: int = 32
+    DEFAULT_POLICY_TRAIN_FREQ: int = 1
+    DEFAULT_TARGET_NET_UPDATE_FREQ: int = 5
+    DEFAULT_REPLAY_BUFFER_SIZE: int = 20
+    DEFAULT_BATCH_SIZE: int = 3
     DEFAULT_LEARNING_RATE: float = 0.001
-    DEFAULT_DENSE_LAYER_WIDTH: int = 10
-    DEFAULT_DENSE_LAYER_DEPTH: int = 2
+    DEFAULT_DENSE_LAYER_WIDTH: int = 8
+    DEFAULT_DENSE_LAYER_DEPTH: int = 1
     DEFAULT_DISCOUNT_FACTOR: float = 0.99
     DEFAULT_EPSILON: float = 1.0
     DEFAULT_EPSILON_MIN: float = 0.01
-    DEFAULT_EPSILON_DECAY: float = 0.999
+    DEFAULT_EPSILON_DECAY: float = 0.8
 
     def __init__(self,
                  policy_train_freq: int = DEFAULT_POLICY_TRAIN_FREQ,
@@ -127,21 +114,27 @@ class DQNStrategy(AbstractStrategy):
 
     def _build_model(self):
         model = Sequential()
-        model.add(Dense(self.dense_layer_width, input_dim=1, activation='relu')) # type: ignore
-        for _ in range(self.dense_layer_depth - 1):
+        model.add(InputLayer(input_shape=(1,))) # type: ignore
+        for _ in range(self.dense_layer_depth):
             model.add(Dense(self.dense_layer_width, activation='relu')) # type: ignore
-        model.add(Dense(2, activation='softmax')) # type: ignore
-        model.compile(loss='huber', optimizer=RMSprop(learning_rate=self.learning_rate)) # type: ignore # Paper recommends RMSprop for DQN and seen Huber loss used a lot
+        model.add(Dense(self.state_size, activation='softmax')) # type: ignore
+        model.compile(loss='huber', optimizer=RMSprop(learning_rate=self.learning_rate)) # type: ignore
+        # Paper recommends RMSprop for DQNs and Huber loss seems an unspoken standard for DQNs
         return model
     
     def act(self, normalised_hp: float) -> int:
-        if np.random.rand() <= self.epsilon:
-            return rand.choice([AbstractStrategy.GUARD_ACTION, AbstractStrategy.REGEN_ACTION])
-        act_values = self.policy_net.predict(normalised_hp) # type: ignore
-        return np.argmax(act_values[0])
+        if normalised_hp >= 0:
+            if np.random.rand() <= self.epsilon:
+                return rand.choice([AbstractStrategy.REGEN_ACTION, AbstractStrategy.GUARD_ACTION])
+            actions = {0: AbstractStrategy.REGEN_ACTION, 1: AbstractStrategy.GUARD_ACTION}
+            q_values = self.policy_net.predict(np.array([np.float(normalised_hp)])) # type: ignore
+            action = actions[np.argmax(q_values[0])]
+        else:
+            action = AbstractStrategy.EXPIRE_ACTION
+        return action
 
     def remember(self, transition: Transition, *, iteration: int):
-        self.memory.append(Transition(transition.state, transition.action, transition.reward, transition.next_state, transition.final))
+        self.memory.append(transition)
 
         if iteration != 0 and iteration % self.policy_net_train_freq == 0:
             self.train(iteration=iteration)
@@ -156,16 +149,15 @@ class DQNStrategy(AbstractStrategy):
         if len(self.memory) < self.batch_size:
             return
         minibatch = rand.sample(self.memory, self.batch_size)
-        
-        # a dead DQN agent would not learn anyway because it does not recieve rewards
-        minibatch = [t for t in minibatch if t.final == False]
 
-        states = np.array([t.state for t in minibatch])
+        states = np.array([t.state.normalised_hp for t in minibatch])
         targets = self.policy_net.predict(states) # type: ignore
 
-        for i, (_, action, reward, next_state, _) in enumerate(minibatch):
-            action_target = reward + self.discount_factor * np.amax(self.target_net.predict(next_state)[0]) # type: ignore
-            targets[i][action] = action_target
+        for i, (_, action, reward, next_state, final) in enumerate(minibatch):
+            action_target = reward
+            if not final:
+                action_target += self.discount_factor * np.amax(self.target_net.predict([next_state.normalised_hp])[0]) # type: ignore
+            targets[i][action - 1] = action_target # action - 1 conforms action code AbstractStrategy constants to prediction array subindices
 
         self.policy_net.fit(states, targets, batch_size=len(minibatch)) # type: ignore
 

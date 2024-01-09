@@ -6,9 +6,9 @@ class Agent:
     REGEN_STATE: int = 1
     EXPIRE_STATE: int = 0
 
-    def __init__(self, max_hp, initial_hp, strategy: AbstractStrategy = RandomStrategy()) -> None:
+    def __init__(self, max_hp: int, initial_hp: int, strategy: AbstractStrategy = RandomStrategy()) -> None:
         self.max_hp: int = max_hp
-        self.hp: float = initial_hp
+        self.hp: int = initial_hp
         self.strategy: AbstractStrategy = strategy
         self.state_label: int = Agent.REGEN_STATE
 
