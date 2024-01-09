@@ -168,13 +168,6 @@ class DQNStrategy(AbstractStrategy):
             targets[i][action - 1] = action_target # action - 1 conforms action code AbstractStrategy constants to prediction array subindices
 
         self.policy_net.fit(states, targets, batch_size=len(minibatch)) # type: ignore
-
-        # for state, action, reward, next_state, _ in minibatch:
-        #     action_target = (reward + self.discount_factor * np.amax(self.target_net.predict(next_state)[0]))
-        #     target = self.policy_net.predict(state) # type: ignore
-        #     target[0][action] = action_target
-        #     self.policy_net.fit(state, target) # type: ignore
-
         
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay

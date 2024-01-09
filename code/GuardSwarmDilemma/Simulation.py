@@ -94,7 +94,7 @@ class Simulation:
         return Transition(
             State(agent_hp, agent_hp/self.template_agent.max_hp, agent_state_label),
             action,
-            reward,
+            reward / self.template_agent.max_hp,
             State(new_agent_hp, new_agent_hp/self.template_agent.max_hp, new_state_label),
             new_agent_hp == 0)
 
