@@ -6,7 +6,7 @@ from src.verification.complete.verifier.monolithic_boolean_milp_encoder import M
 
 
 class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
-    def __init__(self, constrs_manager, state_vars, agents, zero_one_agent, env):
+    def __init__(self, constrs_manager, state_vars, agents, env):
         """
         An immutable visitor implementation for constructing a single MILP from a CTL formula for
         a parameteric NIS.
@@ -36,10 +36,6 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
             offset += agents[agent_number].get_state_dimensions()
         # the last one is the offset for the local environment state
         self.local_state_offsets.append(offset)
-
-        # not needed anymore
-        self.zero_one_agent = zero_one_agent
-        self.num_zero_one_actions = zero_one_agent.get_branching_factor()
 
     def visitENextFormula(self, element):
         """
@@ -121,7 +117,7 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
             all_action_constrs = []
             for agent_number in range(self.agent_count):
                 all_actions_vars.append(action_vars[agent_number][action_indices[agent_number]])
-                all_action_constrs.append(action_constrs[agent_number][action_indices[agent_number]])
+                all_action_constrs.extend(action_constrs[agent_number][action_indices[agent_number]])
 
             ### the transition functions for all template agents
             agent_output_state_vars = []
@@ -134,14 +130,14 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
                                                          all_actions_vars, env_action_vars[action_indices[-1]])
 
                 agent_output_state_vars.append(agent_next_local_state_vars)
-                transition_constrs.append(agent_trans_constrs)
+                transition_constrs.extend(agent_trans_constrs)
 
             ### the transition function for the environment
             env_output_state_vars, env_trans_constrs = \
                 self.env.get_constraints_for_transition(self.constrs_manager,
                                                         self.get_local_state_vars(init_vars, self.agent_count),
                                                         env_action_vars[action_indices[-1]], all_actions_vars)
-            transition_constrs.append(env_trans_constrs)
+            transition_constrs.extend(env_trans_constrs)
 
             ### Put together the variables of the next global state from the agents local states and their perceptions
             output_state_vars = []

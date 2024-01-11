@@ -1,5 +1,5 @@
 from src.network_parser.keras_parser import KerasParser
-from src.network_parser.nnet_parser import NnetParser
+# from src.network_parser.nnet_parser import NnetParser
 
 
 class NetworkModel(object):
@@ -24,11 +24,11 @@ class NetworkModel(object):
             self.layers = layers
             self.n_layers = n_layers
             self.input_shape = input_shape
-        elif nn_filename.endswith(".nnet"):
-                layers, n_layers, input_shape = NnetParser.parse_file(nn_filename)
-                self.layers = layers
-                self.n_layers = n_layers
-                self.input_shape = input_shape
+        # elif nn_filename.endswith(".nnet"):
+        #         layers, n_layers, input_shape = NnetParser.parse_file(nn_filename)
+        #         self.layers = layers
+        #         self.n_layers = n_layers
+        #         self.input_shape = input_shape
         else:
             raise Exception("Unsupported network model file format", nn_filename)
 

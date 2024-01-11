@@ -7,10 +7,10 @@ from common import TO_USER_RESULT
 from resources.guarding.guardagent import GuardingAgent, GuardingConstants
 from resources.guarding.guardzoagent import GuardingZeroOneAgent
 from resources.guarding.guardenv import GuardingEnv
+from src.verification.complete.verifier.monolithic_ctl_pnis_milp_encoder import MonolithicCTLParametricNISMILPEncoder
 
 sys.path.append('../../')
 
-from resources.vcas.two_agent_vcas_agents import VcasOwnshipAgent, VcasIntruderAgent
 from src.verification.complete.verifier.monolithic_atl_milp_encoder import MonolithicATLMILPEncoder
 
 import datetime
@@ -21,13 +21,10 @@ from src.verification.complete.constrmanager.gurobi_constraints_manager import G
 from src.network_parser.network_model import NetworkModel
 from src.utils.formula import *
 from src.verification.bounds.bounds import HyperRectangleBounds
-from src.utils.formula_visitors.immutable_nnf_visitor import FormulaVisitorNNF
 
-from src.verification.complete.constrmanager.custom_constraints_manager import CustomConstraintsManager
-from src.verification.complete.verifier.aesverifier import AESVerifier
 
 # Mono (--method 2)
-def verify_single(formula, input_hyper_rectangle, gamma, not_gamma, env, timeout):
+def verify_single(formula, input_hyper_rectangle, agents, env, timeout):
     """
     Verify using the monolithic approach.
     :param formula: An ATL formula
@@ -53,7 +50,7 @@ def verify_single(formula, input_hyper_rectangle, gamma, not_gamma, env, timeout
 
     # Create a MILP builder visitor using the variables for the initial state
     initial_state_vars, _ = env.get_constraints_for_initial_state(constraint_manager, input_hyper_rectangle)
-    mono_visitor = MonolithicATLMILPEncoder(constraint_manager, initial_state_vars, gamma, not_gamma, env)
+    mono_visitor = MonolithicCTLParametricNISMILPEncoder(constraint_manager, initial_state_vars, agents, env)
 
     # Compute the set of MILP constraints for the negation of the formula in NNF
     # negated_formula = NegationFormula(formula).acceptI(FormulaVisitorNNF())
@@ -131,11 +128,11 @@ def main():
     for num_steps in steps:
         print(num_steps, "steps")
 
-        gamma, not_gamma, formula = get_formula_and_gamma(ARGS, agents, num_steps)
+        formula = get_formula_and_gamma(ARGS, agents, num_steps)
 
         print("Formula to verify", formula)
         # Run a method.
-        verify_single(formula, input_hyper_rectangle, gamma, not_gamma, env, ARGS.timeout)
+        verify_single(formula, input_hyper_rectangle, agents, env, ARGS.timeout)
         print("\n")
 
 

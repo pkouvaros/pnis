@@ -53,3 +53,9 @@ class GuardingEnv(Environment):
                 constrs_manager.get_assignment_constraint(var1, var2))
 
         return output_state_vars, constrs_to_add
+
+    def get_constraints_for_protocol(self, constrs_manager, input_state_vars):
+        """A dummy protocol"""
+        action = constrs_manager.create_integer_variable(lb=0, ub=0)
+
+        return [[action]], [[]]

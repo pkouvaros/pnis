@@ -2,6 +2,8 @@ from src.actors.agents.agent import MultiAgent
 from src.utils.utils import get_widest_bounds
 from src.verification.bounds.bounds import HyperRectangleBounds
 
+from operator import __le__, __ge__, __eq__
+
 
 class GuardingConstants:
     EXPIRED_OBSERVATION = 0
@@ -12,7 +14,12 @@ class GuardingConstants:
     REST_ACTION = 1
     GUARD_ACTION = 2
 
+    GUARDING_REWARD = -8
+    RESTING_REWARD = 4
+    UNGUARDED_REWARD = -32
+
     EXPIRED_HEALTH_POINTS = 0
+    MAX_HEALTH_POINTS = 0
 
     AGENT_STATE_DIMENSIONS = 2
     # The index for the health value in a state
@@ -152,13 +159,15 @@ class GuardingAgent(MultiAgent):
         the caller, to reduce side-effects in this function.
         :param constrs_manager: Manager of Gurobi constraints.
         :param input_state_vars: Gurobi variables representing the input state passed to the agent.
-        :return: Singleton list of Gurobi variables.
+        :return:
+            a list of action vars and a list of action constraints,
+            where i-th element corresponds to i-th possible action.
         :side-effects: Modifies constraints manager when adding variables.
         """
 
-        constrs_to_add = []
-
         percept_var = input_state_vars[GuardingConstants.PERCEPT_IDX]
+
+        constrs_to_add = []
 
         # Binary variable for checking whether the percept is expired, need rest or volunteered to guard
         [expired, need_rest, volunteered] = constrs_manager.create_binary_variables(3)
@@ -176,71 +185,107 @@ class GuardingAgent(MultiAgent):
             constrs_manager.get_sum_constraint([expired, need_rest, volunteered], 1)
         ])
 
+        # The branching factor is 2, so we return two sets of constraints and two sets of action vars
+        constrs1 = [] + constrs_to_add
+        constrs2 = [] + constrs_to_add
         action1 = constrs_manager.create_integer_variable(lb=0, ub=2)
         action2 = constrs_manager.create_integer_variable(lb=0, ub=2)
 
-        constrs_to_add.extend([
+        constrs1.extend([
             constrs_manager.create_indicator_constraint(
                 expired, 1,
                 constrs_manager.get_assignment_constraint(action1, GuardingConstants.EXPIRED_ACTION)),
+            constrs_manager.create_indicator_constraint(
+                need_rest, 1,
+                constrs_manager.get_assignment_constraint(action1, GuardingConstants.REST_ACTION)),
+            constrs_manager.create_indicator_constraint(
+                volunteered, 1,
+                constrs_manager.get_assignment_constraint(action1, GuardingConstants.REST_ACTION))
+        ])
+        constrs2.extend([
             constrs_manager.create_indicator_constraint(
                 expired, 1,
                 constrs_manager.get_assignment_constraint(action2, GuardingConstants.EXPIRED_ACTION)),
             constrs_manager.create_indicator_constraint(
                 need_rest, 1,
-                constrs_manager.get_assignment_constraint(action1, GuardingConstants.REST_ACTION)),
-            constrs_manager.create_indicator_constraint(
-                need_rest, 1,
                 constrs_manager.get_assignment_constraint(action2, GuardingConstants.REST_ACTION)),
-            constrs_manager.create_indicator_constraint(
-                volunteered, 1,
-                constrs_manager.get_assignment_constraint(action1, GuardingConstants.REST_ACTION)),
             constrs_manager.create_indicator_constraint(
                 volunteered, 1,
                 constrs_manager.get_assignment_constraint(action2, GuardingConstants.GUARD_ACTION))
         ])
 
-        actions_vars = []
-
-        integer_argmax_var = None
-
-        return [integer_argmax_var], constrs_to_add
+        return [[action1], [action2]], [constrs1, constrs2]
 
     def get_constraints_for_transition(self, constrs_manager, state_vars,
                                        own_action_vars, joint_action_vars, env_action_vars):
 
+        action_var = own_action_vars[0]
+
         constrs_to_add = []
 
-        # Binary variable for checking whether the agent is expired, need rest or volunteered to guard
-        [expired, need_rest, volunteered] = constrs_manager.create_binary_variables(3)
+        # Binary variable for checking whether the action is expired, rest or guard
+        [expired, rest, guard] = constrs_manager.create_binary_variables(3)
 
-        constrs_to_add.append(
-            constrs_manager.create_indicator_constraint(expired, 1,
-                                                        constrs_manager.get_assignment_constraint(
-                                                            state_vars[GuardingConstants.PERCEPT_IDX],
-                                                            GuardingConstants.EXPIRED_OBSERVATION))
-        )
+        constrs_to_add.extend([
+            constrs_manager.create_indicator_constraint(
+                expired, 1,
+                constrs_manager.get_assignment_constraint(action_var, GuardingConstants.EXPIRED_ACTION)),
+            constrs_manager.create_indicator_constraint(
+                rest, 1,
+                constrs_manager.get_assignment_constraint(action_var, GuardingConstants.REST_ACTION)),
+            constrs_manager.create_indicator_constraint(
+                guard, 1,
+                constrs_manager.get_assignment_constraint(action_var, GuardingConstants.GUARD_ACTION)),
+            constrs_manager.get_sum_constraint([expired, rest, guard], 1)
+        ])
 
-        constrs_to_add.append(
-            constrs_manager.create_indicator_constraint(need_rest, 1,
-                                                        constrs_manager.get_assignment_constraint(
-                                                            state_vars[GuardingConstants.PERCEPT_IDX],
-                                                            GuardingConstants.REST_OBSERVATION))
-        )
+        health_var = state_vars[GuardingConstants.HEALTH_IDX]
+        [next_health_var] = constrs_manager.create_state_variables(1,
+                                                                   lbs=[GuardingConstants.EXPIRED_HEALTH_POINTS],
+                                                                   ubs=[GuardingConstants.MAX_HEALTH_POINTS])
 
-        constrs_to_add.append(
-            constrs_manager.create_indicator_constraint(volunteered, 1,
-                                                        constrs_manager.get_assignment_constraint(
-                                                            state_vars[GuardingConstants.PERCEPT_IDX],
-                                                            GuardingConstants.VOLUNTEER_GUARD_OBSERVATION))
-        )
+        constrs_to_add.extend([
+            constrs_manager.create_indicator_constraint(
+                guard, 1,
+                constrs_manager.get_linear_constraint([next_health_var, health_var], [1, -1],
+                                                      GuardingConstants.GUARDING_REWARD)),
+            constrs_manager.create_indicator_constraint(
+                expired, 1,
+                constrs_manager.get_linear_constraint([next_health_var, health_var], [1, -1], 0))
+        ])
 
-        constrs_to_add.append(
-            constrs_manager.get_sum_constraint([expired, need_rest, volunteered], 1)
-        )
+        # Detecting if at least one agent guards
+        binary_vars = constrs_manager.create_binary_variables(len(joint_action_vars))
+        for action_number, action in enumerate(joint_action_vars):
+            constrs_to_add.extend([
+                constrs_manager.create_indicator_constraint(
+                    binary_vars[action_number], 1,
+                    constrs_manager.get_assignment_constraint(action[0], GuardingConstants.GUARD_ACTION)),
+                constrs_manager.create_indicator_constraint(
+                    binary_vars[action_number], 0,
+                    constrs_manager.get_le_constraint(action[0], GuardingConstants.REST_ACTION)),
+            ])
 
+        [agent_resting_at_least_one_guards] = constrs_manager.create_binary_variables(1)
 
+        constrs_to_add.extend([
+            constrs_manager.create_indicator_constraint(
+                agent_resting_at_least_one_guards, 1,
+                constrs_manager.get_linear_constraint([next_health_var, health_var], [1, -1],
+                                                      GuardingConstants.RESTING_REWARD)),
+            constrs_manager.create_indicator_constraint(
+                agent_resting_at_least_one_guards, 1,
+                constrs_manager.get_linear_constraint(binary_vars, [1] * len(binary_vars), 1, sense=__ge__)),
+            constrs_manager.create_indicator_constraint(
+                agent_resting_at_least_one_guards, 0,
+                constrs_manager.get_linear_constraint([next_health_var, health_var], [1, -1],
+                                                      GuardingConstants.UNGUARDED_REWARD)),
+            constrs_manager.create_indicator_constraint(
+                agent_resting_at_least_one_guards, 0,
+                constrs_manager.get_linear_constraint(binary_vars, [1] * len(binary_vars), 0)),
+        ])
 
+        return [next_health_var], constrs_to_add
 
     def get_branching_factor(self):
         return GuardingConstants.AGENT_MAX_ACTIONS

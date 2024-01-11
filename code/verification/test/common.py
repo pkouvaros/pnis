@@ -8,12 +8,12 @@ from gurobipy import Model
 
 from src.verification.complete.constrmanager.gurobi_constraints_manager import GurobiConstraintsManager
 from src.verification.complete.verifier.monolithic_ctl_milp_encoder import MonolithicCTLMILPEncoder
-from src.verification.complete.verifier.breadth_first_compositional_ctl_milp_encoder import CompositionalCTLMILPEncoder
+# from src.verification.complete.verifier.breadth_first_compositional_ctl_milp_encoder import CompositionalCTLMILPEncoder
 from src.utils.formula_visitors.immutable_nnf_visitor import FormulaVisitorNNF
-from src.verification.complete.verifier.depth_first_compositional_ex_milp_encoder import DepthFirstCompositionalMILPEncoder
+# from src.verification.complete.verifier.depth_first_compositional_ex_milp_encoder import DepthFirstCompositionalMILPEncoder
 
 from src.verification.complete.constrmanager.custom_constraints_manager import CustomConstraintsManager
-from src.verification.complete.verifier.aesverifier import AESVerifier
+# from src.verification.complete.verifier.aesverifier import AESVerifier
 from src.utils.formula import *
 
 
