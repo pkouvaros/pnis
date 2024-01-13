@@ -113,11 +113,10 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
 
         while(True):
             ### Get all action vars and action constras according to the current indiced
-            all_actions_vars = []
-            all_action_constrs = []
-            for agent_number in range(self.agent_count):
-                all_actions_vars.append(action_vars[agent_number][action_indices[agent_number]])
-                all_action_constrs.extend(action_constrs[agent_number][action_indices[agent_number]])
+            all_actions_vars = [action_vars[agent_number][action_indices[agent_number]]
+                                for agent_number in range(self.agent_count)]
+            all_action_constrs = [item for row in [action_constrs[agent_number][action_indices[agent_number]]
+                                  for agent_number in range(self.agent_count)] for item in row]
 
             ### the transition functions for all template agents
             agent_output_state_vars = []
@@ -298,11 +297,12 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
         # If i becomes negative, all indices have reached their maximum, reset them all
         if i < 0:
             indices = [0] * len(indices)
+            return True
 
-        for j in range(len(indices)):
-            if indices[j] != max_ranges[j] - 1:
-                return False
-        return True
+        # for j in range(len(indices)):
+        #     if indices[j] != max_ranges[j] - 1:
+        #         return False
+        return False
 
     def get_local_state_vars(self, init_vars, agent_number):
         if agent_number < len(self.local_state_offsets) - 1:
