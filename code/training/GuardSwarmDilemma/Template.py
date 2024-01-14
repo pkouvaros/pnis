@@ -1,8 +1,8 @@
 from .Strategy import DQNStrategy, AbstractStrategy
 
 class TemplateAgent:
-    DEFAULT_INITIAL_HP: int = 8
-    DEFAULT_MAX_HP: int = 8
+    DEFAULT_INITIAL_HP: int = 4
+    DEFAULT_MAX_HP: int = 4
 
     def __init__(self, max_hp: int = DEFAULT_MAX_HP, initial_hp: int = DEFAULT_INITIAL_HP, strategy: AbstractStrategy = DQNStrategy()) -> None:
         if initial_hp > max_hp:

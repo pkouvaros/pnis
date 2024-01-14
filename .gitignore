@@ -1,5 +1,11 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,jupyternotebooks,python
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,jupyternotebooks,python
+#
+
+### Training animation creation ###
+# ignore pngs of plots
+**/*.png
+# and job outputs
+**/slurm*.out
 
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
