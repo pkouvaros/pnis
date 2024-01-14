@@ -1,5 +1,7 @@
 import math
 
+from gurobipy import GenExprMax, GenExprMin
+
 from src.utils.utils import get_widest_bounds
 from src.verification.bounds.bounds import HyperRectangleBounds
 from src.verification.complete.verifier.monolithic_boolean_milp_encoder import MonolithicBooleanMILPEncoder
@@ -72,7 +74,7 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
                                               self.get_local_state_vars(init_vars, agent_number))
             constrs_to_add.extend(observation_constrs)
             agent_perception_vars.append(perception_vars)
-            self.constrs_manager.get_variable_tracker().add_action_variables(perception_vars)
+            # self.constrs_manager.get_variable_tracker().add_action_variables(perception_vars)
 
         ##########################################
         ######### The protocol functions #########
@@ -84,9 +86,11 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
         action_vars = []
         action_constrs = []
         for agent_number, agent in enumerate(self.agents):
+            local_state = self.get_local_state_vars(init_vars, agent_number)
+            local_state_with_new_perception = (local_state[:agent.get_private_state_dimensions()] +
+                                               agent_perception_vars[agent_number])
             agent_action_vars, agent_action_constrs = \
-                agent.get_constraints_for_protocol(self.constrs_manager,
-                                                   self.get_local_state_vars(init_vars, agent_number))
+                agent.get_constraints_for_protocol(self.constrs_manager, local_state_with_new_perception)
 
             action_vars.append(agent_action_vars)
             action_constrs.append(agent_action_constrs)
@@ -117,6 +121,7 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
                                 for agent_number in range(self.agent_count)]
             all_action_constrs = [item for row in [action_constrs[agent_number][action_indices[agent_number]]
                                   for agent_number in range(self.agent_count)] for item in row]
+            self.constrs_manager.get_variable_tracker().add_action_variables(all_actions_vars)
 
             ### the transition functions for all template agents
             agent_output_state_vars = []
@@ -153,7 +158,9 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
             next_var_constrs = [nsv == osv for nsv, osv in zip(next_state_vars, output_state_vars)]
 
             for constr in all_action_constrs + transition_constrs + next_var_constrs:
-                if constr._sense != 'I':  # Hack to check if indicator constraint.
+                # constrs_to_add.append(constr)
+                if constr._sense != 'I' and not isinstance(constr._rhs, GenExprMax)\
+                        and not isinstance(constr._rhs, GenExprMin):  # Hack to check if indicator constraint.
                     constrs_to_add.append(self.constrs_manager
                                           .create_indicator_constraint(delta[global_action_idx], 1, constr))
                 else:
@@ -164,6 +171,7 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
             stop = self.increment_indices(action_indices, action_ranges)
             if stop:
                 break
+            # break
 
         output_lower, output_upper = zip(*next_state_bounds)  # Unzip the bounds.
         self.constrs_manager.add_variable_bounds(next_state_vars, HyperRectangleBounds(output_lower, output_upper))

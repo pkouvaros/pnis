@@ -295,7 +295,7 @@ class GuardingAgent(MultiAgent):
             nobody_guarding = True
             for action_number, action in enumerate(flat_vars):
                 a_lb, a_ub = action_bounds.get_dimension_bounds(action_number)
-                if a_ub >= GuardingConstants.GUARD_ACTION:
+                if a_lb >= GuardingConstants.GUARD_ACTION:
                     nobody_guarding = False
                     break
 
@@ -328,6 +328,20 @@ class GuardingAgent(MultiAgent):
             next_health_lb = max(health_lb + GuardingConstants.GUARDING_REWARD, GuardingConstants.EXPIRED_HEALTH_POINTS)
             next_health_ub = max(health_ub + GuardingConstants.GUARDING_REWARD, GuardingConstants.EXPIRED_HEALTH_POINTS)
 
+
+        # Detecting if at least one agent guards in MILP
+        binary_vars = constrs_manager.create_binary_variables(len(joint_action_vars))
+        for action_number, action in enumerate(joint_action_vars):
+            constrs_to_add.extend([
+                constrs_manager.create_indicator_constraint(
+                    binary_vars[action_number], 1,
+                    constrs_manager.get_assignment_constraint(action[0], GuardingConstants.GUARD_ACTION)),
+                constrs_manager.create_indicator_constraint(
+                    binary_vars[action_number], 0,
+                    constrs_manager.get_le_constraint(action[0], GuardingConstants.REST_ACTION)),
+            ])
+
+
         # Binary variable for checking whether the action is expired, rest or guard
         [expired, rest, guard] = constrs_manager.create_binary_variables(3, lbs=[expired_lb, rest_lb, guard_lb],
                                                                             ubs=[expired_ub, rest_ub, guard_ub])
@@ -346,46 +360,32 @@ class GuardingAgent(MultiAgent):
         ])
 
         [next_health_var] = constrs_manager.create_state_variables(1, lbs=[next_health_lb], ubs=[next_health_ub])
+        [next_health_var_raw, next_health_var_max] = constrs_manager.create_state_variables(2)
+        [at_least_one_guards, nobody_guards] = constrs_manager.create_binary_variables(2)
+        constrs_manager.update()
 
         constrs_to_add.extend([
-            constrs_manager.create_indicator_constraint(
-                guard, 1,
-                constrs_manager.get_linear_constraint([next_health_var, health_var], [1, -1],
-                                                      GuardingConstants.GUARDING_REWARD)),
             constrs_manager.create_indicator_constraint(
                 expired, 1,
-                constrs_manager.get_linear_constraint([next_health_var, health_var], [1, -1], 0))
-        ])
-
-        # Detecting if at least one agent guards in MILP
-        binary_vars = constrs_manager.create_binary_variables(len(joint_action_vars))
-        for action_number, action in enumerate(joint_action_vars):
-            constrs_to_add.extend([
-                constrs_manager.create_indicator_constraint(
-                    binary_vars[action_number], 1,
-                    constrs_manager.get_assignment_constraint(action[0], GuardingConstants.GUARD_ACTION)),
-                constrs_manager.create_indicator_constraint(
-                    binary_vars[action_number], 0,
-                    constrs_manager.get_le_constraint(action[0], GuardingConstants.REST_ACTION)),
-            ])
-
-        [agent_resting_at_least_one_guards] = constrs_manager.create_binary_variables(1)
-
-        constrs_to_add.extend([
+                constrs_manager.get_linear_constraint([next_health_var_raw, health_var], [1, -1], 0)),
             constrs_manager.create_indicator_constraint(
-                agent_resting_at_least_one_guards, 1,
-                constrs_manager.get_linear_constraint([next_health_var, health_var], [1, -1],
-                                                      GuardingConstants.RESTING_REWARD)),
+                guard, 1,
+                constrs_manager.get_linear_constraint([next_health_var_raw, health_var], [1, -1],
+                                                      GuardingConstants.GUARDING_REWARD)),
             constrs_manager.create_indicator_constraint(
-                agent_resting_at_least_one_guards, 1,
+                rest, 1,
+                constrs_manager.get_linear_constraint([next_health_var_raw, health_var, at_least_one_guards, nobody_guards],
+                                                      [1, -1, -GuardingConstants.RESTING_REWARD, -GuardingConstants.UNGUARDED_REWARD],
+                                                      0)),
+            constrs_manager.get_max_constraint(next_health_var_max, [next_health_var_raw, GuardingConstants.EXPIRED_HEALTH_POINTS]),
+            constrs_manager.get_min_constraint(next_health_var, [next_health_var_max, GuardingConstants.MAX_HEALTH_POINTS]),
+            constrs_manager.create_indicator_constraint(
+                at_least_one_guards, 1,
                 constrs_manager.get_linear_constraint(binary_vars, [1] * len(binary_vars), 1, sense=__ge__)),
             constrs_manager.create_indicator_constraint(
-                agent_resting_at_least_one_guards, 0,
-                constrs_manager.get_linear_constraint([next_health_var, health_var], [1, -1],
-                                                      GuardingConstants.UNGUARDED_REWARD)),
-            constrs_manager.create_indicator_constraint(
-                agent_resting_at_least_one_guards, 0,
+                nobody_guards, 1,
                 constrs_manager.get_linear_constraint(binary_vars, [1] * len(binary_vars), 0)),
+            constrs_manager.get_linear_constraint([at_least_one_guards, nobody_guards], [1, 1], 1)
         ])
 
         return [next_health_var], constrs_to_add
@@ -395,3 +395,6 @@ class GuardingAgent(MultiAgent):
 
     def get_state_dimensions(self):
         return GuardingConstants.AGENT_STATE_DIMENSIONS
+
+    def get_private_state_dimensions(self):
+        return GuardingConstants.PERCEPT_IDX

@@ -92,7 +92,7 @@ def main():
     parser.add_argument("-a", "--agents_number", default=2, type=int, help="Number of template agents.")
     parser.add_argument("-hp", "--initial_health", default=20, type=int, help="Initial health points of a template agent.")
     parser.add_argument("-per", "--initial_percept", default=2, type=int, help="Initial percept of a template agent (one of 0-expired, 1-rest, or 2-volunteer-to-guard).")
-    parser.add_argument("-k", "--max_steps", default=4, type=int, help="Maximum number of time steps to verify for.")
+    parser.add_argument("-k", "--max_steps", default=3, type=int, help="Maximum number of time steps to verify for.")
     parser.add_argument("-w", "--workers", default=2, type=int, help="Number of workers.")
     parser.add_argument("-to", "--timeout", default=3600, type=int, help="Timeout in minutes.")
 
@@ -123,7 +123,7 @@ def main():
     input_hyper_rectangle = HyperRectangleBounds(*unzipped)
     print(input_hyper_rectangle)
 
-    steps = range(1, ARGS.max_steps + 1)
+    steps = [3]#range(1, ARGS.max_steps + 1)
 
     for num_steps in steps:
         print(num_steps, "steps")
