@@ -1,3 +1,4 @@
+import glob
 import os
 from typing import Dict, Tuple
 from matplotlib import pyplot as plt
@@ -12,11 +13,11 @@ from tqdm import tqdm
 
 
 class Simulation:
-    DEFAULT_NUMBER_OF_AGENTS: int = 10
+    DEFAULT_NUMBER_OF_AGENTS: int = 4
     DEFAULT_MAX_EPISODE_LENGTH: int = 32
-    DEFAULT_GUARD_VALUE: int = -4
+    DEFAULT_GUARD_VALUE: int = -2
     DEFAULT_REGEN_VALUE: int = 1
-    DEFAULT_UNGUARDED_VALUE: int = -TemplateAgent.DEFAULT_MAX_HP
+    DEFAULT_UNGUARDED_VALUE: int = -3
 
     def __init__(self,
                  number_of_agents: int = DEFAULT_NUMBER_OF_AGENTS,
@@ -25,12 +26,18 @@ class Simulation:
                  regen_value: int = DEFAULT_REGEN_VALUE,
                  unguarded_value: int = DEFAULT_UNGUARDED_VALUE,
                  template_agent: TemplateAgent = TemplateAgent(),
-                 agent_training_altruism: float = -1,
+                 agent_training_altruism: float = 0.2,
                  ) -> None:
         self.number_of_agents: int = number_of_agents
         self.max_episode_length: int = max_episode_length
+        if guard_value > 0:
+            raise ValueError("Guard value must be negative")
         self.guard_value: int = guard_value
+        if regen_value < 0:
+            raise ValueError("Regen value must be positive")
         self.regen_value: int = regen_value
+        if unguarded_value > 0:
+            raise ValueError("Unguarded value must be negative")
         self.unguarded_value: int = unguarded_value
         self.template_agent: TemplateAgent = template_agent
 
@@ -44,35 +51,39 @@ class Simulation:
                 self.template_agent.initial_hp)
             for _ in range(self.number_of_agents)]
         
-        self.agent_training_altruism = agent_training_altruism if agent_training_altruism != -1 else (1 - (1/number_of_agents))
+        self.agent_training_altruism = agent_training_altruism
 
 
-    def _get_reward(self, transition: Transition, ave_health_delta: float, game_over: bool) -> float:
+    def _get_reward(self, agent_idx: int, transitions: Dict[int, Transition], game_over: bool) -> float:
+        def _get_social_reward(transitions: Dict[int, Transition], agent_idx: int) -> float:
+            # average health delta
+            ave_health_delta = sum([transition.next_state.normalised_hp - transition.state.normalised_hp for agent_idx_, transition in transitions.items() if agent_idx_ != agent_idx]) / self.number_of_agents - 1
+            dead_agent_penalty = sum([-1.0 if transition.state.state_label == Agent.EXPIRE_STATE else 0.0 for agent_idx_, transition in transitions.items() if agent_idx_ != agent_idx]) / self.number_of_agents - 1
+            return (ave_health_delta + dead_agent_penalty) / 2
+
+        transition = transitions[agent_idx]
         individual_reward = transition.next_state.normalised_hp - transition.state.normalised_hp
-        social_reward = ave_health_delta
 
-        reward = (self.agent_training_altruism * social_reward) + ((1 - self.agent_training_altruism) * individual_reward)
+        reward = (self.agent_training_altruism * _get_social_reward(transitions, agent_idx)) + individual_reward + (-1.0 if transition.next_state.state_label == Agent.EXPIRE_STATE else 1.0)
+        reward += -2.0 if game_over else 0
 
-        return reward if not game_over else -1
+        return reward
 
     def _get_rewards(self, transitions: Dict[int, Transition], game_over: bool) -> Dict[int, float]:
-        ave_health_delta = sum([transition.next_state.normalised_hp - transition.state.normalised_hp for transition in transitions.values()]) / len(transitions)
-
         rewards = {}
-        for agent_idx, transition in transitions.items():
-            rewards[agent_idx] = self._get_reward(transition, ave_health_delta, game_over)
+        for agent_idx in transitions.keys():
+            rewards[agent_idx] = self._get_reward(agent_idx, transitions, game_over)
         return rewards
 
     def _get_transitions(self, actions: Dict[int, int]) -> Tuple[Dict[int, Transition], bool]:
         unguarded = not any(action == AbstractStrategy.GUARD_ACTION for action in actions.values())
+        game_over = all(action == AbstractStrategy.EXPIRE_ACTION for action in actions.values())
 
         transitions: Dict[int, Transition] = {}
         for agent_idx, action in actions.items():
             transition = self._get_transition(
                 self.agents[agent_idx].state, action, unguarded)
             transitions[agent_idx] = transition
-
-        game_over = all(action == AbstractStrategy.EXPIRE_ACTION for action in actions.values())
         
         return transitions, game_over
 
@@ -105,6 +116,7 @@ class Simulation:
             new_state_label = state_label
 
         new_hp = valid_hp(hp + delta_hp)
+        new_state_label = new_state_label if new_hp > 0 else Agent.EXPIRE_STATE
 
         return Transition(
             State(hp, hp/self.template_agent.max_hp, state_label),
@@ -118,7 +130,10 @@ class Simulation:
 
         # random subset of transitions are changed to result in regenerating instead of guarding
         guard_agents = [agent_idx for agent_idx, transition in transitions.items() if transition.action == AbstractStrategy.GUARD_ACTION]
-        selected_to_regen = random.sample(guard_agents, k=random.choice(range(len(guard_agents)))) if len(guard_agents) > 0 else []
+        mask = [random.choice([0, 1]) for _ in range(len(guard_agents))]
+        if len(mask) > 0 and all(flag == 1 for flag in mask):
+            mask[random.choice(range(len(mask)))] = 0
+        selected_to_regen = [agent_idx for agent_idx, flag in enumerate(mask) if flag == 1]
         for agent_idx in selected_to_regen:
             orig_state = transitions[agent_idx].state
             new_transition = self._get_transition(orig_state, AbstractStrategy.GUARD_ACTION, unguarded=False, arbitrated=True)
@@ -131,8 +146,8 @@ class Simulation:
 
         return transitions, rewards, game_over
 
-    def run(self, train: bool = False) -> None:
-        for _ in range(self.max_episode_length):
+    def run(self, train: bool = False, episode: int = 0) -> int:
+        for i in range(self.max_episode_length):
             round_hps: dict[int, list[int]] = {}
 
             # get actions
@@ -150,32 +165,51 @@ class Simulation:
                 round_hps[agent_idx] = [transition.state.hp]
             
             # train the agents
-            # the agent will only remember one final transition, not looping in the final state
             if train:
-                train_experiences = [e for e in experiences.values() if e.transition.state.hp > 0]
-                self.template_agent.strategy.remember(train_experiences)
+                self.template_agent.strategy.remember(experiences.values(), episode)
 
             # update scores dataframe
             self.scores = pd.concat(
                 [self.scores, pd.DataFrame(round_hps)], ignore_index=True)
 
             if game_over:
-                return
+                return i
+        return self.max_episode_length
 
-    def train(self, n_episodes: int = DQNStrategy.DEFAULT_TRAINING_EPISODES, savefig: bool = False) -> None:
+    def train(self, n_episodes: int = DQNStrategy.DEFAULT_TRAINING_EPISODES, savefigs: bool = False) -> None:
         def reset_agents():
             for agent in self.agents:
                 agent.state = State(agent.max_hp, 1.0, Agent.REGEN_STATE)
 
-        for i in tqdm(range(n_episodes), desc='Running Episodes'):
-            if savefig:
-                qfunc = pd.DataFrame(self.template_agent.strategy.policy_net.predict(np.arange(0, 1, 0.01)), index=np.arange(0, 1, 0.01)) # type: ignore
-                qfunc.plot(title='Q-Function', xlabel='Normalised HP', ylabel='Q-Value')
-                if os.path.exists('trainingfig') == False:
-                    os.mkdir('trainingfig')
-                plt.savefig(f'trainingfig/episode{i}.png')
-                plt.close()
-            
-            self.run(train=True)
+        if savefigs:
+            if os.path.exists('traininghistory') == False:
+                os.mkdir('traininghistory')
+
+            qfunc = pd.DataFrame(self.template_agent.strategy.policy_net.predict(np.arange(0, 1, 0.01)), index=np.arange(0, 1, 0.01)) # type: ignore
+            qfunc = qfunc.rename({0: 'Regen', 1: 'Guard'}, axis=1)
+            qfunc.plot(title='Q-Function', xlabel='Normalised HP', ylabel='Q-Value')
+            plt.savefig('traininghistory/episode0_0.png')
+            plt.close()
+
+        for i in tqdm(range(1, n_episodes + 1), desc='Running Episodes'):            
+            length = self.run(train=True, episode=i)
             reset_agents()
 
+            if savefigs:
+                qfunc = pd.DataFrame(self.template_agent.strategy.policy_net.predict(np.arange(0, 1, 0.01)), index=np.arange(0, 1, 0.01)) # type: ignore
+                qfunc = qfunc.rename({0: 'Regen', 1: 'Guard'}, axis=1)
+                qfunc.plot(title='Q-Function Episode ' + str(i), xlabel='Normalised HP', ylabel='Q-Value')
+                # save one frame for every turn of the episode
+                # they are all the same, but this tells us how long the episode was in the final animation
+                for j in range(length):
+                    plt.savefig(f'traininghistory/episode{i}_{j}.png')
+                plt.close()
+
+        if savefigs:
+            savedfigs = glob.glob('traininghistory/*.png')
+            savedfigs.sort(key = os.path.getmtime)
+            for i, fig_path in enumerate(savedfigs):
+                new_path = f'traininghistory/episode{i:d}.png'
+                os.rename(fig_path, new_path)
+
+        print('Training complete')
