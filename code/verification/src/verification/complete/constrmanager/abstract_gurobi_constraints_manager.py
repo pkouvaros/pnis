@@ -98,8 +98,11 @@ class AbstractGurobiConstraintsManager(ConstraintsManagerI):
 
     def add_constrs(self, new_constrs):
         # :side-effects: Modifies Gurobi model.
+        # count = 1
         for c in new_constrs:
+            # print(f"{count}", str(c))
             self.gmodel.addConstr(c)
+            # count += 1
 
     @staticmethod
     def get_atomic_constraint(constraint, state_vars):

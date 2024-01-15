@@ -14,12 +14,12 @@ class GuardingConstants:
     REST_ACTION = 1
     GUARD_ACTION = 2
 
-    GUARDING_REWARD = -8
-    RESTING_REWARD = 4
-    UNGUARDED_REWARD = -32
+    GUARDING_REWARD = -1
+    RESTING_REWARD = 1
+    UNGUARDED_REWARD = -2
 
     EXPIRED_HEALTH_POINTS = 0
-    MAX_HEALTH_POINTS = 32
+    MAX_HEALTH_POINTS = 3
 
     AGENT_STATE_DIMENSIONS = 2
     # The index for the health value in a state

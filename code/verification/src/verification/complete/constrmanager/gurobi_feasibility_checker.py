@@ -38,9 +38,9 @@ class GurobiFeasibilityChecker:
             return "True"
         elif status == GRB.INFEASIBLE or status == GRB.INF_OR_UNBD:
             ## IF YOU UNCOMMENT, MAKE SURE YOU COMMENT IT FOR THE EXPERIMENTS!!!
-            # print("HAVE YOU FORGOTTEN TO COMMENT OUT IIS COMPUTATION???")
-            # gmodel.computeIIS()
-            # gmodel.write("infeasprogram.ilp")
+            print("HAVE YOU FORGOTTEN TO COMMENT OUT IIS COMPUTATION???")
+            gmodel.computeIIS()
+            gmodel.write("infeasprogram.ilp")
             return "False"
         elif status == GRB.TIME_LIMIT:
             return "Timeout"

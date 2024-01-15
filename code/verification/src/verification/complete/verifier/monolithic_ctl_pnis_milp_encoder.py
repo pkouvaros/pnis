@@ -2,7 +2,7 @@ import math
 
 from gurobipy import GenExprMax, GenExprMin
 
-from src.utils.utils import get_widest_bounds
+from src.utils.utils import get_widest_bounds, increment_indices
 from src.verification.bounds.bounds import HyperRectangleBounds
 from src.verification.complete.verifier.monolithic_boolean_milp_encoder import MonolithicBooleanMILPEncoder
 
@@ -168,7 +168,7 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
 
             # Increment global action index and the action indices
             global_action_idx += 1
-            stop = self.increment_indices(action_indices, action_ranges)
+            stop = increment_indices(action_indices, action_ranges)
             if stop:
                 break
             # break
@@ -273,44 +273,6 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
         self.constrs_manager.binvars.update(binvars)
 
         return constrs_to_add
-
-    def increment_indices(self, indices, max_ranges):
-        """
-        Increments indices similarly to a binary counter only
-        that every index is bounded by its maximum range.
-
-        Returns True when the maximum has been reached for all indices.
-        Otherwise returns False
-        :param indices: a list of integer indiced to increment
-        :param max_ranges: a list of maximum ranges for each of the indices
-        :return:
-            whether the maximum has been reached
-        """
-        # Start from the rightmost index
-        i = len(indices) - 1
-
-        # Increment the indices
-        while i >= 0:
-            indices[i] += 1
-
-            # Check if the current index exceeds its maximum range
-            if indices[i] >= max_ranges[i]:
-                # Reset the current index to 0 and move to the left
-                indices[i] = 0
-                i -= 1
-            else:
-                # If the current index is within its maximum range, we're done
-                break
-
-        # If i becomes negative, all indices have reached their maximum, reset them all
-        if i < 0:
-            indices = [0] * len(indices)
-            return True
-
-        # for j in range(len(indices)):
-        #     if indices[j] != max_ranges[j] - 1:
-        #         return False
-        return False
 
     def get_local_state_vars(self, init_vars, agent_number):
         if agent_number < len(self.local_state_offsets) - 1:

@@ -1,3 +1,5 @@
+import numpy as np
+
 
 class Layer(object):
     """
@@ -27,6 +29,9 @@ class Relu(Layer):
     def clone(self):
         return Relu(self.output_shape, self.weights, self.bias, self.depth)
 
+    def forward(self, inputs):
+        return np.maximum(self.weights.dot(inputs) + self.bias, 0)
+
 
 class Linear(Layer):
     """
@@ -38,3 +43,5 @@ class Linear(Layer):
     def clone(self):
         return Linear(self.output_shape, self.weights, self.bias, self.depth)
 
+    def forward(self, inputs):
+        return self.weights.dot(inputs) + self.bias
