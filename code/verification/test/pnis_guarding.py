@@ -89,7 +89,7 @@ def main():
     parser.add_argument("-f", "--formula", type=int, default=1, help="Formula to verify: 0. [[o,i]] X^k safety; 1. <<o>> X^k safety; 2. [[i]] X^k safety; 3. <<o,i>> X^k unsafety")
     parser.add_argument("-n", "--noise", default=2.0, type=float, help="Noise to add to initial position of pilot.")
     parser.add_argument("-a", "--agents_number", default=2, type=int, help="Number of template agents.")
-    parser.add_argument("-hp", "--initial_health", default=3, type=int, help="Initial health points of a template agent.")
+    parser.add_argument("-hp", "--initial_health", default=2, type=int, help="Initial health points of a template agent.")
     parser.add_argument("-per", "--initial_percept", default=2, type=int, help="Initial percept of a template agent (one of 0-expired, 1-rest, or 2-volunteer-to-guard).")
     parser.add_argument("-k", "--max_steps", default=3, type=int, help="Maximum number of time steps to verify for.")
     parser.add_argument("-w", "--workers", default=2, type=int, help="Number of workers.")
@@ -102,15 +102,6 @@ def main():
     # Constraint specific variables of the initial state to one value by setting the upper
     # bounds equal to the lower bounds.
 
-    # This is len([health_agent1,
-    #              percept_agent1,
-    #              health_agent2,
-    #              percept_agent2,
-    #              healths_zo,
-    #              percepts_zo,
-    #              env_flag]
-    #            )
-
     initial_state = []
     for agent in range(ARGS.agents_number):
         initial_state.extend([ARGS.initial_health, ARGS.initial_percept])
@@ -119,7 +110,7 @@ def main():
     # no expired
     initial_state.append(0)
     # only one value of health
-    initial_state.extend([0]* (ARGS.initial_health-1) +
+    initial_state.extend([0] * (ARGS.initial_health-1) +
                          [1] +
                          [0] * (GuardingConstants.MAX_HEALTH_POINTS - ARGS.initial_health))
     # zero-one percepts
@@ -136,7 +127,7 @@ def main():
     for num_steps in steps:
         print(num_steps, "steps")
 
-        formula = get_formula_and_gamma(ARGS, agents, num_steps)
+        formula = get_formula_and_gamma(num_steps)
 
         print("Formula to verify", formula)
         # Run a method.
@@ -144,18 +135,12 @@ def main():
         print("\n")
 
 
-def get_formula_and_gamma(ARGS, agents, num_steps):
+def get_formula_and_gamma(num_steps):
     colony_alive = AtomicConjFormula(
         VarConstConstraint(
             StateCoordinate(GuardingConstants.HEALTH_IDX), GE, GuardingConstants.EXPIRED_HEALTH_POINTS + 1),
         VarConstConstraint(
             StateCoordinate(GuardingConstants.HEALTH_IDX + GuardingConstants.AGENT_STATE_DIMENSIONS), GE, GuardingConstants.EXPIRED_HEALTH_POINTS + 1))
-
-    # gamma_all = agents
-    # not_gamma_empty = []
-    #
-    # colony_survives = GammaExistentialFormula(num_steps, gamma_all, not_gamma_empty, colony_alive) # [[o,i]] X^k safety
-    # return gamma_all, not_gamma_empty, colony_survives
 
     colony_survives = ENextFormula(num_steps, colony_alive)
     return colony_survives
@@ -169,23 +154,6 @@ def initialise_and_get_agent_and_env(agents_number):
 
     # Where the agent networks are.
     REL_PATH = "../resources/guarding/agent.h5"
-
-    # Dimension of the action space; there is only one action, the advisory, returned by the agent.
-    ACTION_SPACE_DIM = 1
-
-    # Dimension of the global state space;
-    # This is len([health_agent1,
-    #              percept_agent1,
-    #              health_agent2,
-    #              percept_agent2,
-    #              healths_zo,
-    #              percepts_zo,
-    #              env_flag]
-    #             ) = 7 for 2 agents.
-    STATE_SPACE_DIM = 2 *(agents_number
-                          # + 1
-                          ) + \
-                      1 # the environment state
 
     network_model = NetworkModel()
     network_model.parse(REL_PATH)

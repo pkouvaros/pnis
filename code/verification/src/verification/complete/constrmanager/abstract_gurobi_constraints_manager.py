@@ -77,16 +77,48 @@ class AbstractGurobiConstraintsManager(ConstraintsManagerI):
         return sense(np.array(coeff).dot(np.array(vars)), rhs)
 
     @staticmethod
-    def get_linear_constraint(vars, coeff, rhs, sense=__eq__):
-        return sense(np.array(coeff).dot(np.array(vars)), rhs)
-
-    @staticmethod
     def get_max_constraint(var, values):
         return (var == max_(values))
 
     @staticmethod
     def get_min_constraint(var, values):
         return (var == min_(values))
+
+    def encode_max_constraint(self, y, x, c, M):
+        """
+        Encoding y = max(x,c) where x is a variable, c is a constant, M is the big-M constant
+        :return: constraints encoding the restriction
+        """
+        [delta] = self.create_binary_variables(1)
+
+        return [
+            # y >= x
+            self.get_linear_constraint([y,x], [1,-1], 0, sense=__ge__),
+            # y >= c
+            self.get_ge_constraint(y, c),
+            # y <= x + M * (1 - delta) === y - x + M*delta <= M
+            self.get_linear_constraint([y, x, delta], [1, -1, M], M, sense=__le__),
+            # y <= c + M * delta === y - M*delta <= c
+            self.get_linear_constraint([y, delta], [1, -M], c, sense=__le__)
+        ]
+
+    def encode_min_constraint(self, y, x, c, M):
+        """
+        Encoding y = min(x,c) where x is a variable, c is a constant
+        :return: constraints encoding the restriction
+        """
+        [delta] = self.create_binary_variables(1)
+
+        return [
+            # y <= x
+            self.get_linear_constraint([y,x], [1,-1], 0, sense=__le__),
+            # y <= c
+            self.get_le_constraint(y, c),
+            # y >= x - M(1 - delta) === y - x - M*delta >= -M
+            self.get_linear_constraint([y, x, delta], [1, -1, -M], -M, sense=__ge__),
+            # y >= c - M * delta === y + M*delta >= c
+            self.get_linear_constraint([y, delta], [1, M], c, sense=__ge__)
+        ]
 
     def update(self):
         self.gmodel.update()

@@ -16,7 +16,7 @@ class GuardingConstants:
 
     GUARDING_REWARD = -1
     RESTING_REWARD = 1
-    UNGUARDED_REWARD = -2
+    UNGUARDED_REWARD = -3
 
     EXPIRED_HEALTH_POINTS = 0
     MAX_HEALTH_POINTS = 3
@@ -26,8 +26,13 @@ class GuardingConstants:
     HEALTH_IDX = 0
     PERCEPT_IDX = 1
 
+    # the branching factor of the agent.
+    # When volunteering to guard, the agent has a choice of actions: rest or guard
+    # In other cases there are always exactly one action to choose from
     AGENT_MAX_ACTIONS = 2
 
+    # Maximum absolute value of health that can be obtained, to be used for encoding max and min constraints
+    BIG_M_CONSTANT = MAX_HEALTH_POINTS - UNGUARDED_REWARD
 
 class GuardingAgent(MultiAgent):
 
@@ -281,10 +286,9 @@ class GuardingAgent(MultiAgent):
 
         # Detecting if at least one agent guards or nobody guards
         # Assumption here that action is a single variable
-        flat_vars = [item for row in joint_action_vars for item in row]
-        action_bounds = constrs_manager.get_variable_bounds(flat_vars)
+        action_bounds = constrs_manager.get_variable_bounds(joint_action_vars)
         at_least_one_guarding = False
-        for action_number, action in enumerate(flat_vars):
+        for action_number, action in enumerate(joint_action_vars):
             a_lb, a_ub = action_bounds.get_dimension_bounds(action_number)
             if a_lb >= GuardingConstants.GUARD_ACTION:
                 at_least_one_guarding = True
@@ -293,7 +297,7 @@ class GuardingAgent(MultiAgent):
         nobody_guarding = False
         if not at_least_one_guarding:
             nobody_guarding = True
-            for action_number, action in enumerate(flat_vars):
+            for action_number, action in enumerate(joint_action_vars):
                 a_lb, a_ub = action_bounds.get_dimension_bounds(action_number)
                 if a_lb >= GuardingConstants.GUARD_ACTION:
                     nobody_guarding = False
@@ -335,10 +339,10 @@ class GuardingAgent(MultiAgent):
             constrs_to_add.extend([
                 constrs_manager.create_indicator_constraint(
                     binary_vars[action_number], 1,
-                    constrs_manager.get_assignment_constraint(action[0], GuardingConstants.GUARD_ACTION)),
+                    constrs_manager.get_assignment_constraint(action, GuardingConstants.GUARD_ACTION)),
                 constrs_manager.create_indicator_constraint(
                     binary_vars[action_number], 0,
-                    constrs_manager.get_le_constraint(action[0], GuardingConstants.REST_ACTION)),
+                    constrs_manager.get_le_constraint(action, GuardingConstants.REST_ACTION)),
             ])
 
 
@@ -377,8 +381,6 @@ class GuardingAgent(MultiAgent):
                 constrs_manager.get_linear_constraint([next_health_var_raw, health_var, at_least_one_guards, nobody_guards],
                                                       [1, -1, -GuardingConstants.RESTING_REWARD, -GuardingConstants.UNGUARDED_REWARD],
                                                       0)),
-            constrs_manager.get_max_constraint(next_health_var_max, [next_health_var_raw, GuardingConstants.EXPIRED_HEALTH_POINTS]),
-            constrs_manager.get_min_constraint(next_health_var, [next_health_var_max, GuardingConstants.MAX_HEALTH_POINTS]),
             constrs_manager.create_indicator_constraint(
                 at_least_one_guards, 1,
                 constrs_manager.get_linear_constraint(binary_vars, [1] * len(binary_vars), 1, sense=__ge__)),
@@ -387,6 +389,14 @@ class GuardingAgent(MultiAgent):
                 constrs_manager.get_linear_constraint(binary_vars, [1] * len(binary_vars), 0)),
             constrs_manager.get_linear_constraint([at_least_one_guards, nobody_guards], [1, 1], 1)
         ])
+
+        constrs_to_add.extend(
+            # max constraint for next health
+            constrs_manager.encode_max_constraint(
+                next_health_var_max, next_health_var_raw, GuardingConstants.EXPIRED_HEALTH_POINTS, GuardingConstants.BIG_M_CONSTANT) +
+            # min constraint for next health
+            constrs_manager.encode_min_constraint(
+                next_health_var, next_health_var_max, GuardingConstants.MAX_HEALTH_POINTS, GuardingConstants.BIG_M_CONSTANT))
 
         return [next_health_var], constrs_to_add
 

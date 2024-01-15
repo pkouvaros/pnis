@@ -226,10 +226,18 @@ class GuardingZeroOneAgent(MultiAgent):
         ####################################################################
         ##### Compute the complete joint actions as 3 binary variables #####
         ####################################################################
-        [joint_expired, joint_rest, joint_guard] = constrs_manager.create_binary_variables(3)
-        flat_joint_actions = [item for row in joint_action_vars for item in row]
-        for action in flat_joint_actions:
+        # We actually don't really need joint_expired or joint_rest (so no constraints for them).
+        # [joint_expired, joint_rest, joint_guard] = constrs_manager.create_binary_variables(3)
+        # We only care about joint_guard. So computing joint_guard
+        [joint_guard] = constrs_manager.create_binary_variables(1)
+
+        # Collect all g variables to make sure joint_guard cannot be 1 for no reason
+        individual_gs = []
+
+        for action in joint_action_vars:
+            # variables for detecting what the current action is
             [e, r, g] = constrs_manager.create_binary_variables(3)
+            individual_gs.append(g)
 
             constrs_to_add.extend([
                 constrs_manager.create_indicator_constraint(
@@ -240,26 +248,37 @@ class GuardingZeroOneAgent(MultiAgent):
                     g, 1, constrs_manager.get_equality_constraint(action, GuardingConstants.GUARD_ACTION)),
                 constrs_manager.get_sum_constraint([e,r,g], 1),
                 constrs_manager.create_indicator_constraint(
-                    e, 1, constrs_manager.get_equality_constraint(joint_expired, 1)),
-                constrs_manager.create_indicator_constraint(
-                    r, 1, constrs_manager.get_equality_constraint(joint_rest, 1)),
-                constrs_manager.create_indicator_constraint(
                     g, 1, constrs_manager.get_equality_constraint(joint_guard, 1)),
             ])
 
         next_state_vars = constrs_manager.create_binary_variables(self.private_dimensions)
 
+        [exists_transition0, guard_trans0, unguarded_trans0] = constrs_manager.create_binary_variables(3)
+
         # Add from own actions
         constrs_to_add.extend([
             constrs_manager.create_indicator_constraint(
-                own_action_vars[0], 1, constrs_manager.get_equality_constraint(joint_expired, 1)),
+                own_action_vars[0], 1, constrs_manager.get_equality_constraint(next_state_vars[0], 1)),
             constrs_manager.create_indicator_constraint(
-                own_action_vars[0], 1, constrs_manager.get_equality_constraint(next_state_vars[0], 1))
+                next_state_vars[0], 1, constrs_manager.get_equality_constraint(exists_transition0, 1)),
+            # a valid transition is any of guard, rest or unguarded transitions
+            constrs_manager.create_indicator_constraint(
+                exists_transition0, 1,
+                constrs_manager.get_linear_constraint([guard_trans0, unguarded_trans0], [1, 1], 1, sense=__ge__)),
         ])
+        constrs_to_add.extend(
+            self.get_guard_trans_constraints(constrs_manager, own_action_vars, 0, guard_trans0) +
+            self.get_unguarded_trans_constraints(constrs_manager, own_action_vars, 0, unguarded_trans0, joint_guard)
+        )
 
+
+        ## Adding to joint guard from the own states and
+        ## encoding the next state values
         for health_points in range(1, GuardingConstants.MAX_HEALTH_POINTS):
 
+            # variables for detecting what the current action is
             [absent, r, g, r_guarded, r_unguarded] = constrs_manager.create_binary_variables(5)
+            individual_gs.append(g)
 
             next_health_guarding = max(health_points + GuardingConstants.GUARDING_REWARD, GuardingConstants.EXPIRED_HEALTH_POINTS)
             next_health_regenerating = min(health_points + GuardingConstants.RESTING_REWARD, GuardingConstants.MAX_HEALTH_POINTS)
@@ -268,6 +287,7 @@ class GuardingZeroOneAgent(MultiAgent):
             action = own_action_vars[health_points]
 
             constrs_to_add.extend([
+                # Constraints for knowing the current state
                 constrs_manager.create_indicator_constraint(
                     absent, 1, constrs_manager.get_equality_constraint(action, 0)),
                 constrs_manager.create_indicator_constraint(
@@ -277,13 +297,11 @@ class GuardingZeroOneAgent(MultiAgent):
 
                 constrs_manager.get_sum_constraint([absent,r,g], 1),
 
-                # For computing joint action
-                constrs_manager.create_indicator_constraint(
-                    r, 1, constrs_manager.get_equality_constraint(joint_rest, 1)),
+                # For computing joint guard action
                 constrs_manager.create_indicator_constraint(
                     g, 1, constrs_manager.get_equality_constraint(joint_guard, 1)),
 
-                # Constraints for computing next health
+                # Detecting whether resting while guarded or not
                 constrs_manager.create_indicator_constraint(
                     r_guarded, 1, constrs_manager.get_linear_constraint([r, joint_guard], [1,1], 2, sense=__ge__)),
                 constrs_manager.create_indicator_constraint(
@@ -294,6 +312,7 @@ class GuardingZeroOneAgent(MultiAgent):
                 constrs_manager.create_indicator_constraint(
                     r_unguarded, 0, constrs_manager.get_linear_constraint([r, joint_guard], [1, -1], 0, sense=__le__)),
 
+                # Constraints for computing next health
                 constrs_manager.create_indicator_constraint(
                     r_guarded, 1, constrs_manager.get_equality_constraint(next_state_vars[next_health_regenerating], 1)),
                 constrs_manager.create_indicator_constraint(
@@ -303,7 +322,92 @@ class GuardingZeroOneAgent(MultiAgent):
                     g, 1, constrs_manager.get_equality_constraint(next_state_vars[next_health_guarding], 1)),
             ])
 
+            # Constraints to make sure that next_state_vars[health_points] cannot be 1 for no reason
+            [exists_transition, guard_trans, rest_trans, unguarded_trans] = constrs_manager.create_binary_variables(4)
+            constrs_to_add.extend([
+                # if next_state_vars[health_points] is true, then there must a valid transition into such local state
+                constrs_manager.create_indicator_constraint(
+                    next_state_vars[health_points], 1, constrs_manager.get_equality_constraint(exists_transition, 1)),
+                # a valid transition is any of guard, rest or unguarded transitions
+                constrs_manager.create_indicator_constraint(
+                    exists_transition, 1,
+                    constrs_manager.get_linear_constraint([guard_trans, rest_trans, unguarded_trans], [1,1,1], 1, sense=__ge__))
+            ] +
+                self.get_rest_trans_constraints(constrs_manager, own_action_vars, health_points, rest_trans, joint_guard) +
+                self.get_guard_trans_constraints(constrs_manager, own_action_vars, health_points, guard_trans) +
+                self.get_unguarded_trans_constraints(constrs_manager, own_action_vars, health_points, unguarded_trans, joint_guard)
+            )
+
+        # if joint_guard is true, then there is at least one individual g
+        constrs_to_add.append(
+            constrs_manager.create_indicator_constraint(
+                joint_guard, 1,
+                constrs_manager.get_linear_constraint(individual_gs, [1]*len(individual_gs), 1, sense=__ge__))
+        )
+
         return next_state_vars, constrs_to_add
+
+    def get_rest_trans_constraints(self, constrs_manager, own_action_vars, health_points, rest_trans, joint_guard):
+        # Add rest transition constraints only if the original health exists (rest action cannot be taken from 0)
+        if (health_points - GuardingConstants.RESTING_REWARD > GuardingConstants.EXPIRED_HEALTH_POINTS):
+            return [
+                # rest transition is true then
+                # for the local state (current health points - resting reward) the action must be rest and
+                # joint_guard must be true
+                constrs_manager.create_indicator_constraint(
+                    rest_trans, 1,
+                    constrs_manager.get_assignment_constraint(
+                        own_action_vars[health_points - GuardingConstants.RESTING_REWARD],
+                        GuardingConstants.REST_ACTION)),
+                constrs_manager.create_indicator_constraint(
+                    rest_trans, 1,
+                    constrs_manager.get_assignment_constraint(joint_guard, 1))
+            ]
+        # Otherwise rest_trans must be false
+        else:
+            return [
+                constrs_manager.get_assignment_constraint(rest_trans, 0)
+            ]
+
+    def get_guard_trans_constraints(self, constrs_manager, own_action_vars, health_points, guard_trans):
+        # Add guard transition constraints only if the original health exists (cannot be more than Max Health)
+        if (health_points - GuardingConstants.GUARDING_REWARD <= GuardingConstants.MAX_HEALTH_POINTS):
+            return [
+                # guard transition is true then
+                # for the local state (current health points - guarding reward) the action must be guard
+                constrs_manager.create_indicator_constraint(
+                    guard_trans, 1,
+                    constrs_manager.get_assignment_constraint(
+                        own_action_vars[health_points - GuardingConstants.GUARDING_REWARD],
+                        GuardingConstants.GUARD_ACTION))
+            ]
+        # Otherwise guard_trans must be false
+        else:
+            return [
+                constrs_manager.get_assignment_constraint(guard_trans, 0)
+            ]
+
+    def get_unguarded_trans_constraints(self, constrs_manager, own_action_vars, health_points, unguarded_trans, joint_guard):
+        # Add unguarded transition constraints only if the original health exists (cannot be more than Max Health)
+        if (health_points - GuardingConstants.UNGUARDED_REWARD <= GuardingConstants.MAX_HEALTH_POINTS):
+            return [
+                # unguarded transition is true then
+                # for the local state (current health points - unguarded reward) the action must be rest and
+                # joint_guard must be false
+                constrs_manager.create_indicator_constraint(
+                    unguarded_trans, 1,
+                    constrs_manager.get_assignment_constraint(
+                        own_action_vars[health_points - GuardingConstants.UNGUARDED_REWARD],
+                        GuardingConstants.REST_ACTION)),
+                constrs_manager.create_indicator_constraint(
+                    unguarded_trans, 1,
+                    constrs_manager.get_assignment_constraint(joint_guard, 0))
+            ]
+        # Otherwise unguarded_trans must be false
+        else:
+            return [
+                constrs_manager.get_assignment_constraint(unguarded_trans, 0)
+            ]
 
     def get_branching_factor(self):
         return 2**GuardingConstants.MAX_HEALTH_POINTS

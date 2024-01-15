@@ -110,18 +110,23 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
         self.constrs_manager.get_variable_tracker().add_state_variables(next_state_vars)
 
 
+        # action vars for tracking and printing traces
+        joint_actions_count = sum([len(action_vars[agent_number][0]) for agent_number in range(self.agent_count)])
+        next_action_vars = self.constrs_manager.create_state_variables(joint_actions_count)
+        self.constrs_manager.get_variable_tracker().add_action_variables(next_action_vars)
+
         action_ranges = [agent.get_branching_factor() for agent in self.agents] + \
                         [self.env.get_branching_factor()]
         action_indices = [0 for _ in range(len(action_ranges))]
         global_action_idx = 0
 
         while(True):
-            ### Get all action vars and action constras according to the current indiced
-            all_actions_vars = [action_vars[agent_number][action_indices[agent_number]]
-                                for agent_number in range(self.agent_count)]
+            ### Get all action vars and action constras according to the current indices
+            # Flattened for convenience already here
+            all_actions_vars = [item for row in [action_vars[agent_number][action_indices[agent_number]]
+                                for agent_number in range(self.agent_count)] for item in row]
             all_action_constrs = [item for row in [action_constrs[agent_number][action_indices[agent_number]]
                                   for agent_number in range(self.agent_count)] for item in row]
-            self.constrs_manager.get_variable_tracker().add_action_variables(all_actions_vars)
 
             ### the transition functions for all template agents
             agent_output_state_vars = []
@@ -156,11 +161,12 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
             # Constraints for identifying the next_state_vars with the output_state_vars
             # for the current action combination
             next_var_constrs = [nsv == osv for nsv, osv in zip(next_state_vars, output_state_vars)]
+            # Constraints for identifying the next_action_vars with the current all_action_vars
+            next_action_constrs = [nsv == osv for nsv, osv in zip(next_action_vars, all_actions_vars)]
 
-            for constr in all_action_constrs + transition_constrs + next_var_constrs:
+            for constr in all_action_constrs + transition_constrs + next_var_constrs + next_action_constrs:
                 # constrs_to_add.append(constr)
-                if constr._sense != 'I' and not isinstance(constr._rhs, GenExprMax)\
-                        and not isinstance(constr._rhs, GenExprMin):  # Hack to check if indicator constraint.
+                if constr._sense != 'I':  # Hack to check if indicator constraint.
                     constrs_to_add.append(self.constrs_manager
                                           .create_indicator_constraint(delta[global_action_idx], 1, constr))
                 else:
@@ -171,6 +177,7 @@ class MonolithicCTLParametricNISMILPEncoder(MonolithicBooleanMILPEncoder):
             stop = increment_indices(action_indices, action_ranges)
             if stop:
                 break
+            # constrs_to_add.append(self.constrs_manager.get_assignment_constraint(delta[global_action_idx-1], 1))
             # break
 
         output_lower, output_upper = zip(*next_state_bounds)  # Unzip the bounds.
