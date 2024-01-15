@@ -165,7 +165,7 @@ class GuardingZeroOneAgent(MultiAgent):
                 ),
                 constrs_manager.create_indicator_constraint(
                     expired, 0,
-                    constrs_manager.get_equality_constraint(action_vars[0], 0)
+                    constrs_manager.get_assignment_constraint(action_vars[0], 0)
                 )
             ])
 
@@ -175,15 +175,15 @@ class GuardingZeroOneAgent(MultiAgent):
                     action_constrs.extend([
                         constrs_manager.create_indicator_constraint(
                             volunteered, 1,
-                            constrs_manager.get_equality_constraint(action_vars[hper], input_state_vars[hper] * GuardingConstants.REST_ACTION)
+                            constrs_manager.get_linear_constraint([action_vars[hper], input_state_vars[hper]], [1, -GuardingConstants.REST_ACTION], 0)
                         ),
                         constrs_manager.create_indicator_constraint(
                             need_rest, 1,
-                            constrs_manager.get_equality_constraint(action_vars[hper], input_state_vars[hper] * GuardingConstants.REST_ACTION)
+                            constrs_manager.get_linear_constraint([action_vars[hper], input_state_vars[hper]], [1, -GuardingConstants.REST_ACTION], 0)
                         ),
                         constrs_manager.create_indicator_constraint(
                             no_guard_no_rest, 1,
-                            constrs_manager.get_equality_constraint(action_vars[hper], 0)
+                            constrs_manager.get_assignment_constraint(action_vars[hper], 0)
                         )
                     ])
 
@@ -192,16 +192,16 @@ class GuardingZeroOneAgent(MultiAgent):
                     action_constrs.extend([
                         constrs_manager.create_indicator_constraint(
                             volunteered, 1,
-                            constrs_manager.get_equality_constraint(action_vars[hper], input_state_vars[hper] * GuardingConstants.GUARD_ACTION)
+                            constrs_manager.get_linear_constraint([action_vars[hper], input_state_vars[hper]], [1, -GuardingConstants.GUARD_ACTION], 0)
                         ),
                         # if there is no volunteered percept, then the second branch is rest as well
                         constrs_manager.create_indicator_constraint(
                             only_rest, 1,
-                            constrs_manager.get_equality_constraint(action_vars[hper], input_state_vars[hper] * GuardingConstants.REST_ACTION)
+                            constrs_manager.get_linear_constraint([action_vars[hper], input_state_vars[hper]], [1, -GuardingConstants.REST_ACTION], 0)
                         ),
                         constrs_manager.create_indicator_constraint(
                             no_guard_no_rest, 1,
-                            constrs_manager.get_equality_constraint(action_vars[hper], 0)
+                            constrs_manager.get_assignment_constraint(action_vars[hper], 0)
                         )
                     ])
 
@@ -241,14 +241,14 @@ class GuardingZeroOneAgent(MultiAgent):
 
             constrs_to_add.extend([
                 constrs_manager.create_indicator_constraint(
-                    e, 1, constrs_manager.get_equality_constraint(action, GuardingConstants.EXPIRED_ACTION)),
+                    e, 1, constrs_manager.get_assignment_constraint(action, GuardingConstants.EXPIRED_ACTION)),
                 constrs_manager.create_indicator_constraint(
-                    r, 1, constrs_manager.get_equality_constraint(action, GuardingConstants.REST_ACTION)),
+                    r, 1, constrs_manager.get_assignment_constraint(action, GuardingConstants.REST_ACTION)),
                 constrs_manager.create_indicator_constraint(
-                    g, 1, constrs_manager.get_equality_constraint(action, GuardingConstants.GUARD_ACTION)),
+                    g, 1, constrs_manager.get_assignment_constraint(action, GuardingConstants.GUARD_ACTION)),
                 constrs_manager.get_sum_constraint([e,r,g], 1),
                 constrs_manager.create_indicator_constraint(
-                    g, 1, constrs_manager.get_equality_constraint(joint_guard, 1)),
+                    g, 1, constrs_manager.get_assignment_constraint(joint_guard, 1)),
             ])
 
         next_state_vars = constrs_manager.create_binary_variables(self.private_dimensions)
@@ -258,15 +258,15 @@ class GuardingZeroOneAgent(MultiAgent):
         # Add from own actions
         constrs_to_add.extend([
             constrs_manager.create_indicator_constraint(
-                own_action_vars[0], 1, constrs_manager.get_equality_constraint(next_state_vars[0], 1)),
+                own_action_vars[0], 1, constrs_manager.get_assignment_constraint(next_state_vars[0], 1)),
+            # Constraints to make sure that next_state_vars[0] cannot be 1 for no reason
             constrs_manager.create_indicator_constraint(
-                next_state_vars[0], 1, constrs_manager.get_equality_constraint(exists_transition0, 1)),
+                next_state_vars[0], 1, constrs_manager.get_assignment_constraint(exists_transition0, 1)),
             # a valid transition is any of guard, rest or unguarded transitions
             constrs_manager.create_indicator_constraint(
                 exists_transition0, 1,
                 constrs_manager.get_linear_constraint([guard_trans0, unguarded_trans0], [1, 1], 1, sense=__ge__)),
-        ])
-        constrs_to_add.extend(
+        ] +
             self.get_guard_trans_constraints(constrs_manager, own_action_vars, 0, guard_trans0) +
             self.get_unguarded_trans_constraints(constrs_manager, own_action_vars, 0, unguarded_trans0, joint_guard)
         )
@@ -274,7 +274,7 @@ class GuardingZeroOneAgent(MultiAgent):
 
         ## Adding to joint guard from the own states and
         ## encoding the next state values
-        for health_points in range(1, GuardingConstants.MAX_HEALTH_POINTS):
+        for health_points in range(1, GuardingConstants.MAX_HEALTH_POINTS+1):
 
             # variables for detecting what the current action is
             [absent, r, g, r_guarded, r_unguarded] = constrs_manager.create_binary_variables(5)
@@ -289,17 +289,17 @@ class GuardingZeroOneAgent(MultiAgent):
             constrs_to_add.extend([
                 # Constraints for knowing the current state
                 constrs_manager.create_indicator_constraint(
-                    absent, 1, constrs_manager.get_equality_constraint(action, 0)),
+                    absent, 1, constrs_manager.get_assignment_constraint(action, 0)),
                 constrs_manager.create_indicator_constraint(
-                    r, 1, constrs_manager.get_equality_constraint(action, GuardingConstants.REST_ACTION)),
+                    r, 1, constrs_manager.get_assignment_constraint(action, GuardingConstants.REST_ACTION)),
                 constrs_manager.create_indicator_constraint(
-                    g, 1, constrs_manager.get_equality_constraint(action, GuardingConstants.GUARD_ACTION)),
+                    g, 1, constrs_manager.get_assignment_constraint(action, GuardingConstants.GUARD_ACTION)),
 
                 constrs_manager.get_sum_constraint([absent,r,g], 1),
 
                 # For computing joint guard action
                 constrs_manager.create_indicator_constraint(
-                    g, 1, constrs_manager.get_equality_constraint(joint_guard, 1)),
+                    g, 1, constrs_manager.get_assignment_constraint(joint_guard, 1)),
 
                 # Detecting whether resting while guarded or not
                 constrs_manager.create_indicator_constraint(
@@ -314,20 +314,21 @@ class GuardingZeroOneAgent(MultiAgent):
 
                 # Constraints for computing next health
                 constrs_manager.create_indicator_constraint(
-                    r_guarded, 1, constrs_manager.get_equality_constraint(next_state_vars[next_health_regenerating], 1)),
+                    r_guarded, 1, constrs_manager.get_assignment_constraint(next_state_vars[next_health_regenerating], 1)),
                 constrs_manager.create_indicator_constraint(
-                    r_unguarded, 1, constrs_manager.get_equality_constraint(next_state_vars[next_health_unguarded], 1)),
+                    r_unguarded, 1, constrs_manager.get_assignment_constraint(next_state_vars[next_health_unguarded], 1)),
 
                 constrs_manager.create_indicator_constraint(
-                    g, 1, constrs_manager.get_equality_constraint(next_state_vars[next_health_guarding], 1)),
+                    g, 1, constrs_manager.get_assignment_constraint(next_state_vars[next_health_guarding], 1)),
             ])
 
             # Constraints to make sure that next_state_vars[health_points] cannot be 1 for no reason
             [exists_transition, guard_trans, rest_trans, unguarded_trans] = constrs_manager.create_binary_variables(4)
+            constrs_manager.update()
             constrs_to_add.extend([
                 # if next_state_vars[health_points] is true, then there must a valid transition into such local state
                 constrs_manager.create_indicator_constraint(
-                    next_state_vars[health_points], 1, constrs_manager.get_equality_constraint(exists_transition, 1)),
+                    next_state_vars[health_points], 1, constrs_manager.get_assignment_constraint(exists_transition, 1)),
                 # a valid transition is any of guard, rest or unguarded transitions
                 constrs_manager.create_indicator_constraint(
                     exists_transition, 1,
