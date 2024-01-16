@@ -14,7 +14,7 @@ from tqdm import tqdm
 
 class Simulation:
     DEFAULT_NUMBER_OF_AGENTS: int = 4
-    DEFAULT_MAX_EPISODE_LENGTH: int = 32
+    DEFAULT_MAX_EPISODE_LENGTH: int = 16
     DEFAULT_GUARD_VALUE: int = -2
     DEFAULT_REGEN_VALUE: int = 1
     DEFAULT_UNGUARDED_VALUE: int = -3
@@ -25,8 +25,7 @@ class Simulation:
                  guard_value: int = DEFAULT_GUARD_VALUE,
                  regen_value: int = DEFAULT_REGEN_VALUE,
                  unguarded_value: int = DEFAULT_UNGUARDED_VALUE,
-                 template_agent: TemplateAgent = TemplateAgent(),
-                 agent_training_altruism: float = 0.2,
+                 template_agent: TemplateAgent = TemplateAgent()
                  ) -> None:
         self.number_of_agents: int = number_of_agents
         self.max_episode_length: int = max_episode_length
@@ -50,21 +49,19 @@ class Simulation:
                 self.template_agent.max_hp,
                 self.template_agent.initial_hp)
             for _ in range(self.number_of_agents)]
-        
-        self.agent_training_altruism = agent_training_altruism
 
 
     def _get_reward(self, agent_idx: int, transitions: Dict[int, Transition], game_over: bool) -> float:
         def _get_social_reward(transitions: Dict[int, Transition], agent_idx: int) -> float:
             # average health delta
             ave_health_delta = sum([transition.next_state.normalised_hp - transition.state.normalised_hp for agent_idx_, transition in transitions.items() if agent_idx_ != agent_idx]) / self.number_of_agents - 1
-            dead_agent_penalty = sum([-1.0 if transition.state.state_label == Agent.EXPIRE_STATE else 0.0 for agent_idx_, transition in transitions.items() if agent_idx_ != agent_idx]) / self.number_of_agents - 1
+            dead_agent_penalty = sum([-1.0 if transition.next_state.state_label == State.EXPIRE_STATE else 0.0 for agent_idx_, transition in transitions.items() if agent_idx_ != agent_idx]) / self.number_of_agents - 1
             return (ave_health_delta + dead_agent_penalty) / 2
 
         transition = transitions[agent_idx]
         individual_reward = transition.next_state.normalised_hp - transition.state.normalised_hp
 
-        reward = (self.agent_training_altruism * _get_social_reward(transitions, agent_idx)) + individual_reward + (-1.0 if transition.next_state.state_label == Agent.EXPIRE_STATE else 1.0)
+        reward = (transition.next_state.normalised_hp * _get_social_reward(transitions, agent_idx)) + individual_reward + (-1.0 if transition.next_state.state_label == State.EXPIRE_STATE else 1.0)
         reward += -2.0 if game_over else 0
 
         return reward
@@ -75,7 +72,7 @@ class Simulation:
             rewards[agent_idx] = self._get_reward(agent_idx, transitions, game_over)
         return rewards
 
-    def _get_transitions(self, actions: Dict[int, int]) -> Tuple[Dict[int, Transition], bool]:
+    def _get_transitions(self, actions: Dict[int, int]) -> Dict[int, Transition]:
         unguarded = not any(action == AbstractStrategy.GUARD_ACTION for action in actions.values())
         game_over = all(action == AbstractStrategy.EXPIRE_ACTION for action in actions.values())
 
@@ -85,7 +82,7 @@ class Simulation:
                 self.agents[agent_idx].state, action, unguarded)
             transitions[agent_idx] = transition
         
-        return transitions, game_over
+        return transitions
 
     def _get_transition(self, state: State, action: int, unguarded: bool, arbitrated: bool = False) -> Transition:
         def valid_hp(hp) -> int:
@@ -104,29 +101,29 @@ class Simulation:
             new_state_label = state_label
         elif arbitrated or action == AbstractStrategy.REGEN_ACTION:
             delta_hp = self.regen_value
-            new_state_label = Agent.REGEN_STATE
+            new_state_label = State.REGEN_STATE
         elif action == AbstractStrategy.GUARD_ACTION:
             delta_hp = self.guard_value
-            new_state_label = Agent.GUARD_STATE
+            new_state_label = State.GUARD_STATE
         elif action == AbstractStrategy.EXPIRE_ACTION:
             delta_hp = 0
-            new_state_label = Agent.EXPIRE_STATE
+            new_state_label = State.EXPIRE_STATE
         else:
             delta_hp = 0
             new_state_label = state_label
 
         new_hp = valid_hp(hp + delta_hp)
-        new_state_label = new_state_label if new_hp > 0 else Agent.EXPIRE_STATE
+        new_state_label = new_state_label if new_hp > 0 else State.EXPIRE_STATE
 
         return Transition(
             State(hp, hp/self.template_agent.max_hp, state_label),
             action,
             State(new_hp, new_hp /
                   self.template_agent.max_hp, new_state_label),
-            new_hp <= 0)
+            new_state_label == State.EXPIRE_STATE)
 
     def _step(self, actions: Dict[int, int]) -> Tuple[Dict[int, Transition], Dict[int, float], bool]:
-        transitions, game_over = self._get_transitions(actions)
+        transitions = self._get_transitions(actions)
 
         # random subset of transitions are changed to result in regenerating instead of guarding
         guard_agents = [agent_idx for agent_idx, transition in transitions.items() if transition.action == AbstractStrategy.GUARD_ACTION]
@@ -138,6 +135,8 @@ class Simulation:
             orig_state = transitions[agent_idx].state
             new_transition = self._get_transition(orig_state, AbstractStrategy.GUARD_ACTION, unguarded=False, arbitrated=True)
             transitions[agent_idx] = new_transition
+
+        game_over = all(transition.final for transition in transitions.values())
 
         rewards = self._get_rewards(transitions, game_over)
         
@@ -151,8 +150,9 @@ class Simulation:
             round_hps: dict[int, list[int]] = {}
 
             # get actions
-            actions = {idx: self.template_agent.strategy.act(agent.state.hp / self.template_agent.max_hp)  # TODO: change to dictionary
+            actions = {idx: self.template_agent.strategy.act(agent.state.hp / self.template_agent.max_hp)
                        for idx, agent in enumerate(self.agents)}
+            # actions = {idx: AbstractStrategy.REGEN_ACTION for idx in range(self.number_of_agents)}
 
             # get transitions and construct experiences
             transitions, rewards, game_over = self._step(actions)
@@ -166,7 +166,7 @@ class Simulation:
             
             # train the agents
             if train:
-                self.template_agent.strategy.remember(experiences.values(), episode)
+                self.template_agent.strategy.remember(experiences.values(), episode) # TODO: EXPIRATION?
 
             # update scores dataframe
             self.scores = pd.concat(
@@ -179,7 +179,7 @@ class Simulation:
     def train(self, n_episodes: int = DQNStrategy.DEFAULT_TRAINING_EPISODES, savefigs: bool = False) -> None:
         def reset_agents():
             for agent in self.agents:
-                agent.state = State(agent.max_hp, 1.0, Agent.REGEN_STATE)
+                agent.state = State(agent.max_hp, 1.0, State.REGEN_STATE)
 
         if savefigs:
             if os.path.exists('traininghistory') == False:

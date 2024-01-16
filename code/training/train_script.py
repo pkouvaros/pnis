@@ -3,7 +3,7 @@ from GuardSwarmDilemma.Strategy import DQNStrategy
 
 sim = Simulation()
 
-sim.train(512, savefigs=True)
+sim.train(savefigs=True)
 
 dqn: DQNStrategy = sim.template_agent.strategy # type: ignore
 dqn.save("qnets/policy_net.h5")
