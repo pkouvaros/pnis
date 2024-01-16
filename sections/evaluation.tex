@@ -23,13 +23,13 @@ then used the \venmas toolkit developed for verification of
 NISs~\cite{Akintunde+20b} to verify $\bctl$ properties checking whether it is
 possible for a colony of agents to survive after a number of time steps.
 
-We assume that $M_h = 5$, $G_r = -2$, $R_r = 1$ and $U_r = -3$. 
+We assume that $M_h = 4$, $G_r = -2$, $R_r = 1$ and $U_r = -3$. 
 
 Assume the set $\atprop$ and the labelling function $\ell$ as in
 Example~\ref{ex:pnis}. We evaluate the zero-one NIS
-$\tuple{\set{1,\ldots,3,zo,e}, \globalinit{3}_{zo}, \valuation{3}_{zo}}$
+$\pnis_{zo} = \tuple{\set{1,\ldots,m,zo,e}, \globalinit{m}_{zo}, \valuation{m}_{zo}}$
 against two specifications:
-$\varphi^k_1 = EX^k (\mathsf{a},1) \land (\mathsf{a},2) \land (\mathsf{a},3)$,
+$\varphi^k_1 = EX^k \bigwedge_{i=1}^m(\mathsf{a},i)$,
 expressing that there is a way to choose agents' actions from those available
 to them so that all three agents are alive after $k$ time steps, and
 $\varphi^k_2 = AX^k (\mathsf{a},1) \land (\mathsf{a},2) \land (\mathsf{a},3)$,
@@ -39,6 +39,35 @@ agents are alive.
 The experiments have been performed on a standard PC running Ubuntu 22.04 with
 16GB RAM and processor Intel(R) Core i5-4460 CPU @ 3.20GHz. We relied on Gurobi
 v9.5.1 to solve MILP \cite{Gurobi+16a}.
+
+
+
+\begin{table}
+\centering
+\begin{tabular}{ccrcrc}
+  \toprule
+  & $k$ & \multicolumn{2}{c}{$m = 2$} & \multicolumn{2}{c}{$m = 3$}  \\\midrule
+  $\varphi_1^k$ & 1 &     0.76s & True    &     2.03s & True   \\
+               & 2 &     4.53s & True    &    20.06s & True   \\
+               & 3 &     8.64s & True    &    31.78s & True   \\
+               & 4 &    28.48s & True    &   Timeout & --     \\
+  \midrule
+  $\varphi_2^k$ & 1 &     0.71s & False   &     1.85s & False  \\
+               & 2 &     3.57s & False   &    15.93s & False  \\
+               & 3 &     9.16s & False   &    32.78s & False  \\
+               & 4 &    13.31s & False   &    47.20s & False  \\
+
+\bottomrule
+\end{tabular}
+  \caption{ Verification times for \guard{m} against properties $\varphi_{1}^{k}$
+    and $\varphi_{2}^{k}$ for various $k$ and $h_\init$.  Grey cells indicate a
+    \texttt{\greyc} result, otherwise a \texttt{True} result was obtained.
+    Dashes indicate a \timeout hour timeout.
+  }
+  \label{tab:results}
+\end{table}
+
+
 
 %%% Local Variables:
 %%% mode: latex
