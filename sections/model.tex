@@ -150,7 +150,7 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 
   \label{ex:agent-template}
 
-  Version 1, Everybody can guard and rest
+  % Version 1, Everybody can guard and rest
   
   We consider the example of a guarding game, an instance of sequential social
   dilemma games \cite{LeiboZLMG17}.\nb{E: check if this is really an SSD} In
@@ -419,6 +419,22 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 %   \end{itemize}
 
 % \end{example}
+% \begin{example}
+%   For the penguin scenario, the environment $e$ is defined as
+%   $\tuple{\lstates{e}, \acts{e}, \prot{e}, \tr{e}}$, where
+%   \begin{itemize}[$\bullet$]
+%   \item $\lstates{e} = \{(c,b) \mid c \in \mathit{Loc}, b\in\{0,1\}\}$. Thus
+%     every state is a map indicating whether there is at least one or no
+%     penguins at a location.
+%   \item $\acts{e} = \{0\}$
+%   \item $\prot{e} = ..$
+%   \item
+%     $\tr{e}(\mathit{map}, \act{e}, A) = A \times \{1\} \ \cup \
+%     (\mathit{Loc}\setminus A) \times \{0\}$ the transition function computes
+%     the new map, given the set of penguin actions.
+%   \end{itemize}
+% \end{example}
+
 
 
 
@@ -433,22 +449,6 @@ of actions,  $\prot e : 2^{\acts e} \setminus \set{\emptyset}$ is a local
 protocol function, and $\tr e : \lstates e \times \acts e \times 2^{\acts t} 
 \rightarrow \lstates e$ is a local transition function.
 \end{definition}
-
-\begin{example}
-  For the penguin scenario, the environment $e$ is defined as
-  $\tuple{\lstates{e}, \acts{e}, \prot{e}, \tr{e}}$, where
-  \begin{itemize}[$\bullet$]
-  \item $\lstates{e} = \{(c,b) \mid c \in \mathit{Loc}, b\in\{0,1\}\}$. Thus
-    every state is a map indicating whether there is at least one or no
-    penguins at a location.
-  \item $\acts{e} = \{0\}$
-  \item $\prot{e} = ..$
-  \item
-    $\tr{e}(\mathit{map}, \act{e}, A) = A \times \{1\} \ \cup \
-    (\mathit{Loc}\setminus A) \times \{0\}$ the transition function computes
-    the new map, given the set of penguin actions.
-  \end{itemize}
-\end{example}
 
 Agent and environment templates define the main formal structure we will be
 using in this paper.
