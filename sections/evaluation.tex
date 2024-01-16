@@ -1,0 +1,47 @@
+
+In this section we present an evaluation of the parameterised verification
+procedure described in Section~\ref{sec:verification} for the guarding game
+presented in Example~\ref{ex:agent-template}.
+
+
+The guarding game is an instance of a social dilemma game
+\cite{LeiboZLMG17}. Such games are characterised by an intrinsic tension
+between individual and collective goals.
+
+We used reinforcement learning to learn the neural observation function, where
+the agents have been given instantaneous rewards when ...
+
+deep Q-learning..
+
+The resulting NN has 1 hidden layer of .. neurons and ReLU activation function.
+
+
+
+Given the neural network implementing the observation function, we 
+implemented an agent template and a zero-one agent for the guarding game. We
+then used the \venmas toolkit developed for verification of
+NISs~\cite{Akintunde+20b} to verify $\bctl$ properties checking whether it is
+possible for a colony of agents to survive after a number of time steps.
+
+We assume that $M_h = 5$, $G_r = -2$, $R_r = 1$ and $U_r = -3$. 
+
+Assume the set $\atprop$ and the labelling function $\ell$ as in
+Example~\ref{ex:pnis}. We evaluate the zero-one NIS
+$\tuple{\set{1,\ldots,3,zo,e}, \globalinit{3}_{zo}, \valuation{3}_{zo}}$
+against two specifications:
+$\varphi^k_1 = EX^k (\mathsf{a},1) \land (\mathsf{a},2) \land (\mathsf{a},3)$,
+expressing that there is a way to choose agents' actions from those available
+to them so that all three agents are alive after $k$ time steps, and
+$\varphi^k_2 = AX^k (\mathsf{a},1) \land (\mathsf{a},2) \land (\mathsf{a},3)$,
+expressing that for all possible evolutions after $k$ time steps all three
+agents are alive.
+
+The experiments have been performed on a standard PC running Ubuntu 22.04 with
+16GB RAM and processor Intel(R) Core i5-4460 CPU @ 3.20GHz. We relied on Gurobi
+v9.5.1 to solve MILP \cite{Gurobi+16a}.
+
+%%% Local Variables:
+%%% mode: latex
+%%% fill-column: 79
+%%% TeX-master: "../main"
+%%% End:

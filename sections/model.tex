@@ -611,6 +611,7 @@ example.
 
   \begin{center}
     \begin{tikzpicture}[yscale=1.2, %
+      gg/.style={green!50!red}, %
       gr/.style={green!50!blue}, %
       rg/.style={red!50!blue}, %
       rr/.style={blue}, %
@@ -621,9 +622,10 @@ example.
 
     \foreach \a/\hone/\perone/\htwo/\pertwo/\prop/\x/\y in { %
       s22gg/2/G_s/2/G_s/{a,a}/0/1.1,%
-      s00/  0/E_s/0/E_s/{d,d}/0/0,%
-      s31/  3/G_s/1/R_s/{a,a}/-2.5/0,%
-      s13/  1/R_s/3/G_s/{a,a}/2.5/0,%
+      s00/  0/E_s/0/E_s/{d,d}/1.1/0,%
+      s11/  1/R_s/1/R_s/{a,a}/-1.1/0,%
+      s31/  3/G_s/1/R_s/{a,a}/-3.3/0,%
+      s13/  1/R_s/3/G_s/{a,a}/3.3/0,%
       s10/  1/R_s/0/E_s/{a,d}/-1.2/-0.9,%
       s01/  0/E_s/1/R_s/{d,a}/1.2/-0.9%
     }{ %
@@ -633,7 +635,7 @@ example.
       }
 
       \foreach \from/\to/\lab/\wh in { %
-        s22gg/s00/{rr}/left, s22gg/s31/{rg}/left, s22gg/s13/{gr}/right, %
+        s22gg/s00/{rr}/left, s22gg/s11/{gg}/left, s22gg/s31/{rg}/left, s22gg/s13/{gr}/right, %
         s31/s10/{rr}/left, %
         s13/s01/{rr}/left, %
         s10/s00/{re}/left,%
@@ -644,16 +646,18 @@ example.
       \foreach \from/\to/\out/\in/\loose/\lab/\wh in { %
         s00.40/s00.30/120/60/8/{ee}/above,%
         s31.120/s22gg.190/40/190/1.2/{gr}/right,%
-        s13.60/s22gg.350/140/350/1.2/{rg}/left%
+        s13.60/s22gg.350/140/350/1.2/{rg}/left,%
+        s11.30/s00.150/30/150/1/{rr}/left%
       }{%
         \draw[-latex,thick,\lab] (\from) to[out=\out,in=\in, looseness=\loose]  (\to); %
       }
 
       \begin{scope}[yshift=1.4cm]
-      \foreach \col/\y/\lab in { %
-        gr/1/{G_a,R_a}, rg/2/{R_a,G_a}, rr/3/{R_a,R_a}, %
-        re/4/{R_a,E_a}, er/5/{E_a,R_a}, ee/6/{E_a,E_a}%
-      }{ \draw[-latex, semithick, \col] (3.2,-0.18*\y) -- ++(1,0) node[right, scale=0.6] {$\lab$}; }
+        \foreach \col/\y/\lab in { %
+          gg/0/{G_a,G_a},
+          gr/1/{G_a,R_a}, rg/2/{R_a,G_a}, rr/3/{R_a,R_a}, %
+          re/4/{R_a,E_a}, er/5/{E_a,R_a}, ee/6/{E_a,E_a}%
+        }{ \draw[-latex, semithick, \col] (3.2,-0.18*\y) -- ++(1,0) node[right, scale=0.6] {$\lab$}; }
     \end{scope}
     \end{tikzpicture}
   \end{center}
