@@ -32,3 +32,9 @@ class NetworkModel(object):
         else:
             raise Exception("Unsupported network model file format", nn_filename)
 
+    def forward(self, inputs):
+        outputs = inputs
+        for layer in self.layers:
+            outputs = layer.forward(outputs)
+
+        return outputs

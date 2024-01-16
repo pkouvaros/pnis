@@ -99,6 +99,10 @@ class AbstractCustomConstraintsManager(ConstraintsManagerI):
 
         return vars
 
+    def create_integer_variable(self, lb, ub):
+        var = IntegerVariable(self._get_next_var_name(), lb=lb, ub=ub)
+        return var
+
     @staticmethod
     def get_sum_constraint(vars, rhs):
         coeffs = [1 for _ in range(len(vars))]
@@ -153,6 +157,42 @@ class AbstractCustomConstraintsManager(ConstraintsManagerI):
     @staticmethod
     def get_min_constraint(var, values):
         return MinConstraint(var, values)
+
+    def encode_max_constraint(self, y, x, c, M):
+        """
+        Encoding y = max(x,c) where x is a variable, c is a constant, M is the big-M constant
+        :return: constraints encoding the restriction
+        """
+        [delta] = self.create_binary_variables(1)
+
+        return [
+            # y >= x
+            self.get_linear_constraint([y,x], [1,-1], 0, sense=__ge__),
+            # y >= c
+            self.get_ge_constraint(y, c),
+            # y <= x + M * (1 - delta) === y - x + M*delta <= M
+            self.get_linear_constraint([y, x, delta], [1, -1, M], M, sense=__le__),
+            # y <= c + M * delta === y - M*delta <= c
+            self.get_linear_constraint([y, delta], [1, -M], c, sense=__le__)
+        ]
+
+    def encode_min_constraint(self, y, x, c, M):
+        """
+        Encoding y = min(x,c) where x is a variable, c is a constant
+        :return: constraints encoding the restriction
+        """
+        [delta] = self.create_binary_variables(1)
+
+        return [
+            # y <= x
+            self.get_linear_constraint([y,x], [1,-1], 0, sense=__le__),
+            # y <= c
+            self.get_le_constraint(y, c),
+            # y >= x - M(1 - delta) === y - x - M*delta >= -M
+            self.get_linear_constraint([y, x, delta], [1, -1, -M], -M, sense=__ge__),
+            # y >= c - M * delta === y + M*delta >= c
+            self.get_linear_constraint([y, delta], [1, M], c, sense=__ge__)
+        ]
 
     @staticmethod
     def get_atomic_constraint(constraint, state_vars):

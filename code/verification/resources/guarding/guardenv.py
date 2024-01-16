@@ -50,7 +50,7 @@ class GuardingEnv(Environment):
 
         for var1, var2 in zip(input_state_vars, output_state_vars):
             constrs_to_add.append(
-                constrs_manager.get_assignment_constraint(var1, var2))
+                constrs_manager.get_equality_constraint(var1, var2))
 
         return output_state_vars, constrs_to_add
 

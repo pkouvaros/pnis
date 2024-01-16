@@ -11,7 +11,7 @@ class GurobiFeasibilityChecker:
     def check_feasibility(gmodel, stats=None, aes_var_tracker=None, trace_variables=None):
         # :side-effects: Updates, optimizes and reads from Gurobi model, modifies stats object.
 
-        # gmodel.write("program.lp")
+        gmodel.write("program.lp")
 
         gmodel.update()
         # print("Vars", gmodel.NumVars, "Constrs", gmodel.NumConstrs+gmodel.NumGenConstrs)

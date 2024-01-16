@@ -98,7 +98,7 @@ class IndicatorConstraint(Constraint):
         """
 
         assert isinstance(lin_constr, LinearConstraint)
-        assert isinstance(binvar, BinaryVariable)
+        # assert isinstance(binvar, BinaryVariable)
 
         self.name = name
         self.lin_constr = lin_constr
