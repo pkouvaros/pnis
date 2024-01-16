@@ -3,7 +3,7 @@ from email.policy import Policy
 import numpy as np
 import random as rand
 import pandas as pd
-from .State import Experience
+from .State import Experience, State
 from collections import deque
 from tensorflow.keras.layers import Dense, InputLayer
 from typing import Any, List, Tuple, Union
@@ -79,8 +79,8 @@ class DQNStrategy(AbstractStrategy):
 
     DEFAULT_POLICY_TRAIN_FREQ: int = 1
     DEFAULT_TARGET_NET_UPDATE_FREQ: int = 32
-    DEFAULT_REPLAY_BUFFER_SIZE: int = 2048
-    DEFAULT_BATCH_SIZE: int = 32
+    DEFAULT_REPLAY_BUFFER_SIZE: int = 4096
+    DEFAULT_BATCH_SIZE: int = 16
     DEFAULT_LEARNING_RATE: float = 0.0025
     DEFAULT_DENSE_LAYERS_WIDTH: int = 4
     DEFAULT_DENSE_LAYERS_DEPTH: int = 2
@@ -151,7 +151,7 @@ class DQNStrategy(AbstractStrategy):
         ave_reward = sum(e.reward for e in experiences) / len(experiences) if len(experiences) > 0 else -2
 
         # the agent will only remember one final transition, not looping in the final state
-        experiences = [e for e in experiences if e.transition.state.hp > 0]
+        experiences = [e for e in experiences if e.transition.state != State.EXPIRE_STATE] # probably should never have to remove anything here?
 
         for experience in experiences:
             self.memory.append(experience)
