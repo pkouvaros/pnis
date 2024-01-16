@@ -41,7 +41,7 @@ iff ($\msys n, \pi(q)) \models  \varphi[v_1 \mapsto \pi(1), \ldots, v_m \mapsto
 \models \bictlspec$.  \end{proof}
 
 
-\subsection*{Formal defintion of the abstract global transition function} In the
+\subsection*{Formal definition of the abstract global transition function} In the
 following we give the full formal definition of the abstract transition function.
 \begin{definition}
   \label{def:globaltransition}
@@ -63,48 +63,17 @@ following we give the full formal definition of the abstract transition function
 \end{definition}
 
 
+
+
+
 \subsection*{Proof of Theorem 1}
-We prove the $\bictl$ preservation Theorem which we restate here for
-convenience:
 \begin{customthm}{1}
-$\masys m \models \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ iff 
-$\pnis \models  \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.
+$\msys n \leq_b \masys m$ for any $n \geq m+1$ and $b \in \mathbb N$.
 \end{customthm}
-
 \begin{proof}
-We first prove the left to right direction and then the right to left direction.
-
-$\boldsymbol{(\Longrightarrow)}$ For the left to right direction assume that  $\masys m \models
-\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.  To establish the preservation
-of $\bictl$ formulae from the abstract model to the concrete models we show that
-$\masys m$ simulates every concrete model $\msys n$ for $n \geq m$. Intuitively
-a model simulates another if every behaviour exhibited by the simulated model is
-also exhibited by the simulating model.  Since a $\bictl$ formula may only
-quantify over all paths, every formula satisfied by the simulating model is also
-satisfied by the simulated model.  Formally,  a relation $\sim \subseteq
-\globalstates n \times \aglobalstates m$ is a simulation between $\msys n$ and
-$\masys m$ if the following conditions hold:
-\begin{enumerate}
-  \item $(\globalinit n, \aglobalinit m) \in \sim$.
-  \item Whenever $(q, \abstate) \in \sim$, then
-  \begin{enumerate}
-    \item If $q \in \valuation n(p,a)$, for some $p \in \atprop$ and $a \in
-    \set{1,\ldots,m}$, then $\abstate \in \avaluation m(p, a)$.
-    \item If $(q, \alpha, q') \in \globalrel n$ for a joint action $\alpha$ and
-    global state $q'$, then there is an abstract joint action
-    $\abaction$ and an abstract global state $\abstatep$ such that
-    $(\abstate, \abaction, \abstatep) \in \aglobalrel m$ and
-    $(q', \abstatep) \in \sim$. 
-    \end{enumerate}
-\end{enumerate}
-If there is a simulation relation between $\msys n$ and $\masys n$, then we say
-that $\masys m$ simulates $\msys n$. If $\masys m$ simulates $\msys n$, then
-$\masys n \models \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ implies that
-$\msys n \models \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto
-m]$~\cite{ClarkeGrumbergLong94} (the result in the cited work is shown w.r.t. 
-arbitrary Kripke structures and unbounded $\ctl$ formulae).
-
-In the following we show that $\masys m$ simulates $\msys n$. Define $\gamma_n
+Let $n \geq m+1$. We show that $\msys n
+\leq_b \masys m$ for any $b \geq 0$.
+ Define $\gamma_n
 \colon \globalstates n \rightarrow \aglobalstates m$ to map concrete states in
 $\msys n$ to abstract states in $\masys m$ as follows:
 \begin{align*}
@@ -112,24 +81,30 @@ $\msys n$ to abstract states in $\masys m$ as follows:
   &\set{\ls{i}{q} \mid i \in \set{m + 1, \ldots, n}}, \\
   &\ls{e}{q}  \rangle.
 \end{align*}
-We show that $\sim = \set{(q, \gamma_n(q)) \mid q \in \globalstates n }$ is a
-simulation relation between $\msys n$ and $\masys m$. By the definitions of the
-initial global states of abstract and concrete models the relation satisfies the
-first condition of the simulation. 
 
-To show that it satisfies the second condition, let $(q, \abstate) \in \sim$ by
-arbitrary. As $\gamma_n$ preserves the local states of the agents $1, \ldots,
-m$, we have that $q \in \valuation n(p, a)$ iff $\abstate \in \avaluation(p, a)$
-for any $p \in \atprop$ and $a \in \set{1, \ldots, m}$, thus the first clause of
-the second condition is satisfied. 
+We show by induction on $b$ that $\sim_b = \set{(q, \gamma_n(q)) \mid q \in
+\globalstates n }$ is a $b$-bounded simulation relation between $\msys n$ and
+$\masys m$. 
 
-For the second clause,  assume that $(q,
-\alpha, q') \in \globalrel n$ for some joint action $\alpha$ and global state
-$q'$. We need to show that there is an abstract joint action $\abaction$ and
-an abstract global state $\abstatep$ such that $(\abstate, \abaction, \abstatep) \in
-\aglobalrel m$ and $(q', \abstatep) \in \sim$.  Define $\delta_n \colon
-\globalacts n \rightarrow \aglobalacts m$ to map joint actions in $\msys n$ to
-joint actions in $\masys m$ as follows:
+
+{\bf Base step.} For the base step, let $b = 0$ and $(q, \abstate) \in \sim_0$
+be arbitrary. As $\gamma_n$ preserves the local states of the agents $1, \ldots,
+m$, we have that $q \in \valuation n(p, a)$ implies that $\abstate \in
+\avaluation(p, a)$ for any $p \in \atprop$ and $a \in \set{1, \ldots, m}$, thus
+$\sim_0$ is $0$-bounded simulation between $\msys n$ and $\masys m$.  
+
+{\bf Inductive step.} For the inductive step assume that for any $b >0$,
+$\sim_b$ is a $b$-bounded simulation between $\msys n$ and $\masys m$. We show
+that $\sim_{b+1}$ is a $(b+1)$-bounded simulation relation  between $\msys n$
+and $\masys m$.  As $\sim_{b-1} = \sim_0$, $\sim_{b-1}$ satisfies the first
+condition a condition of a bounded simulation relation. To show that it
+satisfies the second condition, let $(q, \abstate) \in sim_{b+1}$ be arbitrary
+and assume that $(q, \alpha, q') \in \globalrel n$ for some joint action
+$\alpha$ and global state $q'$. We need to show that there is an abstract joint
+action $\abaction$ and an abstract global state $\abstatep$ such that
+$(\abstate, \abaction, \abstatep) \in \aglobalrel m$ and $(q', \abstatep) \in
+\sim_b$.  Define $\delta_n \colon \globalacts n \rightarrow \aglobalacts m$ to
+map joint actions in $\msys n$ to joint actions in $\masys m$ as follows:
 \begin{align*}
   \delta_n(\alpha) =  \langle &\la{1}{q}, \ldots, \la{m}{q}, \\
   &\set{\la{i}{q} \mid i \in \set{m + 1, \ldots, n}}, \\
@@ -144,57 +119,427 @@ transition functions, and since the set $\set{\la{i}{\alpha} \mid i \in
 \in \set{1,\ldots,m}} \cup \set{\alpha_t \mid \exists l_t \colon (l_t, \alpha_t)
 \in \la{zo}{\abaction}}$ of actions in $\abaction$, we have that $\ls{i}{q'} =
 \ls{i}{\abstate}$ for $i \in \set{1,\ldots,m}$, and $\set{\ls{i}{q'} \mid i \in
-\set{m+1,\ldots,n}} = \ls{zo}{\abstate'}$. Therefore $(q', \abstatep) \in \sim$
-as required.
+\set{m+1,\ldots,n}} = \ls{zo}{\abstate'}$.  Therefore $(q', \abstatep) \in
+\sim_b$ as required.
 
-
-
-$\boldsymbol{(\Longleftarrow)}$  For the right to left direction  assume that
-$\pnis \models  \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$. For
-contradiction assume that $\masys m \not \models \varphi[v_1 \mapsto 1, \ldots,
-v_m \mapsto m]$.  Then, there is a finite path $\abpath$
-of evidencing the dissatisfaction of the formula. 
-
-We construct by induction on the length $len(\abpath)$ of $\abpath$ a concrete
-path $\rho$ in $\masys n$, $n \geq m$, such that $\gamma_n(\abpath(j)) =
-\rho(j)$ for $j \in \set{1,\ldots,len(\abpath)}$.  For the base case of
-$len(\abpath)=1$, let $\rho = \globalinit n$ for any $n > m$.  We have that
-$\gamma_n{\abpath(1)} = \rho{1}$, thus the
-base case is satisfied.
-
-For the inductive case assume that $len(\rho) = x$ and that we have constructed
-a concrete path $\rho$ in $\masys n$, $n > m$, of the same length such that
-$\gamma_n(\abpath(j)) = \rho(j)$ for $j \in \set{1,\ldots,x}$. We show that a
-similar path can be constructed for $len(\abpath) = x+1$.  
-
-Let $\abaction$ be the joint abstract action for which $(\abpath(l), \abaction,
-\abpath(x+1)) \in \aglobalrel m$. For any template local state $l_t$ let
-$\#(\abaction, l_t)$ denote the number of state-action pairs involving $l_t$ in
-$\la{zo}{\abaction}$, i.e., $\#(\abaction, l_t) = \set{\alpha_t \mid (l_t,
-\alpha_t) \in \la{zo}{\abaction}}$. Consider $\it{diff}(l_t)$ to be the
-difference between $\#(\abaction, l_t)$ and the number of agents from $\set{m+1,
-\ldots, n}$ that are in local state $l_t$ in $\rho(x)$, i.e.,  $\it{diff}(l_t) =
-\#(\abaction, l_t) - \#\set{i \mid i \in \set{m+1,\ldots,m} \text{ and }
-\ls{i}{\rho(x)} = l_t}$. 
-
-
-Let $n' = \sum_{l_t} \max( \it{diff}(l_t), 0) + n$.  We construct a concrete
-path $\rho'$ in $\msys{n'}$ by specifying the sequence of actions of each of the
-agents.  The first $n$ agents perform the exact sequence of actions of the
-agents in $\masys n$. For each $l_t$ with $\it{diff}(l_t) > 0$, the next
-$\it{diff}(l_t)$ agents perform the same sequence of actions as the first agent
-that is in state $l_t$ in $\rho(x)$ (by the inductive hypothesis there is at
-least one agent in every $l_t$ with $\#(\abaction, l_t) \geq 1$). By
-construction the agents $\set{m+1, \ldots, n'}$ in $\rho'(x)$ can collectively
-perform the set of actions $\la{zo}{\abpath(x)}$ performed by the zero-one agent
-in $\abpath(x)$. This transitions the system to a state $\rho'(x+1)$ such that
-$\gamma_n(\abpath(x+1)) = \rho'(x+1)$ as required.
-
-We therefore have that $\msys n'  \not \models \varphi[v_1 \mapsto 1, \ldots,
-v_m \mapsto m]$, thus $\pnis \not \models \varphi[v_1 \mapsto 1, \ldots,
-v_m \mapsto m]$, concluding the Theorem.
+We have thus proven that for any $b \geq 0$, $\sim_b = \set{(q, \gamma_n(q))
+\mid q \in \globalstates n }$ is a $b$-bounded simulation relation between
+$\msys n$ and $\masys m$.  As by the definitions of the initial global states of
+abstract and concrete models, we have that $(\globalinit{n}, \aglobalinit{,})
+\in \sim_b$ we have that $\msys b \leq b \masys n$ for any $b \geq 0$.
 
 \end{proof}
+
+
+\subsection*{Proof of Theorem 2}
+\begin{customthm}{2}
+There is $n \geq m+1$ such that $\masys m \leq_b \msys n$ for any $b \geq 0$.
+\end{customthm}
+
+\begin{proof}
+
+The proof of the Theorem is by induction on~$b$. For $n \geq m+1$,  define
+$\gamma_n \colon \globalstates n \rightarrow \aglobalstates m$ to map concrete
+states in $\msys n$ to abstract states in $\masys m$ as follows:
+\begin{align*}
+  \gamma_n(q) =  \langle &\ls{1}{q}, \ldots, \ls{m}{q}, \\
+  &\set{\ls{i}{q} \mid i \in \set{m + 1, \ldots, n}}, \\
+  &\ls{e}{q}  \rangle.
+\end{align*}
+
+{\bf Base step.} For the base step, let $b = 0$ and $n = m+1$. Define $$\sim_0 =
+\set{(\abstate, q) \mid \abstate \in \aglobalstates{m}, q \in
+\aglobalstates{m+1}, \gamma_{m+1}(q) = \abstate}.$$ As $\gamma_{m+1}$ preserves
+the local states of the agents $1, \ldots, m$, we have that $\abstate \in
+\avaluation m(p, a)$ implies that $q \in \valuation{m+1}(p, a)$ for any $p \in
+\atprop$ and $a \in \set{1, \ldots, m}$, thus  $\sim_0$ is $0$-bounded
+simulation between $\masys m$ and $\msys{m+1}$. Therefore, since
+$(\aglobalinit{m}, \globalinit{m+1}) \in \sim_0$, we what that $\masys m \leq_0
+\msys n$. 
+
+{\bf Inductive step.} For the inductive step, assume that for each $i \in
+\set{1, \ldots, b}$ there is $n \geq m + 1$ such that $\masys m \leq_b \msys n$
+by means of relation $\sim_i$. We show that there is $n' \geq n$ such that
+$\masys m \leq_{b+1} \msys{n'}$. Let $|\prot t| = \max \set{|\prot t(l_t)| \mid
+l_t \in \lstates{t}}$ and  $n' = m + n * |\prot t|$.  Define the following
+relations $\sim_i \subseteq \aglobalstates{m} \times \globalstates{n'}$ between
+the abstract states in $\aglobalstates{m}$ and the global states in $\msys{n'}$:
+
+\begin{itemize}
+
+  \item  $\sim'_0 = \set{(\abstate, q) \mid  q_{ab \rightarrow m} =
+  \projection{q}{m} [m]}$, where $q_{ab \rightarrow m}$ and $\projection{q}{n}$
+  is the projection of $q_{ab}$ and $q$ onto the first~$m$ agents, e.g.,
+  $\projection{q}{m} = \tuple{\ls{1}{q}, \ldots, \ls{m}{q}, \ls{e}{q}}$.
+
+
+  \item for $i \in \set{1, \ldots, b + 1}$, we have that $(\abstate, q) \in
+  \sim'_i$ if:
+  \begin{itemize}
+    \item  $(\abstate,\projection{q}{n}) \in \sim_{i-1}$, and 
+    \item  for $j \in [n]$ and $k \in [|\prot t|]$, 
+    $\ls{m + (j - 1) * |\prot t| + k}{q} = \ls{j}{q}$.
+  \end{itemize}
+\end{itemize}
+
+We show that for every $x \in \set{0, \ldots, b+1}$, $\sim'_x$ is an $x$-bounded
+simulation between $\masys m$ and $\msys{n'}$. We have three cases.
+
+\begin{itemize}
+  \item Case 1: $x=0$.  Since  $q_{ab \rightarrow m} = \projection{q}{m}$, we have that
+  $q \in \avaluation m(p, a)$ implies that $q \in \valuation n (p, a)$ for any
+  $p \in \atprop$ and $a \in [m]$, thus $\sim'_0$ is a $0$-bounded simulation
+  between $\masys m$ and $\msys{n'}$.
+
+
+  \item Case 2: $x = 1$.  By the definition of $\sim'_1$ we have
+  that $(\abstate, \projection{q}{n}) \in \sim_{0}$, 
+  thus  $q \in \avaluation m(p, a)$ implies that $\projection{q}{n} \in
+  \valuation n (p, a)$ for any $p \in \atprop$ and $a \in [m]$. Hence, by the
+  definition of the valuation function, we have that $q_{ab \rightarrow m} =
+  \projection{q}{m}$, thus $(\abstate, q') \in \sim'_0$, so $\sim'_1$
+  satisfies the first condition of bounded simulation. 
+
+
+  To show that it satisfies the second condition, assume that $(\abstate,
+  \abaction, \abstatep) \in \aglobalrel m$ for some abstract joint action
+  $\abaction$ and abstract global state $\abstatep$. We need to show that there
+  is a joint action $\alpha$ and a  global state $q'$ such that $(q, \alpha, q')
+  \in \globalrel{n'}$ and $(\abstatep, q') \in \sim'_0$. Define $\alpha$ as
+  follows:
+
+  \begin{itemize}
+    \item $\la{i}{\alpha} = \la{i}{\abaction}$, for $i \in [m]$.
+    \item  for $i \in [n]$, consider the set $\set{a_t \mid (\ls{m + (i - 1) *
+    |\prot t| + 1} {q},\alpha_t) \in \la{zo}{\abaction}}$ of template actions
+    that are paired with the template state of the $(m + (i-1) + 1)$-the agent
+    in the action of the zero-one agent. Assume an ordering $\alpha_1, \ldots,
+    \alpha_j$ of this set and define
+    \begin{itemize}
+    \item  $\la{m + (i -1) * |\prot t| + k}{\alpha} = \alpha_k$  for $k \in [j]$.
+    \item $\la{m + (i-1) * |\prot t| + k}{\alpha} = \alpha_1$ for $k \in
+    \set{j+1, \ldots, |\prot t|}$.
+    \end{itemize}
+  \end{itemize}
+  By the definition of $\alpha$ we have that $\la{i}{\alpha} \in \prot
+  i(\ls{i}{q})$ for every $i \in [n']$. So $(q, \alpha, q') \in \globalrel
+  {n'}$, where $q' = \globaltr{n'} (q, \alpha)$. By the definition of the
+  concrete and abstract local transition functions, and since the set
+  $\set{\la{i}{\alpha} \mid i \in [n']}$ of actions in $\alpha$ equals the set
+  $\set{\la{i}{q} \mid i \in \set{1,\ldots,m}} \cup \set{\alpha_t \mid \exists
+  l_t \colon (l_t, \alpha_t) \in \la{zo}{\abaction}}$ of actions in $\abaction$,
+  we have that $q_{ab \rightarrow m} = \projection{q}{m}$, therefore
+  $(\abstatep, q') \in \sim'_0$, as required. 
+
+
+  \item Case 3: $x \in \set{2, \ldots, b+1}$.   By the definition of $\sim'_x$
+  we have that $(\abstate, \projection{q}{n}) \in \sim_{x-1}$. By the definition
+  of bounded simulation it follows that $(\abstate, \projection{q}{n}) \in
+  \sim_0$, thus  $q \in \avaluation m(p, a)$ implies that $\projection{q}{n} \in
+  \valuation n (p, a)$ for any $p \in \atprop$ and $a \in [m]$. Hence, by the
+  definition of the valuation function, we have that $q_{ab \rightarrow m} =
+  \projection{q}{m}$, thus $(\abstate, q') \in \sim'_0$, so $\sim'_{x}$
+  satisfies the first condition of bounded simulation. 
+
+
+  To show that it satisfies the second condition, assume that $(\abstate,
+  \abaction, \abstatep) \in \aglobalrel m$ for some abstract joint action
+  $\abaction$ and abstract global state $\abstatep$. We need to show that there
+  is a joint action $\alpha$ and a  global state $q'$ such that $(q, \alpha, q')
+  \in \globalrel{n'}$ and $(\abstatep, q') \in \sim'_{x-1}$. Since $(\abstate,
+  \projection{q}{n}) \in \sim_{x-1}$, we have that there is a joint action
+  $\beta$ and a global state $r$ such that $(\projection{q}{n}, \beta, r) \in
+  \globalrel n$ and $(\abstate, r) \in \sim_{x-2}$. Define a joint action
+  $\alpha \in \globalacts{n'}$ such that
+  
+  \begin{itemize}
+    \item for $i \in [n]$, $\la{i}{\alpha} = \la{i}{\beta}$, 
+    \item  for $i \in \set{0, \ldots, n-1}$ and $j \in [|\prot t| -  1]$, $\la{n +
+    i * |\prot t| + j}{\alpha} = \la{i}{\beta}$.
+  \end{itemize}
+
+  By the definition of $\alpha$, we have that $(q, \alpha, q')  \in
+  \globalrel{n'}$ for a global state $q'$ that satisfies
+
+  \begin{itemize}
+    \item  $(\abstate,\projection{q'}{n}) \in \sim_{b-1}$, and 
+    \item  for $j \in \set{0, \ldots, n-1}$ and $k \in [|\prot t| -  1]$, 
+    $\ls{n + j * |\prot t| + k}{q'} = \ls{j}{q'}$.
+  \end{itemize}
+
+  It follows that $(q, \alpha, q') \in \sim'_{x-1}$. Consequently, $\sim'_{x}$
+  is an $x$-bounded simulation between $\masys m$ and $\msys{n'}$.
+
+\end{itemize}
+
+We have thus proven that for every $x \in \set{0, \ldots, b+1}$, $\sim'_x$ is an
+$x$-bounded simulation between $\masys m$ and $\msys{n'}$.  As by the
+definitions of the initial global states of abstract and concrete models, we
+have that $(\aglobalinit{m}, \globalinit{n'}) \in \sim'_{b+1}$ we have that
+$\masys m \leq_{b+1} \msys{n'}$.
+
+\end{proof}
+
+
+
+% We say that $\msys n$ and $\masys m$ are {\em $b$-bounded bisimiulation
+% equivalent} models if there is a $b$-bounded bisimiulation relation $\sim_b$
+% between $\msys n$ and $\masys n$  such that $(\globalinit n, \aglobalinit m) \in
+% \sim_b$.
+
+% where $\projection{q}{n} =
+%   \tuple{\ls{1}{q}, \ldots, \ls{n}{q}, \ls{e}{q}}$ is the projection of $q$ to
+%   the first~$n$ agents,  and 
+
+
+
+% \begin{lemma} 
+%   \label{lemma:lifting}
+%   Let $m \in \mathbb{N}$, $n \geq m$ and $n' > n$. If $\sim_b = \set{\tuple{q,
+%   \gamma_n(q)} \mid q \in \globalstates n}$ is a $b$-bounded bisimulation
+%   relation between   $\msys n$ and $\masys{m}$, then the relation 
+%   $$
+%   \sim'_b = \set{(q, \gamma_{n'}(q)) \mid q \in \globalstates{n'}, 
+%   \exists r \in \globalstates{n} \colon (r, \gamma_{n'}(q)) \in \sim_b}
+%  $$
+%   % \subseteq \globalstates{n'} \times \aglobalstates{m}$ satisfying $$(q,
+%   % \abstate) \in \sim'_b \text{ iff } (\projection{q}{n}, \abstate) \in \sim_b$$ 
+%   is a $b$-bounded bisimulation relation between $\msys{n'}$ and $\masys{m}$.
+% \end{lemma}
+% \begin{proof}
+
+% Assume that $\sim_b$ is a $b$-bounded bisimulation relation between  $\msys n$
+% and $\masys{m}$. We show that the relation $\sim'_b$ is a $b$-bounded
+% bisimulation relation between  $\msys{n'}$ and $\masys{m}$. Let $(q, \abstate)
+% \in \sim'_b$ be arbitrary. We need to show that $(q, \abstate)$ satisfies
+% conditions 1-3 of Definition~\ref{def:bounded-bisimulation}.   By the definition
+% of $\sim'$ there is a global state $r \in \globalstates{n}$ such that $(r,
+% \gamma_{n'}(q)) \in \sim_b$.
+
+
+
+% \begin{itemize}
+
+%   \item[] Condition 1. Assume that $q \in \valuation{n'}(p,a)$ for some $p \in
+%   \atprop$, $a \in \set{1, \ldots, m}$.  As  $\abstate = \gamma_{n'}(q)$ and
+%   $\gamma_{n'}$ preserves the local states of the agents $1, \ldots, m$, we have
+%   that $q \in \valuation{n'}(p,a)$ iff  $\abstate \in \avaluation m(p, a)$.
+
+%   \item[] Condition 2. Assume that $(q, \alpha, q') \in \globalrel{n'}$ for a
+%   joint action $\alpha$ and global state $q'$.  We need to show that there is  a
+%   joint abstract action $\abaction$ and an abstract global state $\abstatep$
+%   such that $(\abstate, \abaction, \abstatep) \in \aglobalrel m$ and $(q',
+%   \abstatep) \in \sim'_{b-1}$.  
+  
+%   Let $\abaction = \delta_{n'}(\alpha)$. By the definition of the abstract
+%   protocol function we have that $\abaction \in \prot{zo}(\abstate)$. So
+%   $(\abstate, \abaction, \abstatep) \in \aglobalrel m$, where $\abstatep =
+%   \aglobaltr m (\abstate, \abaction)$. By the definition of the concrete and
+%   abstract local transition functions, and since the set $\set{\la{i}{\alpha}
+%   \mid i \in \set{1,\ldots,n'}}$ of actions in $\alpha$ equals the set
+%   $\set{\la{i}{q} \mid i \in \set{1,\ldots,m}} \cup \set{\alpha_t \mid \exists
+%   l_t \colon (l_t, \alpha_t) \in \la{zo}{\abaction}}$ of actions in $\abaction$,
+%   we have that $\ls{i}{q'} = \ls{i}{\abstate}$ for $i \in \set{1,\ldots,m}$, and
+%   $\set{\ls{i}{q'} \mid i \in \set{m+1,\ldots,n'}} = \ls{zo}{\abstate'}$.
+%   Therefore $\gamma_{n'}(q') =  \abstatep$. 
+
+%   Now as $(r, \abstate) \in \sim_b$, there is a joint action $\beta$ such that
+%   $(r, \beta, r') \in \globalrel{n}$ and $(r', \abstatep) \in \sim_{b-1}$. As
+%   $\abstatep = \gamma_{n'}(q')$, we have that $(q', \abstatep) \in \sim'_{b-1}$,
+%   as required.
+
+%   \item Condition 3. Assume that $(\abstate, \abaction, \abstatep) \in
+%   \aglobalrel m$ for an abstract joint action $\abaction$ and abstract global
+%   state $\abstatep$. We need to show that there is a joint action $\alpha$ and a
+%   global state $q'$ such that $(q, \alpha, q') \in \globalrel{n'}$ and $(q',
+%   \abstatep) \in \sim'_{b-1}$. 
+
+%   Since $(r, \abstate) \in \sim_b$, there is a joint action $\beta$ such that
+%   $(r, \beta, r') \in \globalrel{n}$ and $(r', \abstatep) \in \sim_{b-1}$.
+%   Construct a joint action $\alpha$ in $\msys{n'}$ such that 
+  
+%   \begin{itemize}
+%     \item for each $i \in \set{1,\ldots,n}$, $\la{i}{\alpha} = \la{i}{\beta}$;
+%     \item for each $i \in \set{n+1, \ldots, n'}$,  $\la{i}{\alpha} =
+%     \la{j}{\beta}$, where $j$ is the smallest number in $\set{m + 1,\ldots,n}$, for
+%     which $\ls{i}{q} = \ls{j}{r}$.
+%   \end{itemize}
+  
+%   As $\gamma_{n'}(q) = \gamma_{n}(r)$ we have that $\la{i}{\alpha} \in
+%   \prot{i}{q}$ for $i \in \set{1,\ldots,n'}$. So $(q, \alpha, q') \in
+%   \globalrel{n}$, where $q' = \globaltr{n'}(q, \alpha)$.  By the definition of
+%   the concrete local transition functions, and since the set
+%   $\set{\la{i}{\alpha} \mid i \in \set{m,\ldots,n'}}$ of actions in $\alpha$
+%   equals the set $\set{\la{i}{q} \mid i \in \set{m + 1,\ldots,n}}$ of actions in
+%   $\beta$, we have that $\gamma_{n'}{q'} = \gamma_n(r')$. Therefore, $(r',
+%   \gamma_{n'}(q')) \in \sim_{b-1}$, as required.
+
+% \end{itemize}
+% \end{proof}
+
+% $l_t \rightarrow_\rho l'_t$ if $l_t$ if there is a sequence
+% $(l_1, \alpha_1),  \ldots, (l_{x-1}, \alpha_{x-1}), l_x$, where 
+% \begin{itemize}
+%   \item $x = \it{len}(\rho)$, $l_1 = l_t$, $l_x = l'_t$,
+%   \item for each $i \in [\it{len}(\rho) -1]$, we have that 
+%   \begin{itemize}
+%     \item $l_i = (\prv i, \per i)$,
+%     \item $(l_i, \alpha_i) \in \ls{zo}{\rho(i, \it{act})}$,
+%     \item $\tr{t}(l_i, \alpha_i, A, \la{e}{\rho(i, \it{act})}) = \prv {i + 1}$ and
+%     \item $\obs t(\prv{i+1}, \per i, \ls{e}{\rho(i+1)}) = \per{i+1}$.
+%   \end{itemize}
+% \end{itemize}
+% 
+% $A = \set{\la_a(\rho(x, \it{act}) \id a \in set{1, \ldots,m}} \cup \la{zo}(\rho(x)$
+% $$
+% \max_{i \in [b], \rho \in \Pi(q)}  \left( \sum_{l_t \dashrightarrow_{\rho[i,b]} l'_t} \#\set{a_t
+% \mid (l_t,a_t) \in \la{zo}{\rho(i,\it{act})}} \right)
+% $$
+
+
+
+
+% \globalstates{m+1})}$ is a $0$-bisimulation relation between $\msys{m+1}$ and
+% $\masys m$ are $0$-bisimulation equivalent. Clearly, we have that
+% $\tuple{\globalinit{m+1}, \aglobalinit{m}} \in sim_0$.  As  $\gamma_{m+1}$
+% preserves the local states of the agents $1, \ldots, m$, we also have that
+% $q \in \valuation{n'}(p,a)$ iff  $\abstate \in \avaluation m(p, a)$, therefore
+% $\sim_0$ is a $0$-bisimulation relation between $\msys{m+1}$ and $\masys m$. 
+
+% \end{proof}
+
+
+
+
+
+
+
+
+
+% \begin{proof}
+% We first prove the left to right direction and then the right to left direction.
+
+% $\boldsymbol{(\Longrightarrow)}$ For the left to right direction assume that  $\masys m \models
+% \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.  To establish the preservation
+% of $\bictl$ formulae from the abstract model to the concrete models we show that
+% $\masys m$ simulates every concrete model $\msys n$ for $n \geq m$. Intuitively
+% a model simulates another if every behaviour exhibited by the simulated model is
+% also exhibited by the simulating model.  Since a $\bictl$ formula may only
+% quantify over all paths, every formula satisfied by the simulating model is also
+% satisfied by the simulated model.  Formally,  a relation $\sim \subseteq
+% \globalstates n \times \aglobalstates m$ is a simulation between $\msys n$ and
+% $\masys m$ if the following conditions hold:
+% \begin{enumerate}
+%   \item $(\globalinit n, \aglobalinit m) \in \sim$.
+%   \item Whenever $(q, \abstate) \in \sim$, then
+%   \begin{enumerate}
+%     \item If $q \in \valuation n(p,a)$, for some $p \in \atprop$ and $a \in
+%     \set{1,\ldots,m}$, then $\abstate \in \avaluation m(p, a)$.
+%     \item If $(q, \alpha, q') \in \globalrel n$ for a joint action $\alpha$ and
+%     global state $q'$, then there is an abstract joint action
+%     $\abaction$ and an abstract global state $\abstatep$ such that
+%     $(\abstate, \abaction, \abstatep) \in \aglobalrel m$ and
+%     $(q', \abstatep) \in \sim$. 
+%     \end{enumerate}
+% \end{enumerate}
+% If there is a simulation relation between $\msys n$ and $\masys n$, then we say
+% that $\masys m$ simulates $\msys n$. If $\masys m$ simulates $\msys n$, then
+% $\masys n \models \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ implies that
+% $\msys n \models \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto
+% m]$~\cite{ClarkeGrumbergLong94} (the result in the cited work is shown w.r.t. 
+% arbitrary Kripke structures and unbounded $\ctl$ formulae).
+
+% In the following we show that $\masys m$ simulates $\msys n$. Define $\gamma_n
+% \colon \globalstates n \rightarrow \aglobalstates m$ to map concrete states in
+% $\msys n$ to abstract states in $\masys m$ as follows:
+% \begin{align*}
+%   \gamma_n(q) =  \langle &\ls{1}{q}, \ldots, \ls{m}{q}, \\
+%   &\set{\ls{i}{q} \mid i \in \set{m + 1, \ldots, n}}, \\
+%   &\ls{e}{q}  \rangle.
+% \end{align*}
+% We show that $\sim = \set{(q, \gamma_n(q)) \mid q \in \globalstates n }$ is a
+% simulation relation between $\msys n$ and $\masys m$. By the definitions of the
+% initial global states of abstract and concrete models the relation satisfies the
+% first condition of the simulation. 
+
+% To show that it satisfies the second condition, let $(q, \abstate) \in \sim$ by
+% arbitrary. As $\gamma_n$ preserves the local states of the agents $1, \ldots,
+% m$, we have that $q \in \valuation n(p, a)$ iff $\abstate \in \avaluation(p, a)$
+% for any $p \in \atprop$ and $a \in \set{1, \ldots, m}$, thus the first clause of
+% the second condition is satisfied. 
+
+% For the second clause,  assume that $(q,
+% \alpha, q') \in \globalrel n$ for some joint action $\alpha$ and global state
+% $q'$. We need to show that there is an abstract joint action $\abaction$ and
+% an abstract global state $\abstatep$ such that $(\abstate, \abaction, \abstatep) \in
+% \aglobalrel m$ and $(q', \abstatep) \in \sim$.  Define $\delta_n \colon
+% \globalacts n \rightarrow \aglobalacts m$ to map joint actions in $\msys n$ to
+% joint actions in $\masys m$ as follows:
+% \begin{align*}
+%   \delta_n(\alpha) =  \langle &\la{1}{q}, \ldots, \la{m}{q}, \\
+%   &\set{\la{i}{q} \mid i \in \set{m + 1, \ldots, n}}, \\
+%   &\la{e}{q}  \rangle.
+% \end{align*}
+% Let $\abaction = \delta_n(\alpha)$. By the definition of the abstract protocol
+% function we have that $\abaction \in \prot{zo}(\abstate)$. So $(\abstate,
+% \abaction, \abstatep) \in \aglobalrel m$, where $\abstatep = \aglobaltr m
+% (\abstate, \abaction)$. By the definition of the concrete and abstract local
+% transition functions, and since the set $\set{\la{i}{\alpha} \mid i \in
+% \set{1,\ldots,n}}$ of actions in $\alpha$ equals the set $\set{\la{i}{q} \mid i
+% \in \set{1,\ldots,m}} \cup \set{\alpha_t \mid \exists l_t \colon (l_t, \alpha_t)
+% \in \la{zo}{\abaction}}$ of actions in $\abaction$, we have that $\ls{i}{q'} =
+% \ls{i}{\abstate}$ for $i \in \set{1,\ldots,m}$, and $\set{\ls{i}{q'} \mid i \in
+% \set{m+1,\ldots,n}} = \ls{zo}{\abstate'}$. Therefore $(q', \abstatep) \in \sim$
+% as required.
+
+
+
+% $\boldsymbol{(\Longleftarrow)}$  For the right to left direction  assume that
+% $\pnis \models  \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$. For
+% contradiction assume that $\masys m \not \models \varphi[v_1 \mapsto 1, \ldots,
+% v_m \mapsto m]$.  Then, there is a finite path $\abpath$
+% of evidencing the dissatisfaction of the formula. 
+
+% We construct by induction on the length $len(\abpath)$ of $\abpath$ a concrete
+% path $\rho$ in $\masys n$, $n \geq m$, such that $\gamma_n(\abpath(j)) =
+% \rho(j)$ for $j \in \set{1,\ldots,len(\abpath)}$.  For the base case of
+% $len(\abpath)=1$, let $\rho = \globalinit n$ for any $n > m$.  We have that
+% $\gamma_n{\abpath(1)} = \rho{1}$, thus the
+% base case is satisfied.
+
+% For the inductive case assume that $len(\rho) = x$ and that we have constructed
+% a concrete path $\rho$ in $\masys n$, $n > m$, of the same length such that
+% $\gamma_n(\abpath(j)) = \rho(j)$ for $j \in \set{1,\ldots,x}$. We show that a
+% similar path can be constructed for $len(\abpath) = x+1$.  
+
+% Let $\abaction$ be the joint abstract action for which $(\abpath(l), \abaction,
+% \abpath(x+1)) \in \aglobalrel m$. For any template local state $l_t$ let
+% $\#(\abaction, l_t)$ denote the number of state-action pairs involving $l_t$ in
+% $\la{zo}{\abaction}$, i.e., $\#(\abaction, l_t) = \set{\alpha_t \mid (l_t,
+% \alpha_t) \in \la{zo}{\abaction}}$. Consider $\it{diff}(l_t)$ to be the
+% difference between $\#(\abaction, l_t)$ and the number of agents from $\set{m+1,
+% \ldots, n}$ that are in local state $l_t$ in $\rho(x)$, i.e.,  $\it{diff}(l_t) =
+% \#(\abaction, l_t) - \#\set{i \mid i \in \set{m+1,\ldots,m} \text{ and }
+% \ls{i}{\rho(x)} = l_t}$. 
+
+
+% Let $n' = \sum_{l_t} \max( \it{diff}(l_t), 0) + n$.  We construct a concrete
+% path $\rho'$ in $\msys{n'}$ by specifying the sequence of actions of each of the
+% agents.  The first $n$ agents perform the exact sequence of actions of the
+% agents in $\masys n$. For each $l_t$ with $\it{diff}(l_t) > 0$, the next
+% $\it{diff}(l_t)$ agents perform the same sequence of actions as the first agent
+% that is in state $l_t$ in $\rho(x)$ (by the inductive hypothesis there is at
+% least one agent in every $l_t$ with $\#(\abaction, l_t) \geq 1$). By
+% construction the agents $\set{m+1, \ldots, n'}$ in $\rho'(x)$ can collectively
+% perform the set of actions $\la{zo}{\abpath(x)}$ performed by the zero-one agent
+% in $\abpath(x)$. This transitions the system to a state $\rho'(x+1)$ such that
+% $\gamma_n(\abpath(x+1)) = \rho'(x+1)$ as required.
+
+% We therefore have that $\msys n'  \not \models \varphi[v_1 \mapsto 1, \ldots,
+% v_m \mapsto m]$, thus $\pnis \not \models \varphi[v_1 \mapsto 1, \ldots,
+% v_m \mapsto m]$, concluding the Theorem.
+
+% \end{proof}
 
 
 

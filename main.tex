@@ -50,6 +50,7 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
 \newtheorem{innercustomthm}{Theorem}
 \newenvironment{customthm}[1]
   {\renewcommand\theinnercustomthm{#1}\innercustomthm}
@@ -126,15 +127,29 @@ fourth@example.com
 
 \begin{abstract}
 
-    Abstract placeholder. 
+We study the problem of verifying multi-agent systems composed of arbitrarily
+many neural-symbolic agents. We introduce a novel parameterised model, where the
+parameter denotes the number of agents in the system, each homogeneously
+constructed from an agent template equipped with a neural network-based
+perception unit  and traditionally programmed action selection mechanism. We
+define the verification and emergence identification problems for these models
+against a bounded fragment of CTL. We put forward an abstraction methodology
+that enables us to recast both problems to the problem of checking Neural
+Interpreted Systems with a bounded number of agents. We present an
+implementation and discuss experimental results obtained on a guarding scenario
+of social dilemma games.
+
+
 
 \end{abstract}
 
 \section{Introduction}
 \input{sections/introduction.tex}
 \section{Parameterised Neural-symbolic Interpreted Systems}
+\label{sec:pnis}
 \input{sections/model.tex}
 \section{Parameterised Verification Procedure}
+\label{sec:ver}
 \input{sections/verification.tex}
 \section*{Appendix}
 \input{sections/appendix.tex}

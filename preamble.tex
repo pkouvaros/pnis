@@ -1,4 +1,4 @@
-\newcommand{\tuple}[1]{\left \langle #1  \right \rangle}
+\newcommand{\tuple}[1]{\left ( #1  \right )}
 \newcommand{\set}[1]{\left \{ #1  \right \}}
 \newcommand{\ags}[0]{\it{Ag}}
 \newcommand{\ag}[1]{{#1}}
@@ -17,37 +17,43 @@
 \newcommand{\obs}[1]{\it{obs}_{#1}}
 \newcommand{\tr}[1]{\it{tr}_{#1}}
 \newcommand{\sys}[1]{\mathcal{S}^{(#1)}}
+\newcommand{\asys}[1]{\mathcal{S}_{ab}^{(#1)}}
 \newcommand{\npis}{\mathcal{S}}
 \newcommand{\agents}[1]{\it{Ag}^{(n)}}
 \newcommand{\ls}[2]{\it{ls}_{#1}(#2)}
 \newcommand{\lprv}[2]{\it{lprv}_{#1}(#2)}
 \newcommand{\lper}[2]{\it{lper}_{#1}(#2)}
 \newcommand{\globalacts}[1]{\it{ACT}^{(#1)}}
-\newcommand{\aglobalacts}[1]{\it{ACT}^{(#1)}_{zo}}
+\newcommand{\aglobalacts}[1]{\it{ACT}^{(#1)}_{ab}}
 \newcommand{\acts}[1]{\it{Act}_{#1}}
 \newcommand{\act}[1]{\it{\alpha}_{#1}}
 \newcommand{\la}[2]{\it{la}_{#1}({#2})}
 \newcommand{\msys}[1]{\mathcal{M}_{\sys{#1}}}
-\newcommand{\masys}[1]{\mathcal{M}_{\mathcal{S}_{zo}^{(#1)}}}
+\newcommand{\masys}[1]{\mathcal{M}_{\mathcal{S}_{ab}^{(#1)}}}
 \newcommand{\globalstates}[1]{G^{(#1)}}
 \newcommand{\globalinit}[1]{\iota^{({#1})}}
 \newcommand{\globaltr}[1]{\it{tr}^{(#1)}}
 \newcommand{\globalrel}[1]{T^{(#1)}}
 \newcommand{\valuation}[1]{\ell^{(#1)}}
-\newcommand{\aglobalstates}[1]{G^{(#1)}_{zo}}
-\newcommand{\aglobaltr}[1]{\it{tr}^{(#1)}_{zo}}
-\newcommand{\aglobalrel}[1]{T^{(#1)}_{zo}}
-\newcommand{\aglobalinit}[1]{\iota^{({#1})}_{zo}}
-\newcommand{\avaluation}[1]{\ell^{(#1)}_{zo}}
+\newcommand{\aglobalstates}[1]{G^{(#1)}_{ab}}
+\newcommand{\aglobaltr}[1]{\it{tr}^{(#1)}_{ab}}
+\newcommand{\aglobalrel}[1]{T^{(#1)}_{ab}}
+\newcommand{\aglobalinit}[1]{\iota^{({#1})}_{ab}}
+\newcommand{\avaluation}[1]{\ell^{(#1)}_{ab}}
 \newcommand{\tlabel}[1]{\ell_{#1}}
 \newcommand{\prop}[0]{\it{AP}}
 \newcommand{\ctl}[0]{\sf{CTL}}
 \newcommand{\bctl}[0]{\sf{bCTL}}
-\newcommand{\bictl}[0]{\sf{bIACTL}}
+\newcommand{\bictl}[0]{\sf{bICTL}}
 \newcommand{\bictlspec}[0]{\forall_{v1_,\ldots,v_m} \varphi}
 \newcommand{\atprop}{\it{AP}}
 \newcommand{\atvar}{\it{VAR}}
-\newcommand{\paths}[1]{\Pi_{\sys n}(#1)}
+% \newcommand{\paths}[1]{\Pi_{\sys n}(#1)}
+% \newcommand{\apaths}[2]{\Pi_{\asys m}^{#2}(#1)}
+\newcommand{\paths}[1]{\Pi(#1)}
+\newcommand{\apaths}[2]{\Pi^{#2}(#1)}
+\newcommand{\pathstates}[2]{\it{States}(\Pi^{#2}(#1))}
+
 \newcommand{\pnis}{\mathcal S}
 \newcommand{\apnis}{\overline{\mathcal S}}
 \newcommand{\astates}{\overline{G}}
@@ -59,6 +65,8 @@
 \newcommand{\abaction}{\alpha_{ab}}
 \newcommand{\abactionp}{\alpha_{ab}'}
 \newcommand{\abpath}{\rho_{ab}}
+\newcommand{\td}[1]{\it{td}(#1)}
+\newcommand{\projection}[2]{#1_{\rightarrow #2}}
 
 
 

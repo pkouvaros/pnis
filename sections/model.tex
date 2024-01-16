@@ -384,11 +384,30 @@ $k$ following steps and before then $\varphi$ is true along the path'.
 % The dual
 % until, prefixed by the universal operator, can be defined analogously.
 
+The temporal depth of a $\bictl$ formula is the number of time steps up to which
+the formula is evaluated (see below). It is formally defined as follows.
+\begin{definition}[Temporal depth]
+The temporal depth $\td{\varphi}$ of a $\bictl$ formula $\varphi$ is inductively defined as
+follows:
+\begin{center}
+\begin{tabular}{lll}
+  $\td \varphi = 0$ & if & $\varphi = (p, a)$; \\
+  $\td \varphi = \max(\td{\psi_1}, \td{\psi_2})$  & if & $\varphi = \psi_1 \lor \psi_2$; \\
+  $\td \varphi = \max(\td{\psi_1}, \td{\psi_2})$  & if & $\varphi = \psi_1 \land \psi_2$; \\
+  $\td \varphi =  k + \td{\psi_1}$  & if & $\varphi = EX^k \psi_1$; \\
+  $\td \varphi =  k + \td{\psi_1}$  & if & $\varphi = AX^k \psi_1$; \\
+  $\td \varphi = \td{\psi_1}$  & if & $\varphi = \forall_{v1,\ldots,v_m} \psi_1$.
+\end{tabular}
+\end{center}
+\end{definition}
+
+
 A $\bictl$ formula is said to be a sentence if every variable appearing the
 formula is in the scope of a universal quantifier. Hereafter we consider only
 indexed $\bictl$ sentences of the form $\forall v_1 \ldots \forall v_m :
 \varphi$, or, shortly, $\bictlspec$, where $v_i \in \atvar$ for $i \in
 \set{1,\ldots,m}$ and $\varphi$ does not contain any universal quantifier.
+
 
 We now define the satisfaction relation for $\bictl$ on the temporal models
 associated with the concrete systems.
