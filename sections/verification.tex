@@ -33,8 +33,13 @@ homogeneous agents. The Appendix includes the full proof.
 We next construct the zero-one abstraction of the systems generated from
 $\pnis$. The zero-one abstraction is a NIS comprising a zero-one agent, which is
 an abstraction for arbitrarily many concrete agents, $m$ concrete agents, whose
+<<<<<<< HEAD
 local states determines the satisfaction status of the atomic propositions in
 $\varphi[m]$ (see
+=======
+local states determine the satisfaction status of the atomic propositions in
+$\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ (see
+>>>>>>> 80f46e43fa732afd4f55f01e124a28454ddbd83b
 Definition~\ref{def:concreteystem}), and the environment. In other words, the
 zero-one agent defined below encodes how an arbitrary number of agents may
 interfere with the temporal evolution of the concrete agents $1, \ldots, m$.
@@ -42,7 +47,7 @@ interfere with the temporal evolution of the concrete agents $1, \ldots, m$.
 \begin{definition}[Zero-one agent]
 Given an agent template $\ag t = \tuple{\lstates t, \init t, \obs t,  \acts t,
 \prot t, \tr t }$ over a set $\pers t$ of percepts and a set $\prvs t$ of
-private states, its associated zero-one agent is a tuple $\ag{zo} =
+private states, its associated \emph{zero-one agent} is a tuple $\ag{zo} =
 \tuple{\lstates{zo}, \init{zo}, \obs{zo}, \acts{zo}, \prot{zo}, \tr{zo}}$ over
 sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
 2^{\prvs t} \setminus \set{\emptyset}$ of percepts and private states, where:
@@ -56,7 +61,7 @@ sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
     \item $\obs{zo} : \lstates{zo} \times \lstates e \rightarrow \per{zo}$ is
     abstract observation function. It maps pairs of abstract and environment
     states to sets of percepts, where each set includes the percepts that would
-    be collectively generate in a global state represented by the abstract
+    be collectively generated in a global state represented by the abstract
     state. Formally, the observation function satisfies $\obs{zo}(l_{zo}, l_e) =
     \per{zo}$ if:
     \begin{itemize}
@@ -88,8 +93,8 @@ sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
     \begin{itemize}
         \item $\alpha_{zo} \in \prot{zo}(l_{zo})$; 
         \item for all $(l_t, \alpha_t) \in \alpha_{zo}$ we have that $\tr t(l_t,
-        \alpha_t, , \alpha_e) \in \prv{zo}$, where $A' = A \cup \set{\alpha'_t
-        \mid (l'_t, \alpha'_t) \in \alpha_{zo} \text{ for some } l'_t})$; 
+        \alpha_t, A', \alpha_e) \in \prv{zo}$, where $A' = A \cup \set{\alpha'_t
+        \mid (l'_t, \alpha'_t) \in \alpha_{zo} \text{ for some } l'_t})$;
         \item for all $\prv t \in \prv{zo}$, there is $(l_t, \alpha_t) \in
         \alpha_{zo}$ s.t. $\tr t(l_t, \alpha_t, A', \alpha_e) = \prv t$, where
         $A'$ is as in the above clause.  
@@ -179,6 +184,7 @@ concrete model with at least~$m+1$ agents.
 $\msys n \leq_b \masys m$ for any $n \geq m+1$ and $b \geq 0$.
 \end{theorem}
 \begin{proof}
+<<<<<<< HEAD
 The proof proceeds by induction on~$b$ and it is included in the Appendix.
 \end{proof}
 
@@ -337,3 +343,24 @@ the existence of an emergent threshold for the specification.
 % The result follows from Theorem~\ref{th:ab-sim}, Theorem~\ref{th:concr-sim} and
 % Lemma~\ref{lemma:symmetry}.
 % \end{proof}
+=======
+The left to right direction follows from the property of the zero-one model to
+simulate every concrete with at least $m+1$ agents.  For the right to left
+direction  assume that $\masys m \not \models \varphi[v_1 \mapsto 1, \ldots, v_m
+\mapsto m]$l. Then, $\masys m  \models \neg \varphi[v_1 \mapsto 1, \ldots, v_m
+\mapsto m]$. As $\neg \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ includes
+only existential path quantification, there is a path evidencing the
+satisfaction of the formula. The theorem can be proved by induction
+constructing a similar concrete path that also evidences the satisfaction of
+said formula. This implies that $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$
+is not satisfied by the underlying concrete system and thus it is neither
+satisfied by the parameterised system. The Appendix includes the full proof.
+\end{proof}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% fill-column: 79
+%%% TeX-master: "../main"
+%%% End:
+>>>>>>> 80f46e43fa732afd4f55f01e124a28454ddbd83b
