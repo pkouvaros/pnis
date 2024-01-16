@@ -673,7 +673,7 @@ example.
  
 \end{example}
 
-  
+
 We express specifications for PNIS in an indexed and bounded variant of
 Computation Tree Logic ($\ctl$), henceforth $\bictl$. The logic (i) introduces
 indexed atomic propositions that are quantified over the agents of the concrete
@@ -681,8 +681,8 @@ system that the formula in question is evaluated; and (ii) permits only the
 construction of formulae whose evaluation can be realised on paths of bounded
 lengths. The former extends $\ctl$ by allowing the formulation of properties
 irrespective of the concrete system on which they are evaluated.  The latter
-restrict $\ctl$ following the undecidability of verification for unbounded
-formulae~\cite{Akintunde+20}.
+restricts $\ctl$ to bounded formulae following the undecidability of
+verification for unbounded formulae~\cite{Akintunde+20}.
 
 \begin{definition}
 Given a  set $\atprop$ of atomic propositions and a set $\atvar$ of variables,
@@ -704,7 +704,8 @@ with the meaning ``there is a path in which $\psi$ holds at some point in the
 $k$ following steps and before then $\varphi$ is true along the path. 
 The dual
 until, prefixed by the existential operator, can be defined analogously.
-
+The logic $\bctl$~\cite{Akintunde+22} is the logic obtained from the above BNF, but
+replacing the first clause with $p$ and removing the last clause.
 
 A $\bictl$ formula is said to be a sentence if every variable appearing the
 formula is in the scope of a universal quantifier. Hereafter we consider only

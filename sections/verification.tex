@@ -1,18 +1,18 @@
-In this section we put forward a procedure for solving the parameterised
-verification problem introduced in the previous section. For ease of
-presentation we fix a PNIS $\pnis = \tuple{t, e, \ell}$, where $\ag t =
-\tuple{\lstates t, \init t, \obs t, \acts t, \prot t, \tr t }$, $\ag e =
-\tuple{\lstates e, \acts e, \prot e, \tr e }$, and a $\bictl$ sentence
+In this section we put forward  procedures for solving the parameterised
+verification and emergence identification problems introduced in the previous
+section. For ease of presentation we fix a PNIS $\pnis = \tuple{t, e, \ell}$,
+where $\ag t = \tuple{\lstates t, \init t, \obs t, \acts t, \prot t, \tr t }$,
+$\ag e = \tuple{\lstates e, \acts e, \prot e, \tr e }$, and a $\bictl$ sentence
 $\bictlspec$ throughout the section. The verification procedure that we
-introduce recasts the parameterised verification problem for $\pnis$ and
-$\bictlspec$  to a (standard) verification problem for NIS $\pnis_{zo}$, which
-we below define as a zero-one abstraction of the concrete systems generated from
-$\pnis$,  and the $\bctl$ formula $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto
-m]$.  We show that the satisfaction status of $\varphi[v_1 \mapsto 1, \ldots,
-v_m \mapsto m]$ on $\pnis_{zo}$ determines the the satisfaction status of
+introduce recasts the parameterised verification  and emergence identification
+problems for $\pnis$ and $\bictlspec$  to a number of  (standard) verification
+problems for  abstract and concrete NIS  against the $\bctl$ formula
+$\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.  We show that the satisfaction
+status of $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ on 
+these systems determines the the satisfaction and emergent status of
 $\bictlspec$ on $\pnis$. This enables us to use previously established
 methodologies for the verification of NIS against $\bctl$~\cite{Akintunde+20b}
-to solve the verification problem for PNIS.
+to analyse PNIS.
 
 
 We start by reducing the problem of checking the $\bictl$ sentence in question
@@ -33,13 +33,8 @@ homogeneous agents. The Appendix includes the full proof.
 We next construct the zero-one abstraction of the systems generated from
 $\pnis$. The zero-one abstraction is a NIS comprising a zero-one agent, which is
 an abstraction for arbitrarily many concrete agents, $m$ concrete agents, whose
-<<<<<<< HEAD
 local states determines the satisfaction status of the atomic propositions in
 $\varphi[m]$ (see
-=======
-local states determine the satisfaction status of the atomic propositions in
-$\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ (see
->>>>>>> 80f46e43fa732afd4f55f01e124a28454ddbd83b
 Definition~\ref{def:concreteystem}), and the environment. In other words, the
 zero-one agent defined below encodes how an arbitrary number of agents may
 interfere with the temporal evolution of the concrete agents $1, \ldots, m$.
@@ -79,22 +74,22 @@ sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
     \item $\prot{zo} : \lstates{zo} \rightarrow 2^{\acts{zo}} \setminus
     \set{\emptyset}$ is the abstract protocol. The protocol prescribes the sets
     of template actions that can be collectively performed at a global state
-    represented by a given abstract state. It is defined as $$\prot{zo}(l_{zo})
-    = \set{ \bigcup_{l_t \in l_{zo}} \set{l_t} \times A_{l_t} \mid A_{l_t} \in
-    2^{\prot t(l_t)} \setminus \set{\emptyset}}.$$
+    represented by a given abstract state. It is defined as $\prot{zo}(l_{zo})
+    = \set{ \set{l_t \times A_{l_t} \mid l_t \in l_{zo}} \mid A_{l_t} \in
+    2^{\prot t(l_t)} \setminus \set{\emptyset}}.$
 
     \item $\tr{zo} \colon \lstates{zo} \times \acts{zo} \times 2^{\acts t} 
     \times \acts e \rightarrow \prvs{zo}$ is the abstract transition function.
     The function determines the set of private states that the agents would
     collectively transition to in any global state represented by a given
-    abstract state after they have performed a joint action represented by a
-    given abstract action. It is s.t. $\tr{zo}(l_{zo}, \alpha_{zo}, A, \alpha_e)
+    abstract state and after they have performed a joint action represented by a
+    given abstract action. It is such that $\tr{zo}(l_{zo}, \alpha_{zo}, A, \alpha_e)
     = \prv{zo}$ if the following hold:
     \begin{itemize}
         \item $\alpha_{zo} \in \prot{zo}(l_{zo})$; 
         \item for all $(l_t, \alpha_t) \in \alpha_{zo}$ we have that $\tr t(l_t,
         \alpha_t, A', \alpha_e) \in \prv{zo}$, where $A' = A \cup \set{\alpha'_t
-        \mid (l'_t, \alpha'_t) \in \alpha_{zo} \text{ for some } l'_t})$;
+        \mid (l'_t, \alpha'_t) \in \alpha_{zo} \text{ for some } l'_t \in \lstates{t}})$;
         \item for all $\prv t \in \prv{zo}$, there is $(l_t, \alpha_t) \in
         \alpha_{zo}$ s.t. $\tr t(l_t, \alpha_t, A', \alpha_e) = \prv t$, where
         $A'$ is as in the above clause.  
@@ -102,25 +97,25 @@ sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
 \end{itemize}
 \end{definition}
 
-The abstract  NIS comprised the zero-one agent and~$m$ concrete agents. It is a
-tuple $\pnis_{zo} = \tuple{\set{1,\ldots,m,zo,e}, \globalinit{m}_{zo},
-\valuation{m}_{zo}}$, where $\globalinit{m}_{zo} = \tuple{\init 1, \ldots, \init
-m, \init{zo}, \init e}$ is the initial global state and $\valuation{m}_{zo} :
-\atprop \times \set{1, \ldots, m } \rightarrow 2^{\globalstates{m}_{zo}}$ is the
-concrete labelling function satisfying $q \in \valuation{m}_{zo}(p,a)$ iff
-$\ls{a}{q} \in \tlabel a(p)$.  The global transition function is defined as in
-Definition~\ref{def:globaltransition} but replacing $A$ in the environment
-conditions in the first clause with $A = \set{\la{a}{q} \mid a \in
-\set{1,\ldots,n}} \cup \la{zo}{q}$, similarly replacing~$A$ for the concrete
-agents' conditions in the second clause, and adding analogous conditions for the
-zero-one agent. Given the global transition function we can similarly associate
-a model  $\masys m = \tuple{\aglobalstates m}$
+The abstract  NIS comprises the zero-one agent and~$m$ concrete agents. It is a
+tuple $\pnis_{ab} = \tuple{\set{1,\ldots,m,zo,e}, \globalinit{m}_{ab},
+\valuation{m}_{ab}}$, where $\globalinit{m}_{ab} = \tuple{\init 1, \ldots, \init
+m, \init{ab}, \init e}$ is the initial global state and $\valuation{m}_{ab} :
+\atprop \times \set{1, \ldots, m } \rightarrow 2^{\globalstates{m}_{ab}}$ is the
+concrete labelling function satisfying $q \in \valuation{m}_{ab}(p,i)$ iff
+$\ls{i}{q} \in \tlabel i(p)$.  The global transition function is defined as in
+Definition~\ref{def:globaltransition} but replacing $\setprojection{\alpha}$ in
+the environment and concrete agents' clauses $\set{\la{a}{q} \mid a \in
+\set{1,\ldots,n}} \cup \la{zo}{q}$,  and adding analogous conditions for the
+zero-one agent (see the Appendix for the full definition). Given the global
+transition function we can similarly associate a (abstract) model  $\masys m =
+\tuple{\aglobalstates m, \aglobalacts m, \aglobalrel m, \avaluation m}$.
 
-We now establish a correspondence between the abstract models and the concrete
+We now establish a correspondence between the abstract model and the concrete
 models. We show in particular that (i) the abstract model simulates every
 concrete model with at least~$m+1$ agents; (ii) there is always a concrete model
 with a sufficient number of agents that simulates the abstract model; and (iii)
-a concrete models always simulates a smaller model. A model simulates another
+a concrete model always simulates a smaller concrete model. A model simulates another
 model if every behaviour exhibited by the latter is also admitted by the former.
 As specifications for PNIS are bounded, we consider simulation up to a bounded
 number of steps as defined below.
@@ -132,9 +127,8 @@ global states $\iota$ and $\iota'$ is inductively defined on $b \geq 0$ as
 follows.
 \begin{itemize}
     \item A relation $\sim_0 \subseteq G \times G'$ is  $0$-bounded simulation
-    if $(\iota, \iota') \in sim_0$ and whenever $(q, q) \in \sim_0$, we have
-    that $q \in \ell(p,a)$ implies that $q' \in \ell'(p, a)$, for any $p \in
-    \atprop, a \in \mathbb N$.
+    if $(\iota, \iota') \in \sim_0$ and whenever $(q, q') \in \sim_0$, we have
+    that $q \in \ell(p,i)$ implies that $q' \in \ell'(p, i)$.
     \item A relation $\sim_b \subseteq G \times G'$ is  $b$-bounded simulation
     if $(\iota, \iota') \in \sim_b$ and  whenever $(q, q') \in \sim_b$, the
     following conditions hold:
@@ -142,7 +136,7 @@ follows.
     \item $(q, q') \in \sim_0$.
     \item If $(q, \alpha, q^1) \in T$ for a joint action $\alpha \in \it{ACT}$ and
     global state $q^1 \in G$, then there is a joint action
-    $\alpha' \in \it{ACT}'$ and global state $g'^1$ such that
+    $\alpha' \in \it{ACT}'$ and global state $g'^1 \in G'$ such that
     $(g', \alpha', g'^1) \in T'$ and 
     $(q^1, q'^1) \in \sim_{b - 1}$.  
 \end{enumerate}
@@ -154,7 +148,7 @@ steps, denoted $\mathcal M \leq_b \mathcal{M'}$, if there is a $b$-bounded
 simulation relation between $\mathcal M$ and $\mathcal{M'}$.  Universal $\bctl$
 formulae are preserved from the simulating model to the simulated model and
 existential $\bctl$ formulae are preserved from the simulated model to the
-simulating model if their temporal depth is at most~$b$. 
+simulating model whenever their temporal depth is at most~$b$. 
 
 \begin{theorem} Let $\mathcal M$ and $\mathcal M'$ be two models such $\mathcal
 M \sim_b  \mathcal M'$. Then, the following hold.
@@ -171,11 +165,11 @@ M \sim_b  \mathcal M'$. Then, the following hold.
 \begin{proof}[Proof Sketch.]
 The result is established in~\cite{ClarkeGrumbergLong94} for arbitrary Kripke
 structures and unbounded $\ctl$ formulae and simulations. Since $\bctl$ formulae
-are evaluated up to a bounded temporal depths, they are preserved under bounded
+are evaluated up to bounded temporal depths, they are preserved under bounded
 simulations.
 \end{proof}
 
-We can now show that the simulation results pertaining to the abstract and
+We can now show the simulation results pertaining to the abstract and
 concrete model.  We start by showing that the abstract model simulates every
 concrete model with at least~$m+1$ agents.
 
@@ -200,20 +194,20 @@ The proof proceeds by induction on~$b$ and it is included in the Appendix.
 \end{proof}
 
 
-Every concrete model simulates every smaller concrete models.
+Every concrete model simulates every smaller concrete model.
 
 \begin{theorem}
 \label{th:concr-sim}
-For every $n > m$ and $n' > n$ we have that $\msys n \leq_b \msys{n'}$ for any
+For every $n' > n$ we have that $\msys n \leq_b \msys{n'}$ for any
 $b \geq 0$.
 \end{theorem}
 \begin{proof}
-The proof proceeds by having every additional agents in $\msys{n'}$ to mimic
+The proof proceeds by having every additional agent in $\msys{n'}$ to mimic
 agent~1 in $\msys n$ and it is included in the Appendix.
 \end{proof}
 
-The above results enable the derivation of verification procedures for solving
-the parameterised verification and emergence identification problem. In the case
+The above results enable the derivation of procedures for solving
+the parameterised verification and emergence identification problems. In the case
 of universal formulae the emergence identification procedure simply concerns
 checking the abstract model and the parameterised verification procedure 
 additionally involves checking a single concrete model against the formula in
@@ -255,12 +249,13 @@ Lemma~\ref{lemma:symmetry} we obtain that there is $n \geq m$ such that $\msys n
 \not \models \bictlspec$. Consequently, $\pnis \not \models \bictlspec$.
 \end{proof}
 
-So every universal $\bctl$ formula satisfied by the abstract model
-and the concrete model of $m$ agents is also satisfied by the parameterised
-system. This also implies that~$m$ is an emergence threshold for the formula.
+% So every universal $\bctl$ formula satisfied by the abstract model
+% and the concrete model of $m$ agents is also satisfied by the parameterised
+% system. This also implies that~$m$ is an emergence threshold for the formula.
 
-Theorem~\ref{th:concr-sim} additionally enables the derivation of a simple
-procedure for the verification of existential properties.
+Theorems~\ref{th:ab-concr-sim},~\ref{th:concr-ab-sim} and
+~\ref{th:concr-sim},additionally enable the derivation of  simple procedure
+for the verification of existential properties.
 
 \begin{corollary}
 \label{cor:existential}
@@ -281,7 +276,7 @@ $n' \geq n$. Lemma~\ref{lemma:symmetry} gives that  $\msys{n'} \models
 \bictlspec$ for every $n' \geq n$. Hence, $n$ is an emergence threshold for
 $\bictlspec$. If otherwise we have that  $\msys n \not \models \varphi[m]$, then
 by Theorem~\ref{th:concr-ab-sim} it follows  that $\masys m \not \models
-\varphi[m]$, hence, by Theorem~\ref{th:ab-concr-sim}, $\msys n' \not \models
+\varphi[m]$, hence, by Theorem~\ref{th:ab-concr-sim}, $\msys{n'} \not \models
 \varphi[m]$ for every $n' \geq m+1$.  Thus, from Lemma~\ref{lemma:symmetry}, we
 obtain that $\msys{n'} \not \models \bictlspec$ for every $n' \geq m + 1$,
 therefore there is no emergence threshold for $\bictlspec$.
@@ -300,7 +295,7 @@ $\msys i \not \models \bictlspec$, which trivially implies that $\pnis \not
 % \end{proof}
 
 In summary, Corollaries~\ref{cor:universal} and~\ref{cor:existential} provide
-constructive, sound and complete methodologies for checking universal ans
+constructive, sound and complete methodologies for checking universal and 
 existential specifications for PNIS.  For universal properties, verification can
 be conducted by constructing and checking the abstract model and the concrete
 model with~$m$ agents, where $m$ is the the number of index variables in the
@@ -309,8 +304,9 @@ concrete models iff the specification is satisfied in general for any number of
 agents.  The satisfaction of the specification by the abstract model is also
 connected by biconditional implication with the existence of an emergent
 threshold for the specification. For existential properties, verification can be
-performed by checking all concrete models up to the concrete model that
-simulates the abstract model. The specification is satisfied by all these
+performed by enumerating all concrete models, identifying the smallest one that simulates the abstract model,
+ and checking all concrete models up to the simulating one. 
+ The specification is satisfied by all these
 concrete models iff the specification is satisfied in general for any number of
 agents.   The satisfaction of the specification by the concrete model that
 simulates the abstract model is also connected by biconditional implication with
