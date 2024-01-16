@@ -75,6 +75,14 @@ class MonolithicBooleanMILPEncoder(FormulaVisitorI):
         constrs_to_add = left_constraints + right_constraints
         return constrs_to_add
 
+    def visitNAryConjFormula(self, element):
+
+        constrs = []
+        for clause in element.clauses:
+            constrs.extend(clause.acceptI(self))
+
+        return constrs
+
     def visitENextFormula(self, element):
         raise NotImplementedError(NOT_IMPLEMENTED)
 

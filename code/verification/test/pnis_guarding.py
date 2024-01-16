@@ -2,19 +2,18 @@
 
 import argparse
 import sys
+sys.path.append('../')
 
-from common import TO_USER_RESULT
 from resources.guarding.guardagent import GuardingAgent, GuardingConstants
 from resources.guarding.guardzoagent import GuardingZeroOneAgent
 from resources.guarding.guardenv import GuardingEnv
 from src.utils.formula_visitors.immutable_nnf_visitor import FormulaVisitorNNF
 from src.verification.complete.constrmanager.custom_constraints_manager import CustomConstraintsManager
 from src.verification.complete.verifier.aesverifier import AESVerifier
-from src.verification.complete.verifier.depth_first_compositional_multi_agent_milp_encoder import \
-    DepthFirstCompositionalMultiAgentMILPEncoder
-from src.verification.complete.verifier.monolithic_ctl_pnis_milp_encoder import MonolithicCTLMultiAgentMILPEncoder
+# from src.verification.complete.verifier.depth_first_compositional_multi_agent_milp_encoder import \
+#     DepthFirstCompositionalMultiAgentMILPEncoder
+from src.verification.complete.verifier.monolithic_nis_ctl_milp_encoder import MonolithicMultiAgentCTLMILPEncoder
 
-sys.path.append('../../')
 
 
 import datetime
@@ -26,8 +25,9 @@ from src.network_parser.network_model import NetworkModel
 from src.utils.formula import *
 from src.verification.bounds.bounds import HyperRectangleBounds
 
+TO_USER_RESULT = {"True": "False", "False": "True", "Timeout": "Timeout", "Interrupted": "Interrupted"}
 
-# Mono (--method 2)
+
 def verify_single(formula, input_hyper_rectangle, agents, env, timeout):
     """
     Verify using the monolithic approach.
@@ -54,10 +54,15 @@ def verify_single(formula, input_hyper_rectangle, agents, env, timeout):
 
     # Create a MILP builder visitor using the variables for the initial state
     initial_state_vars, _ = env.get_constraints_for_initial_state(constraint_manager, input_hyper_rectangle)
-    mono_visitor = MonolithicCTLMultiAgentMILPEncoder(constraint_manager, initial_state_vars, agents, env)
+    mono_visitor = MonolithicMultiAgentCTLMILPEncoder(constraint_manager, initial_state_vars, agents, env)
 
+    invert_result = True
+    # If the specification is a reachability specification, we pass it as it is
     if isinstance(formula, ENextFormula):
         milp_constrs = formula.acceptI(mono_visitor)
+        # no need to invert the result in this case
+        invert_result = False
+    # Otherwise we negate the formula
     elif isinstance(formula, ANextFormula):
         # Compute the set of MILP constraints for the negation of the formula in NNF
         negated_formula = NegationFormula(formula).acceptI(FormulaVisitorNNF())
@@ -74,14 +79,14 @@ def verify_single(formula, input_hyper_rectangle, agents, env, timeout):
     runtime = end - start
 
     # Negate the result
-    result = TO_USER_RESULT[result]
+    user_result = TO_USER_RESULT[result] if invert_result else result
 
-    print("Overall result and time:", result, runtime)
+    print("Overall result and time:", user_result, runtime)
     stats = constraint_manager.stats
     print("Max number of variables  ", stats.max_var_number)
     print("Max number of constraints", stats.max_constr_number)
 
-    if result == "False":
+    if result == "True":
         print("Counter-example:")
         depth = len(stats.witness_states)
         for i in range(0, depth - 1):
@@ -137,13 +142,11 @@ def verify_parallel_poly(formula, input_hyper_rectangle, agents, env, timeout):
 
 def main():
     parser = argparse.ArgumentParser(description="Verify a MANS")
-    parser.add_argument("-m", "--method", type=int, default=2, help="Method to use for verification: 0. Parallel-poly; 1. Sequential-poly; 2. Mono; 3. Mono-hybrid. ")
-    parser.add_argument("-f", "--formula", type=int, default=1, help="Formula to verify: 0. [[o,i]] X^k safety; 1. <<o>> X^k safety; 2. [[i]] X^k safety; 3. <<o,i>> X^k unsafety")
-    parser.add_argument("-n", "--noise", default=2.0, type=float, help="Noise to add to initial position of pilot.")
+    parser.add_argument("-f", "--formula", type=int, default=0, help="Formula to verify: 0. EX^k alive; 1. AX^k alive;")
+    parser.add_argument("-k", "--step", default=5, type=int, help="The number of time steps to verify for.")
     parser.add_argument("-a", "--agents_number", default=2, type=int, help="Number of template agents.")
-    parser.add_argument("-hp", "--initial_health", default=4, type=int, help="Initial health points of a template agent.")
+    parser.add_argument("-hp", "--initial_health", default=3, type=int, help="Initial health points of a template agent.")
     parser.add_argument("-per", "--initial_percept", default=2, type=int, help="Initial percept of a template agent (one of 0-expired, 1-rest, or 2-volunteer-to-guard).")
-    parser.add_argument("-k", "--max_steps", default=4, type=int, help="Maximum number of time steps to verify for.")
     parser.add_argument("-w", "--workers", default=2, type=int, help="Number of workers.")
     parser.add_argument("-to", "--timeout", default=3600, type=int, help="Timeout in minutes.")
 
@@ -151,14 +154,16 @@ def main():
     # ** Note ** , when adding a new formula, add appropriate agent config to list.
     agents, env = initialise_and_get_agent_and_env(ARGS.agents_number)
 
-    # Constraint specific variables of the initial state to one value by setting the upper
-    # bounds equal to the lower bounds.
-
+    ###########################################################################
+    # Compute the initial state, will be used for the lower and upper bounds. #
+    ###########################################################################
     initial_state = []
+
+    # The template agent components
     for agent in range(ARGS.agents_number):
         initial_state.extend([ARGS.initial_health, ARGS.initial_percept])
 
-    # zero-one initial values
+    # Zero-one initial values
     # no expired
     initial_state.append(0)
     # only one value of health
@@ -166,45 +171,58 @@ def main():
                          [1] +
                          [0] * (GuardingConstants.MAX_HEALTH_POINTS - ARGS.initial_health))
     # zero-one percepts
-    initial_state.extend([0,0,0])
+    initial_state.extend([0, 0, 0])
 
     # The environment part
     initial_state.append(0)
 
+    ############################################################################
+    print(f"========== Parameters of the game:==========\n"
+          f"\t Guarding reward: {GuardingConstants.GUARDING_REWARD}\n"
+          f"\t  Resting reward: {GuardingConstants.RESTING_REWARD}\n"
+          f"\tUnguarded reward: {GuardingConstants.UNGUARDED_REWARD}\n"
+          f"\t  Maximum health: {GuardingConstants.MAX_HEALTH_POINTS}\n")
+
+    print(f"Template agent number: {ARGS.agents_number}\n")
+
+    ############################################################################
     input_hyper_rectangle = HyperRectangleBounds(initial_state, initial_state)
-    print(input_hyper_rectangle)
+    print(input_hyper_rectangle, "\n")
 
-    steps = range(1, ARGS.max_steps + 1)
-
+    ############################################################################
+    # Verify for the given number of steps
+    steps = [ARGS.step]#range(1, ARGS.step + 1)
     for num_steps in steps:
         print(num_steps, "steps")
 
-        formula = get_formula_and_gamma(num_steps)
+        formula = get_formula_and_gamma(ARGS.formula, num_steps, ARGS.agents_number)
 
         print("Formula to verify", formula)
         # Run a method.
         verify_single(formula, input_hyper_rectangle, agents, env, ARGS.timeout)
-        # verify_parallel_poly(formula, input_hyper_rectangle, agents, env, ARGS.timeout)
         print("\n")
 
 
-def get_formula_and_gamma(num_steps):
-    colony_alive = AtomicConjFormula(
-        VarConstConstraint(
-            StateCoordinate(GuardingConstants.HEALTH_IDX), GE, GuardingConstants.EXPIRED_HEALTH_POINTS + 1),
-        VarConstConstraint(
-            StateCoordinate(GuardingConstants.HEALTH_IDX + GuardingConstants.AGENT_STATE_DIMENSIONS), GE, GuardingConstants.EXPIRED_HEALTH_POINTS + 1))
+def get_formula_and_gamma(formula, num_steps, agents_number):
+    if formula == 0:
+        clauses = [
+            VarConstConstraint(
+                StateCoordinate(GuardingConstants.HEALTH_IDX + i * GuardingConstants.AGENT_STATE_DIMENSIONS),
+                GE, GuardingConstants.EXPIRED_HEALTH_POINTS + 1)
+            for i in range(agents_number)
+        ]
+        return ENextFormula(num_steps, NAryConjFormula(clauses))
 
-    colony_alive2 = AtomicConjFormula(
-        VarConstConstraint(
-            StateCoordinate(GuardingConstants.HEALTH_IDX), GT, GuardingConstants.EXPIRED_HEALTH_POINTS),
-        VarConstConstraint(
-            StateCoordinate(GuardingConstants.HEALTH_IDX + GuardingConstants.AGENT_STATE_DIMENSIONS), GT, GuardingConstants.EXPIRED_HEALTH_POINTS))
+    elif formula == 1:
+        clauses = [
+            VarConstConstraint(
+                StateCoordinate(GuardingConstants.HEALTH_IDX + i * GuardingConstants.AGENT_STATE_DIMENSIONS),
+                GT, GuardingConstants.EXPIRED_HEALTH_POINTS)
+            for i in range(agents_number)
+        ]
+        return ANextFormula(num_steps, NAryConjFormula(clauses))
 
-    colony_survives = ENextFormula(num_steps, colony_alive)
-    # colony_survives = ANextFormula(num_steps, colony_alive2)
-
-    return colony_survives
+    return None
 
 
 def initialise_and_get_agent_and_env(agents_number):

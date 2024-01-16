@@ -19,7 +19,7 @@ class GuardingConstants:
     UNGUARDED_REWARD = -3
 
     EXPIRED_HEALTH_POINTS = 0
-    MAX_HEALTH_POINTS = 5
+    MAX_HEALTH_POINTS = 4
 
     AGENT_STATE_DIMENSIONS = 2
     # The index for the health value in a state
@@ -33,6 +33,7 @@ class GuardingConstants:
 
     # Maximum absolute value of health that can be obtained, to be used for encoding max and min constraints
     BIG_M_CONSTANT = MAX_HEALTH_POINTS - UNGUARDED_REWARD
+
 
 class GuardingAgent(MultiAgent):
 

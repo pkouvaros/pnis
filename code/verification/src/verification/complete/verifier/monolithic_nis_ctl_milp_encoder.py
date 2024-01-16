@@ -1,24 +1,30 @@
 import math
 
-from gurobipy import GenExprMax, GenExprMin
-
 from src.utils.utils import get_widest_bounds, increment_indices
 from src.verification.bounds.bounds import HyperRectangleBounds
 from src.verification.complete.verifier.monolithic_boolean_milp_encoder import MonolithicBooleanMILPEncoder
 
 
-class MonolithicCTLMultiAgentMILPEncoder(MonolithicBooleanMILPEncoder):
+class MonolithicMultiAgentCTLMILPEncoder(MonolithicBooleanMILPEncoder):
     def __init__(self, constrs_manager, state_vars, agents, env):
         """
-        An immutable visitor implementation for constructing a single MILP from a CTL formula for
-        a parameteric NIS.
+        An immutable visitor implementation for constructing a single MILP from a EX^k formula for a NIS
+        as defined in Akintunde et al, KR 2020.
+
+        Here the assumption is
+           * every agent has an observation function (implemented by a NN)
+           * every agent has a symbolic protocol function that returns the set of available actions
+           * every agent has its local transition function
+           * the environment has its protocol function
+           * the environment has its local transition function
+
         :param constrs_manager: Constraints manager.
         :param state_vars: The global state of the system, includes the local states of the agents and the environment.
         :param agents: The set of agents.
-        :param env: The  environment.
+        :param env: The environment.
         :side-effects: Modifies constrs_manager and state_vars.
         """
-        super(MonolithicCTLMultiAgentMILPEncoder, self).__init__(constrs_manager, state_vars)
+        super(MonolithicMultiAgentCTLMILPEncoder, self).__init__(constrs_manager, state_vars)
         self.env = env
         self.next_vars = self.state_vars
 
@@ -53,7 +59,6 @@ class MonolithicCTLMultiAgentMILPEncoder(MonolithicBooleanMILPEncoder):
             from src.utils.formula import ENextFormula
             smaller_formula = ENextFormula(k - 1, element.left)
 
-        binvars = set()
         constrs_to_add = []
 
         # Allocate binary variables for each possible combination of actions.
@@ -109,18 +114,19 @@ class MonolithicCTLMultiAgentMILPEncoder(MonolithicBooleanMILPEncoder):
         next_state_bounds = [(float("inf"), float("-inf")) for _ in range(len(next_state_vars))]  # Widest upper and lower bounds for output vars.
         self.constrs_manager.get_variable_tracker().add_state_variables(next_state_vars)
 
-
         # action vars for tracking and printing traces
         joint_actions_count = sum([len(action_vars[agent_number][0]) for agent_number in range(self.agent_count)])
         next_action_vars = self.constrs_manager.create_state_variables(joint_actions_count)
         self.constrs_manager.get_variable_tracker().add_action_variables(next_action_vars)
 
+        # indices to keep track of the current combination of actions
+        # We iterate through all possible indices, each bound by the corresponding branching factor
         action_ranges = [agent.get_branching_factor() for agent in self.agents] + \
                         [self.env.get_branching_factor()]
         action_indices = [0 for _ in range(len(action_ranges))]
         global_action_idx = 0
 
-        while(True):
+        while True:
             ### Get all action vars and action constras according to the current indices
             # Flattened for convenience already here
             all_actions_vars = [item for row in [action_vars[agent_number][action_indices[agent_number]]
@@ -186,8 +192,6 @@ class MonolithicCTLMultiAgentMILPEncoder(MonolithicBooleanMILPEncoder):
         constrs_to_add.extend(left_constraints)
 
         self.state_vars = init_vars
-
-        self.constrs_manager.binvars.update(binvars)
 
         return constrs_to_add
 
