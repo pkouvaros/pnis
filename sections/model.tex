@@ -6,14 +6,15 @@ Parameterised interpreted systems is a parametric extension of interpreted
 systems put forward to reason about unbounded multi-agent
 systems~\cite{KouvarosLomuscio15b}. The parameter in a system of this kind
 denotes the number of agents composing the system, each homogeneously
-constructed from an agent template. We here extend parameterised interpreted
-systems to Parameterised Neural-symbolic Interpreted Systems (PNIS), where the
-template for the agents is not purely symbolic but it comprises a perception
-mechanism that is implemented via neural networks and which is coupled with a
-symbolic action mechanism. This neural-symbolic treatment of the agents follows
-the Neural Interpreted Systems (NIS) model from~\cite{Akintunde+20b}.
-Differently from NPIS however, NIS are limited to standard non-parametric
-systems with a pre-defined number of agents.
+constructed from an agent template. 
+
+In this section we extend parameterised interpreted systems to Parameterised
+Neural-symbolic Interpreted Systems (PNIS), where the template for the agents is
+not purely symbolic but it comprises a perception mechanism that is implemented
+via neural networks and which is coupled with a symbolic action mechanism. This
+neural-symbolic treatment of the agents follows the Neural Interpreted Systems
+(NIS) model from~\cite{Akintunde+20b}.  Differently from NPIS however, NIS are
+limited to standard non-parametric systems with a pre-defined number of agents.
 
 A PNIS consists of the descriptions of an agent template, from which an
 unbounded number of concrete agents may be constructed, and an environment in
@@ -24,19 +25,20 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 \acts t, \prot t, \tr t }$, where:
 \begin{itemize}
   \item $\lstates t = \prvs t \times \pers t$ is a nonempty (possibly infinite)
-  set of local states.  Each local state  is a pair $\tuple{\prv t, \per t}$ of
+  set of template local states.  Each local state  is a pair $\tuple{\prv t, \per t}$ of
   a private state $\prv t \in \prvs t \subseteq \mathbb R^{m_{prv}}$ and a
   percept $\per t \in \pers t \subseteq \mathbb R^{m_{per}}$ that encodes the
-  perception a agent has about the environment.  
+  perception an agent has about the environment.  
 
   \item $\init t \in \lstates t$ is the unique initial template state.
   
   \item $\obs t : \lstates t \times \lstates e \rightarrow \pers t$ is an
   observation function that maps pairs of template local states $\lstates t
   \subseteq \mathbb{R}^{m_{prv} + m_{per}}$ and environment states $\lstates e
-  \subseteq \mathbb{R}^{m_e}$ (defined below) to percepts $\pers t \subseteq
-  \mathbb{R}^{m_{per}}$. The observation function is implemented via a PWL FFNN $f :
-  \mathbb{R}^{m_{prv} + m_{per} + m_e} \rightarrow \mathbb{R}^{m_{per}}$.
+  \subseteq \mathbb{R}^{m_e}$ (see below) to percepts $\pers t \subseteq
+  \mathbb{R}^{m_{per}}$. The function is implemented via a neural
+  network $f : \mathbb{R}^{m_{prv} + m_{per} + m_e} \rightarrow
+  \mathbb{R}^{m_{per}}$.
 
   \item $\acts t$ is a nonempty and finite set of actions.
   
@@ -46,7 +48,7 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 
   \item $\tr t: \lstates t \times \acts t \times 2^{\acts t} \times \acts e 
   \rightarrow \prvs t$ is a local transition function  that determines the next
-  private state for a concrete agent given its current local state, its action, 
+  private state for an agent instantiated from the template given its current local state, its action, 
   the set of actions performed by all the agents  and the action of the
   environment.
   
@@ -184,7 +186,7 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
   
 
   \item Normally, we assume that the observation function is given as a
-    FFNN. But for the sake of illustration, we define here the observation
+    neural network. But for the sake of illustration, we define here the observation
     function of a perfectly altruistic agent:
 
     $\obs{t}((h,\per{}), \ \lstate{e}) = \left\{
@@ -194,8 +196,8 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
         E_s, & \text{ if } h \leq 0\\
       \end{array} \right.$
     
-    Intuitively, if health is good enough, then the agent is in a position to
-    guard, if health is still positive, the agent can only rest, otherwise the
+    Intuitively, if the health is good enough, then the agent is in a position to
+    guard. If the health is  positive, then the agent can only rest. Otherwise, the
     agent is ``expired''. In this example, the environment state is ignored by
     the observation function.
     
@@ -220,7 +222,7 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
        \tr{t}((h,S), R_a, A) = \max(h - U_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > U_p\\
        % \tr{t}((h,S), R_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
        
-       \tr{t}((h,E_s), E_a, A) = h\\
+       \tr{t}((h,E_s), E_a, A) = h.\\
      \end{array}$
 
 \end{itemize}
@@ -473,7 +475,7 @@ using in this paper.
 \end{example}
 
 A PNIS $\mathcal S$ gives a parametric description of an unbounded collection
-of {\em concrete} NIS. In particular, for any value $n \geq 1$ of the parameter
+of {\em concrete} NIS. In particular, for any value $n \geq 1$ of the parameter, 
 the concrete system $\sys n$ composes~$n$ copies $\ag 1, \ldots, \ag n$ of the
 agent template with the environment $\ag e$. We write $\agents n$ for the set
 $\agents n = \set{\ag 1, \ldots, \ag n}$ of concrete agents instantiated from
@@ -482,66 +484,71 @@ $\ag t$.
 A \emph{global state} $q = \tuple{\lstate 1, \ldots, \lstate n, \lstate e}$ in
 $\sys n$ is a tuple of local states for all the agents and the environment in
 $\sys n$; it describes the system at a particular instant of time.  For a
-global state $g$, we write $\lprv{a}{q}$, $\lper{a}{q}$ and $\ls{a}{q}$ to
-denote the \emph{private part} $\prv a$ and the \emph{perception part} $\per a$
-of the local state $\ls{a}{g} = \tuple{\prv a, \per a}$ of agent $\ag a$ in
+global state $g$, we write $\lprv{i}{q}$, $\lper{i}{q}$ and $\ls{i}{q}$ to
+denote the \emph{private part} $\prv i$ and the \emph{perception part} $\per i$
+of the local state $\ls{i}{g} = \tuple{\prv i, \per i}$ of agent $\ag i$ in
 $g$.  The set $\globalstates{n}=\lstates{1}\times\dots\times\lstates{n}\times L_e$
 of all possible global states is the Cartesian product of the agents' sets of
 local states.
 % 
 A \emph{joint action} $\alpha = \tuple{\alpha_1, \ldots, \alpha_n, \alpha_e}$
 in $\sys n$ is a tuple of local actions for all the agents and the environment.
-For a joint action $\alpha$, we write $\la{a}{\alpha}$ to denote the
-\emph{local action} of agent $\ag a$ in~$\alpha$.  The set
+For a joint action $\alpha$, we write $\la{i}{\alpha}$ to denote the
+\emph{local action} of agent $\ag i$ in~$\alpha$.  The set
 $\globalacts{n} = \acts{1}\times\dots\times\acts{n}\times\acts{e}$ of all
 possible joint actions is the Cartesian product of the agents' sets of local
-actions.  A concrete system's global states evolve over time in compliance with
-the following global transition relation.
+actions.   We now formally define the concrete NIS.
+% A concrete system's global states evolve over time in compliance with
+% the following global transition function.
 
 % , i.e., for each agent $a \in \set{1,\ldots,n}$ we have that $a =
 % \tuple{\lstates a, \init a, \obs a, \acts a, \prot a, \tr a} = \ag t$, 
 
+
 \begin{definition}[Concrete Neural Interpreted System]
   \label{def:concreteystem}
 Given an NPIS $\mathcal S = \tuple{\ag t, \ag e, \ell_t}$ and $n \geq 1$, a
-\emph{concrete neural interpreted system} is a tuple $\sys n = \tuple{ \set{\ag 1,
+\emph{concrete neural interpreted system}, is a tuple $\sys n = \tuple{ \set{\ag 1,
 \ldots, \ag n, \ag e}, \globalinit n, \valuation n}$, where $\globalinit n =
 \tuple{\init 1, \ldots, \init n, \init e}$ is the initial global state and
 $\valuation n :  \atprop \times \set{1, \ldots, n } \rightarrow 2^{\globalstates
-n}$ is the concrete labelling function satisfying $q \in \valuation n(p,a)$ iff
-$\ls{a}{q} \in \tlabel a(p)$.
+n}$ is the concrete labelling function satisfying $q \in \valuation n(p,i)$ iff
+$\ls{i}{q} \in \tlabel i(p)$.
 \end{definition}
 
+
 So the atomic propositions in a concrete system are indexed by each of the
-concrete agents: $(p, a)$ holds in a global state if the agent $a$ is at a local
+concrete agents: $(p, i)$ holds in a global state if the agent $i$ is at a local
 state labelled with $p$ by the template labelling function. This will enable us
 to construct specifications independently of the size of the concrete system on
 which they are evaluated.
 
+
 Given the current global state $\tuple{\lstate 1, \ldots, \lstate n, \lstate
-e}$, where $\lstate a = \tuple{\prv a, \per a}$ for $a \in \agents n$, of the
+e}$, where $\lstate i = \tuple{\prv i, \per i}$ for $i \in \agents n$, of the
 agents and the environment, the operational cycle of the agents is described as
-follows. First, every agent $\ag a \in \agents n \cup \set{\ag e}$ selects an
-action~$\act{a}$ that is permitted by its protocol, i.e., $\act{a} \in \prot{a}
-(\lstate a)$. Then, the agents synchronously perform the selected actions.
-Following  the execution of the actions each agent $\ag a \in \agents n$ updates
-the private component of its local state as per its local transition function to
-$\pprv a = \tr{a}( \lstate{a}, \act{a}, A, \act{e})$, where
-$A = \set{ \act b \mid b \in \set{1, \ldots, n}}$.  This
-generates an intermediate local state $\plstate{a} = \tuple{\pprv a, \per a}$
+follows. First, every agent $\ag i \in \agents n \cup \set{\ag e}$ selects an
+action~$\act{i}$ that is permitted by its protocol, i.e., $\act{i} \in \prot{i}
+(\lstate i)$. Then, the agents synchronously perform the joint action $\alpha =
+\tuple(\alpha_1,\ldots,\alpha_n,\alpha_e)$.  Following  the execution of the
+actions each agent $\ag i \in \agents n$ updates the private component of its
+local state as per its local transition function to $\pprv i = \tr{i}(
+\lstate{i}, \act{i}, \setprojection{\alpha}, \act{e})$, where
+$\setprojection{\alpha} = \set{ \act j \mid j \in \set{1, \ldots, n}}$ is the
+projection of local actions for the agents in $\alpha$ onto a set.  This
+generates an intermediate local state $\plstate{i} = \tuple{\pprv i, \per i}$
 for each of the agents. Similarly, the environment updates its local state to
-$\plstate e$. Finally, every agent $\ag a \in \agents n$ observes the update on
+$\plstate e$. Finally, every agent $\ag i \in \agents n$ observes the update on
 its local state and the update on the local state of the environment via its
-neural perception module $\obs a$, thus generating a percept
-$\pper a = \obs a(\plstate a, \plstate e)$, with which it updates its
-perception part thereby obtaining a new local state
-$\pplstate a = \tuple{ \pprv a, \pper{a}}$.
+neural perception module $\obs i$, thus generating a percept $\pper i = \obs
+i(\plstate i, \plstate e)$, with which it updates its perception part thereby
+obtaining a new local state $\pplstate i = \tuple{ \pprv i, \pper{i}}$.
 
 
-Differently from the standard treatment of interpreted systems and NIS, the
+Differently from the standard treatment of interpreted systems, the
 transition function of a concrete agent in PNIS  does not depend on the joint
 action performed in the system, but it depends on the local action performed by
-the  agent and on the on the set of actions performed by the rest of the agents
+the  agent and on the on the set of actions performed by all of the agents
 and the environment.  Thus, the identities of the agents are abstracted away in
 a joint action, thereby reflecting the unbounded nature of PNIS. In other words,
 whereas  a concrete agent can observe which actions were performed in the system
@@ -559,22 +566,19 @@ $\sys n$.
   \times \globalacts n \rightarrow \globalstates n$ of a concrete system $\sys n$
   satisfies $\globaltr n(q, \alpha) = q'$ iff the following hold:
   \begin{itemize}
-  \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$ and
-    $\tr e(\ls{e}{q}, \la{e}{q}, A) = q'$, where
-    $A = \set{\la{a}{q} \mid a \in \set{1,\ldots,n}}$; i.e., the environment’s
-    action is protocol compliant and its local state is updated as per its
-    local transition function w.r.t.\ the set of actions that were performed in
-    the round.
+  \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$, $\tr e(\ls{e}{q},
+  \la{e}{q}, \setprojection{\alpha}) = q'$; i.e., the environment’s action is
+  protocol compliant and its local state is updated as per its local transition
+  function as per the set of actions that were performed in the round.
 
-  \item For all $a \in \set{1,\ldots,n}$, we have that
-    $\la{a}{\alpha} \in \prot{a}(\ls{a}{q})$,
-    $\tr a (\ls{a}{q}, \la{i}{\alpha}, A, \la{e}{\alpha}) = \lprv{a}{q'}$,
-    where $A = \set{\la{b}{q} \mid b \in \set{1,\ldots,n}}$, and
-    $\obs a((\lprv{a}{q'},\lper{a}{q}),\ls{e}{q'}) = \lper{a}{q'}$; i.e., the
-    agent's action is protocol compliant, the private part of its local state
-    is updated as per its local transition function w.r.t to the set of actions
-    performed by all the agents, and the perception part of its local state is
-    updated as per its observation function.
+  \item For all $i \in \set{1,\ldots,n}$, we have that $\la{i}{\alpha} \in
+  \prot{i}(\ls{i}{q})$, $\tr i (\ls{i}{q}, \la{i}{\alpha},
+  \setprojection{\alpha}, \la{e}{\alpha}) = \lprv{i}{q'}$, and $\obs
+  i((\lprv{i}{q'},\lper{i}{q}),\ls{e}{q'}) = \lper{i}{q'}$; i.e., the agent's
+  action is protocol compliant, the private part of its local state is updated
+  as per its local transition function as per the set of actions performed by
+  all the agents, and the perception part of its local state is updated as per
+  its observation function.
   \end{itemize}
 \end{definition}
 
@@ -592,6 +596,11 @@ that we will use  to interpret our specification language.
   $\valuation n$ is the labelling function as in
   Definition~\ref{def:concreteystem}.
 \end{definition}
+
+A path in a model $\msys n$ is an infinite sequence of global states and joint
+actions $q^0\alpha^0q^1\alpha^1\ldots$ such that $(q^i,\alpha^i,q^{i+1}) \in
+\globalrel n$ for all $i \geq 0$. Given a global state $q$ in $\msys n$ we write
+$\paths{q}$ for the set of all paths originating from $q$.
 
 We now illustrate Definitions~\ref{def:concreteystem}-\ref{def:model} on our running
 example.
@@ -664,20 +673,15 @@ example.
  
 \end{example}
 
-
-A path in a model $\msys n$ is an infinite sequence of global states anc joint
-actions $q^0\alpha^0q^1\alpha1\ldots$ such that $(q^i,\alpha^i,q^{i+1}) \in
-\globalrel n$ for all $i \geq 0$. Given a global state $q$ in $\msys n$ we write
-$\paths{q}$ for the set of all paths originating from $q$.
   
 We express specifications for PNIS in an indexed and bounded variant of
 Computation Tree Logic ($\ctl$), henceforth $\bictl$. The logic (i) introduces
 indexed atomic propositions that are quantified over the agents of the concrete
-system the formula in question is evaluated; and (ii) permits only the
+system that the formula in question is evaluated; and (ii) permits only the
 construction of formulae whose evaluation can be realised on paths of bounded
 lengths. The former extends $\ctl$ by allowing the formulation of properties
 irrespective of the concrete system on which they are evaluated.  The latter
-restrict $\ctl$ following the undecidability verification for unbounded
+restrict $\ctl$ following the undecidability of verification for unbounded
 formulae~\cite{Akintunde+20}.
 
 \begin{definition}
@@ -698,32 +702,17 @@ $k$-th step''. We inductively abbreviate bounded until as
 \end{align*}
 with the meaning ``there is a path in which $\psi$ holds at some point in the
 $k$ following steps and before then $\varphi$ is true along the path. 
-% The dual
-% until, prefixed by the universal operator, can be defined analogously.
-
-The temporal depth of a $\bictl$ formula is the number of time steps up to which
-the formula is evaluated (see below). It is formally defined as follows.
-\begin{definition}[Temporal depth]
-The temporal depth $\td{\varphi}$ of a $\bictl$ formula $\varphi$ is inductively defined as
-follows:
-\begin{center}
-\begin{tabular}{lll}
-  $\td \varphi = 0$ & if & $\varphi = (p, a)$; \\
-  $\td \varphi = \max(\td{\psi_1}, \td{\psi_2})$  & if & $\varphi = \psi_1 \lor \psi_2$; \\
-  $\td \varphi = \max(\td{\psi_1}, \td{\psi_2})$  & if & $\varphi = \psi_1 \land \psi_2$; \\
-  $\td \varphi =  k + \td{\psi_1}$  & if & $\varphi = EX^k \psi_1$; \\
-  $\td \varphi =  k + \td{\psi_1}$  & if & $\varphi = AX^k \psi_1$; \\
-  $\td \varphi = \td{\psi_1}$  & if & $\varphi = \forall_{v1,\ldots,v_m} \psi_1$.
-\end{tabular}
-\end{center}
-\end{definition}
+The dual
+until, prefixed by the existential operator, can be defined analogously.
 
 
 A $\bictl$ formula is said to be a sentence if every variable appearing the
 formula is in the scope of a universal quantifier. Hereafter we consider only
 indexed $\bictl$ sentences of the form $\forall v_1 \ldots \forall v_m :
 \varphi$, or, shortly, $\bictlspec$, where $v_i \in \atvar$ for $i \in
-\set{1,\ldots,m}$ and $\varphi$ does not contain any universal quantifier.
+\set{1,\ldots,m}$ and $\varphi$ is either {\em universal} in that it contains
+only universal quantifiers or {\em existential} in that it contains only
+existential quantifiers.
 
 
 We now define the satisfaction relation for $\bictl$ on the temporal models
@@ -731,13 +720,13 @@ associated with the concrete systems.
 
 \begin{definition}[Satisfaction]
   \label{def:sat} 
-  Given a model $\msys n$, a global state~$q^0$ and a $\bictl$ sentence
+  Given a model $\msys n$, a global state~$q$ and a $\bictl$ sentence
   $\bictlspec$ with $m \leq n$, the \emph{satisfaction} of $\varphi$ at $q$\nb{E: $q$ or $q^0$?},
   denoted $(\msys n, q) \models\varphi$, or simply $q \models \varphi$ when
   $\msys n$ is clear from the context, is defined as follows:
   \begin{description}
-  \item[$q \models (p, a)$] \ iff \ $q^o \in \valuation n((p, a))$, for $p \in
-  \atprop$ and $a \in \agents n$; 
+  \item[$q \models (p, a)$] \ iff \ $q \in \valuation n((p, i))$, for $p \in
+  \atprop$ and $i \in \agents n$; 
   \item[$q \models \varphi \lor \psi$] \ iff \ $q \models \varphi$ or $q \models
   \psi$;
   \item[$q \models \varphi \land \psi$] \ iff \ $q \models \varphi$ and $q
@@ -748,8 +737,28 @@ associated with the concrete systems.
   have that $\rho(k) \models \varphi$;
   \item[$q \models \bictlspec$] \ iff for all $h : \set{v_1, \ldots, v_m}
   \rightarrow \set{\ag 1, \ldots,\ag n}$ we have that $q \models 
-  \varphi[v_1 \mapsto h(v_1), \ldots v_m \mapsto h(v_m)]$\nb{E: what is $h$? Would be good to explain it}
+  \varphi[v_1 \mapsto h(v_1), \ldots v_m \mapsto h(v_m)]$.\nb{E: what is $h$? Would be good to explain it}
 \end{description}
+\end{definition}
+
+
+By the definition above, a $\bictl$ sentence is evaluated only up to a bounded
+number of time steps.  We call this number of steps the {\em temporal depth} of
+a given $\bictl$ sentence which we formally define below.
+
+\begin{definition}[Temporal depth]
+The temporal depth $\td{\varphi}$ of a $\bictl$ sentence $\bictlspec$ is inductively defined as
+follows:
+\begin{center}
+\begin{tabular}{lll}
+  $\td \varphi = 0$ & if & $\varphi = (p, i)$; \\
+  $\td \varphi = \max(\td{\psi_1}, \td{\psi_2})$  & if & $\varphi = \psi_1 \lor \psi_2$; \\
+  $\td \varphi = \max(\td{\psi_1}, \td{\psi_2})$  & if & $\varphi = \psi_1 \land \psi_2$; \\
+  $\td \varphi =  k + \td{\psi_1}$  & if & $\varphi = EX^k \psi_1$; \\
+  $\td \varphi =  k + \td{\psi_1}$  & if & $\varphi = AX^k \psi_1$; \\
+  $\td \varphi = \td{\psi_1}$  & if & $\varphi = \forall_{v1,\ldots,v_m} \psi_1$.
+\end{tabular}
+\end{center}
 \end{definition}
 
 A sentence $\bictlspec$ is said to be true in $\msys n$, denoted $\msys n
@@ -766,6 +775,23 @@ check whether this holds.
   $\npis \models \bictlspec$.
 \end{definition}
 
+While solutions to the parameterised verification problem can be used to
+establish whether a property holds for any number of agents, some properties,
+often called emergent properties~\cite{KouvarosLomuscio15b}, are expected to be
+realised only after certain conditions on the number of agents are met. For
+instance, foraging protocols for robot swarms, require a certain number of agent
+to be present for the underlying formation to be established. A natural number
+$th \in \mathbb N$ is an {\em emergence thershold} for a PNIS $\npis$  and a
+$\bictl$ sentence $\bictlspec$  if we have that $\msys n \models \bictlspec$ for
+every $n \geq t$. The emergence identification problem is to compute an
+emergence threshold.
+
+
+\begin{definition}[Emergence identification problem]
+  Given an NPIS $\npis$ and a $\bictl$ sentence $\bictlspec$, compute an
+  emergence threshold $th \in \set{0, m, m+1, \ldots}$ for $\npis$ and $\bictl$.
+  (If $th=0$, then $\npis$ admits no threshold for $\bictlspec$.)
+\end{definition}
   
   % Lomuscio, 2016b]. Given a set IND of indices, a set L AP
   % of local atomic propositions and a set G AP of global
