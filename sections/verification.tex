@@ -10,7 +10,7 @@ and $\bictlspec$ to a number of (standard) verification problems for abstract
 and concrete NIS against the $\bctl$ formula
 $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.  We show that the satisfaction
 status of $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ on these systems
-determines the satisfaction and emergent\nb{E: emergency?} status of
+determines the satisfaction and identifies emergence of
 $\bictlspec$ on $\pnis$. This enables us to use previously established
 methodologies for the verification of NIS against $\bctl$~\cite{Akintunde+20b}
 to analyse PNIS.
@@ -113,10 +113,15 @@ transition function we can similarly associate an (abstract) model  $\masys m =
 \tuple{\aglobalstates m, \aglobalacts m, \aglobalrel m, \avaluation m}$.
 
 We now establish a correspondence between the abstract model and the concrete
-models. We show in particular that (i) the abstract model simulates every
-concrete model with at least~$m+1$ agents; (ii) there is always a concrete model
-with a sufficient number of agents that simulates the abstract model; and (iii)
-a concrete model always simulates a smaller concrete model. A model simulates another
+models. We show in particular that
+\begin{inparaenum}[\it (i)]
+\item the abstract model simulates every concrete model with at least~$m+1$
+  agents;
+\item there is always a concrete model with a sufficient number of agents that
+  simulates the abstract model;
+\item a concrete model always simulates a smaller concrete model.
+\end{inparaenum}
+A model simulates another
 model if every behaviour exhibited by the latter is also admitted by the former.
 As specifications for PNIS are bounded, we consider simulation up to a bounded
 number of steps as defined below.
@@ -217,7 +222,7 @@ question.
 
 \begin{corollary}
 \label{cor:universal}
-If $\varphi[m]$ is a universal $\bctl$ formula, then the following hold:
+For a universal $\bctl$ formula $\varphi[m]$:
 \begin{itemize}
     \item  If $\masys m \models \varphi[m]$, then $m + 1$ is an emergence
     threshold for $\bictlspec$. Otherwise, there is no emergence threshold for
@@ -261,8 +266,8 @@ for the verification of existential properties.
 \begin{corollary}
 \label{cor:existential}
 If $\varphi[m]$ is an existential $\bictl$ formula with temporal depth $b$ and  $n
-= \min_i \left( \masys m \leq_b \msys i \right)$, then the following hold:
-\begin{itemize}
+= \min_i \left( \masys m \leq_b \msys i \right)$, then:
+\begin{itemize}[$\bullet$]
 \item If $\msys n \models \varphi[m]$, then $n$ is an emergence threshold for
 $\bictlspec$. Otherwise, there is no emergence threshold for $\bictlspec$.
 
