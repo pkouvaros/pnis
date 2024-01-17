@@ -510,7 +510,7 @@ actions.   We now formally define the concrete NIS.
 
 \begin{definition}[Concrete Neural Interpreted System]
   \label{def:concreteystem}
-Given an NPIS $\mathcal S = \tuple{\ag t, \ag e, \ell_t}$ and $n \geq 1$, a
+Given an PNIS $\mathcal S = \tuple{\ag t, \ag e, \ell_t}$ and $n \geq 1$, a
 \emph{concrete neural interpreted system}, is a tuple $\sys n = \tuple{ \set{\ag 1,
 \ldots, \ag n, \ag e}, \globalinit n, \valuation n}$, where $\globalinit n =
 \tuple{\init 1, \ldots, \init n, \init e}$ is the initial global state and
@@ -762,9 +762,9 @@ follows:
 \end{center}
 \end{definition}
 
-A sentence $\bictlspec$ is said to be true in $\msys n$, denoted $\msys n
+A sentence $\bictlspec$ is said to \emph{be true} in $\msys n$, denoted $\msys n
 \models \bictlspec$ if $(\msys n, \globalinit n) \models \bictlspec$. The
-sentence is said to be true in $\npis$, denoted $\npis \models \bictlspec$, if
+sentence is said to \emph{be true} in $\npis$, denoted $\npis \models \bictlspec$, if
 $\bictlspec$ is true in every model induced by every concrete system
 instantiated from $\npis$ with at least $m$ agents, i.e., $\forall n \geq m :
 \msys n \models \bictlspec$.  The {\em parameterised verification problem} is to
@@ -789,7 +789,7 @@ emergence threshold.
 
 
 \begin{definition}[Emergence identification problem]
-  Given an NPIS $\npis$ and a $\bictl$ sentence $\bictlspec$, compute an
+  Given an PNIS $\npis$ and a $\bictl$ sentence $\bictlspec$, compute an
   emergence threshold $th \in \set{0, m, m+1, \ldots}$ for $\npis$ and $\bictl$.
   (If $th=0$, then $\npis$ admits no threshold for $\bictlspec$.)
 \end{definition}

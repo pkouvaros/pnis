@@ -52,62 +52,104 @@ We trained the network according to the traditional Q-learning paradigm modified
 
 
 
+%%%%
 Given the neural network implementing the observation function, we 
 implemented a template agent and a zero-one agent for the guarding game. We
 then used the \venmas toolkit developed for verification of
 NISs~\cite{Akintunde+20b} to verify $\bctl$ properties checking whether it is
 possible for a colony of agents to survive after a number of time steps.
+%
+The experiments have been performed on a standard PC running Ubuntu 22.04 with
+16GB RAM and processor Intel(R) Core i5-4460 CPU @ 3.20GHz. We relied on Gurobi
+v10.0 to solve MILP \cite{Gurobi+16a}.
 
 We assume that $M_h = 4$, $G_r = -2$, $R_r = 1$ and $U_r = -3$. 
 
-Assume the set $\atprop$ and the labelling function $\ell$ as in
-Example~\ref{ex:pnis}. We evaluate the zero-one NIS
-$\pnis_{zo} = \tuple{\set{1,\ldots,m,zo,e}, \globalinit{m}_{zo}, \valuation{m}_{zo}}$
-against two specifications:
-$\varphi^k_1 = EX^k \bigwedge_{i=1}^m(\mathsf{a},i)$,
-expressing that there is a way to choose agents' actions from those available
-to them so that all three agents are alive after $k$ time steps, and
-$\varphi^k_2 = AX^k (\mathsf{a},1) \land (\mathsf{a},2) \land (\mathsf{a},3)$,
-expressing that for all possible evolutions after $k$ time steps all three
-agents are alive.
-
-The experiments have been performed on a standard PC running Ubuntu 22.04 with
-16GB RAM and processor Intel(R) Core i5-4460 CPU @ 3.20GHz. We relied on Gurobi
-v9.5.1 to solve MILP \cite{Gurobi+16a}.
-
-
+Consider the guarding example PNIS $\pnis$ from Example~\ref{ex:pnis}, and recall that the proposition $\mathsf{a}$ labels all states with positive health (``alive'') and the proposition $\mathsf{d}$ all other states (``dead'').
 
 \begin{table}
 \centering
-\begin{tabular}{ccrcrcrc}
+\begin{tabular}{c@{\qquad}rrrrr}
   \toprule
-  & $k$ & \multicolumn{2}{c}{$m = 1$} & \multicolumn{2}{c}{$m = 2$} & \multicolumn{2}{c}{$m = 3$}  \\\midrule
-  $\varphi_1^k$ & 1 &       0.27s & True    &       0.69s & True    &       1.87s & True   \\
- & 2 &       1.07s & True    &       3.30s & True    &      14.31s & True   \\
- & 3 &       1.84s & True    &       7.70s & True    &      28.91s & True   \\
- & 4 &      11.26s & False   &      38.14s & True    &     137.84s & True   \\
- & 5 &      10.84s & False   &      46.73s & True    &     237.68s & True   \\
- & 6 &      14.45s & False   &      31.41s & True    &     339.65s & True   \\
-
-
+  k &\multicolumn{1}{c}{$n=2$} & \multicolumn{1}{c}{$n=3$} & \multicolumn{1}{c}{$n=4$} & \multicolumn{1}{c}{$n=5$} & \multicolumn{1}{c}{$n=6$}\\\midrule
   
-  \midrule
-  $\varphi_2^k$ & 1 &    0.65s & False   &     1.79s & False  \\
-               & 2 &     3.32s & False   &    14.67s & False  \\
-               & 3 &  3601.62s & Timeout &     0.00s & False  \\
-               & 4 &    17.12s & False   &     0.00s & False  \\
-               & 5 &    20.50s & False   &     0.00s & False  \\
-               & 6 &  3603.07s & Timeout &     0.00s & False  \\
-
-
-\bottomrule
+  2 &              0.09s &     0.13s &   0.53s &    1.15s &              5.09s\\
+  3 & \graycell    1.46s &     0.30s &   1.19s &    3.41s &             17.58s\\
+  4 & \graycell    5.49s &     0.52s &   2.31s &   17.74s & \multicolumn{1}{c}{--}\\
+  5 & \graycell   61.47s &   133.28s &   4.28s &   95.83s & \multicolumn{1}{c}{--}\\
+  \bottomrule
 \end{tabular}
-  % \caption{ Verification times for \guard{m} against properties $\varphi_{1}^{k}$
-  %   and $\varphi_{2}^{k}$ for various $k$ and $h_\init$.  Grey cells indicate a
-  %   % \texttt{\greyc} result, otherwise a \texttt{True} result was obtained.
-  %   % Dashes indicate a \timeout hour timeout.
-  % }
-  \label{tab:results}
+\caption{ Verification times for $\msys n \models \varphi^k_E[m]$ for $m=2$ and
+  various $k$ and $n$.  Grey cells indicate when the property was not
+  satisfied.  Dashes indicate a 1 hour timeout.  }
+  \label{tab:results-existential}
+\end{table}
+
+Let $m$ be the number of agent variables. We are interesting in verifying two
+specifications:
+\begin{inparaenum}[\it (i)]
+\item existential property
+  $\varphi^k_E = EX^k \bigwedge_{i=1}^m(\mathsf{a},v_i)$ for $v_i \in\atvar$
+  expressing there is an evolution where at least $m$ agents are alive after
+  $k$ time steps,
+\item universal property $\varphi^k_A = AX^k \bigwedge_{i=1}^m(\mathsf{a},v_i)$
+  expressing that in every possible evolution at least $m$ agents are alive
+  after $k$ time steps.
+\end{inparaenum}
+
+For the existential property, we consider the case of $m=2$ and are interested
+in finding the minimal number of agents in the colony that is required to
+guarantee that at least two agents can stay alive for a given number of
+steps. We vary the temporal depth $k$ of the property, from 2 till 6, and the
+total number $n$ of agents from 2 to 6, and verify the property against
+concrete NISs $\sys{n}$ composed of $n$ concrete agents.  The outcomes of the
+verification queries are presented in Table~\ref{tab:results-existential}.
+%
+For temporal depth $k=2$, we have that
+$\pnis\models \forall_{v_1,v_2}\varphi^k_E$. However, for $k\geq 3$,
+$\pnis\not\models\forall_{v_1,v_2}\varphi^k_E$ as a system composed of two
+agents only does not satisfy it, i.e.,
+$\msys{2}\not\models\forall_{v_1,v_2}\varphi^k_E$. On the other hand, $n=3$ is
+the emergence threshold for $\forall_{v_1,v_2}\varphi^k_E$ when $k\geq 3$. This
+result is what we would expect from a cooperative template agent for the given
+parameters of the guarding game. We can therefore conclude that the RL
+procedure has been adequate for training altruistic agents.
+
+For the universal property, we verified $\varphi^k_A[m]$ against $\masys{m}$
+for temporal depth $k = 1,\dots,6$ and the number of agents $m=2,3$. The
+verification results can be found in Table~\ref{tab:results-universal}.  When
+we could get the result within the timeout, none of the properties has been
+satisfied. This is a consequence of the semantics of our PNIS, where even when
+the agents volunteer to guard, they can choose either to rest or to guard, and
+so there is a path in the model where nobody is guarding and a path where
+everybody is guarding, thus everyone's health deteriorates. This result
+highlights the need for some arbitration in the social dilemma settings that
+would follow some reasonable strategy instead of letting the system evolve due
+to a chance.
+
+\begin{table}
+  \centering
+  \begin{tabular}{crrrrrr}
+    \toprule
+    % $k$ & \multicolumn{1}{c}{$m = 2$} & \multicolumn{1}{c}{$m = 3$}\\
+    % \midrule
+    % 1 & \graycell        0.66s      & \graycell        1.75s\\
+    % 2 & \graycell        3.60s      & \graycell       16.03s\\
+    % 3 & \multicolumn{1}{c}{--}      & \graycell        0.00s\\
+    % 4 & \graycell       16.90s      & \multicolumn{1}{c}{--}\\
+    % 5 & \graycell       20.59s      & \multicolumn{1}{c}{--}\\
+    % 6 & \multicolumn{1}{c}{--}      & \multicolumn{1}{c}{--}\\
+
+    m & \multicolumn{1}{c}{$k = 1$} & \multicolumn{1}{c}{$k = 2$} & \multicolumn{1}{c}{$k = 3$} & \multicolumn{1}{c}{$k = 4$} & \multicolumn{1}{c}{$k = 5$} & \multicolumn{1}{c}{$k = 6$}\\
+    \midrule
+2 & \graycell    0.66s & \graycell    3.60s &            \multicolumn{1}{c}{--} & \graycell   16.90s & \graycell   20.59s &            \multicolumn{1}{c}{--}\\
+3 & \graycell    1.75s & \graycell   16.03s & \graycell    0.00s & -- & -- & --\\
+    \bottomrule
+  \end{tabular}
+  \caption{ Verification times for $\masys{m} \models \varphi^k_A[m]$ for various
+    $m$ and $k$.  Grey cells indicate when the property was not satisfied.
+    Dashes indicate a 1 hour timeout.  }
+  \label{tab:results-universal}
 \end{table}
 
 
