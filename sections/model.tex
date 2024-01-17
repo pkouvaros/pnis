@@ -23,7 +23,7 @@ which the agents operate. The agent template is defined by the following.
 \begin{definition}[Agent template.]
 An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 \acts t, \prot t, \tr t }$, where:
-\begin{itemize}[$\bullet$]
+\begin{itemize}[$\bullet$]\itemsep 0cm
   \item $\lstates t = \prvs t \times \pers t$ is a nonempty (possibly infinite)
   set of template local states.  Each local state  is a pair $\tuple{\prv t, \per t}$ of
   a private state $\prv t \in \prvs t \subseteq \mathbb R^{m_{prv}}$ and a
@@ -42,9 +42,11 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 
   \item $\acts t$ is a nonempty and finite set of actions.
   
-  \item $\prot t : \lstates t \rightarrow 2^{\acts t} \setminus \set{\emptyset}$
-  is a local protocol function that selects which actions may be performed at a
-  given local state.%%\nb{E: shouldn't the protocol take as input $\pers{t}$?}
+  \item
+    $\prot t : \lstates t \rightarrow 2^{\acts t} \setminus \set{\emptyset}$ is
+    a local protocol function returning actions available at a given local
+    state.
+    % that selects which actions may be performed at a given local state.
 
   \item $\tr t: \lstates t \times \acts t \times 2^{\acts t} \times \acts e 
   \rightarrow \prvs t$ is a local transition function  that determines the next
@@ -146,37 +148,30 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 
 % \end{example}
 
-\begin{example}
-      %% no restriction on everybody guarding
-    %% suitable for existential properties only
-
+\begin{example}\em
   \label{ex:agent-template}
 
-  % Version 1, Everybody can guard and rest
-  
   We consider the example of a guarding game, an instance of sequential social
-  dilemma games \cite{LeiboZLMG17}. In this game there is a colony of
-  agents. The colony needs to be guarded. Guarding duty costs the guard some
-  health~$G_p$, while those who are resting improve their health by $R_r$,
-  where the health is limited by a maximum value $M_h$. If no one is guarding
-  the colony, then all the agents in the colony lose some health, $U_p$. When
-  an agent does not have any health left, it \emph{expires}.
-
+  dilemma games \cite{LeiboZLMG17}. In this game there is a colony of agents
+  that needs to be guarded. Guarding duty costs a guard some health~$G_r$,
+  resting improves agent's health by $R_r$, however if no one is guarding, then
+  it costs all agents in the colony some health~$U_r$. The maximum value of
+  health is~$M_h$, when agent does not have any health left, it \emph{expires}.
+%
   We formalise the agent template
   $\ag t = \tuple{\lstates{t}, \init{t}, \obs{t}, \acts{t}, \prot{t}, \tr{t} }$
   in this game as follows.
 
  
-  \begin{itemize}[$\bullet$]
+  \begin{itemize}[$\bullet$]\itemsep 0cm
   \item
-    $\lstates{t} = \{(h,\per{}) \mid h \in \{0,\dots,M_h\}, \ \per{} \in \{G_s,
-    R_s, E_s\}$, where $h$ is an integer between 0 and $M_h$, denoting the
-    health of the agent, while percepts $G_s$, $R_s$ and $E_s$ indicate what
-    actions are available to the agent depending on its health.
+    $\lstates{t} = \{(h,\per{}) \mid h \in \{0,\dots,M_h\}, \ \per{} \in \{G_p,
+    R_p, E_p\}$, where $h$ is the health of the agent and percepts $G_p$, $R_p$
+    and $E_p$ indicate what the agent is willing to do.
     % stand for \emph{G}uarding, \emph{R}esting and \emph{E}xpired
     % \emph{s}tates, respectively.
 
-  \item $\init{t} = (G_p + 1, G_s)$, i.e., at the start each agent has enough
+  \item $\init{t} = (|G_r| + 1, G_p)$, i.e., at the start each agent has enough
     of health to be able to guard at least once without expiring.
     
   \item $\acts{t} = \{G_a, R_a, E_a\}$, where $G_a$, $R_a$ and $E_a$ stand for
@@ -184,42 +179,44 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
     respectively.
   
 
-  \item The observation function is assumed to be given as a neural
-    network. But for the sake of illustration, we define here the observation
-    function of a perfectly altruistic agent:
+  \item The observation function is assumed to be given as a neural network. It
+    returns whether the agent volunteers to guard, $G_p$, can only rest, $R_p$, or
+    is expired, $E_p$.
+    % But for the sake of illustration, we define here the observation
+    % function of a perfectly altruistic agent:
 
-    $\obs{t}((h,\per{}), \ \lstate{e}) = \left\{
-      \begin{array}{rl}
-        G_s, & \text{ if } h > G_p\\ 
-        R_s, & \text{ if } 0 < h \leq G_p\\ 
-        E_s, & \text{ if } h \leq 0\\
-      \end{array} \right.$
+    % $\obs{t}((h,\per{}), \ \lstate{e}) = \left\{
+    %   \begin{array}{rl}
+    %     G_s, & \text{ if } h > G_p\\ 
+    %     R_s, & \text{ if } 0 < h \leq G_p\\ 
+    %     E_s, & \text{ if } h \leq 0\\
+    %   \end{array} \right.$
     
-    Intuitively, if the health is good enough, then the agent is in a position to
-    guard. If the health is  positive, then the agent can only rest. Otherwise, the
-    agent is ``expired''. In this example, the environment state is ignored by
-    the observation function.
+    % Intuitively, if the health is good enough, then the agent is in a position to
+    % guard. If the health is  positive, then the agent can only rest. Otherwise, the
+    % agent is ``expired''. In this example, the environment state is ignored by
+    % the observation function.
     
   \item $\prot{t}(h,\per{}) = \left\{
       \begin{array}{rl}
-        \{G_a, R_a\}, & \text{ if } \per{} = G_s\\ 
-        \{R_a\}, & \text{ if } \per{} = R_s\\ 
-        \{E_a\}, & \text{ if } \per{} = E_s\\
+        \{G_a, R_a\}, & \text{ if } \per{} = G_p\\ 
+        \{R_a\}, & \text{ if } \per{} = R_p\\ 
+        \{E_a\}, & \text{ if } \per{} = E_p\\
       \end{array} \right.$
 
-    If the percept is $G_s$, then the agent can both guard and rest. If the
-    percept is $R_s$ or $E_s$, the only available actions are resting and the
+    If the percept is $G_p$, then the agent can both guard and rest. If the
+    percept is $R_p$ or $E_p$, the only available actions are resting and the
     dummy action $E_a$, respectively.
     
   \item The local transition function updates the health according to the
-    rules. Formally, for $S \in \{G_s,R_s\}$:
+    rules. Formally, for $P \in \{G_p,R_p\}$:
 
     $\begin{array}{@{}l@{\quad}l}\small
-       \tr{t}((h,S), G_a, A) = \max(h + G_p,0) &\\% \text{ and } h > G_p\\
-       % \tr{t}((h,S), G_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq G_p\\[2mm]
-       \tr{t}((h,S), R_a, A) = \min(h + R_r, M_h) &\text{ if }G_a\in A\\
-       \tr{t}((h,S), R_a, A) = \max(h + U_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > U_p\\
-       % \tr{t}((h,S), R_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
+       \tr{t}((h,P), G_a, A) = \max(h + G_p,0) &\\% \text{ and } h > G_p\\
+       % \tr{t}((h,P), G_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq G_p\\[2mm]
+       \tr{t}((h,P), R_a, A) = \min(h + R_r, M_h) &\text{ if }G_a\in A\\
+       \tr{t}((h,P), R_a, A) = \max(h + U_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > U_p\\
+       % \tr{t}((h,P), R_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
        
        \tr{t}((h,E_s), E_a, A) = h.\\
      \end{array}$
@@ -454,8 +451,8 @@ protocol function, and $\tr e \colon \lstates e \times \acts e \times 2^{\acts t
 Agent and environment templates define the main formal structure we will be
 using in this paper.
 
-\begin{definition}[Parameterised Neural Interpreted System]
-  A {\em Parameterised Neural Interpreted System} (PNIS) is a tuple $\mathcal S
+\begin{definition}%[Parameterised Neural Interpreted System]
+  A \emph{Parameterised Neural Interpreted System (PNIS)} is a tuple $\mathcal S
   = \tuple{\ag t, \ag e, \ell}$, where $\tlabel{} : \atprop \rightarrow
   2^{\lstates t}$ is a labelling function on the agent  template states for a set
   $\atprop$ of atomic propositions.
@@ -465,37 +462,37 @@ using in this paper.
   \label{ex:pnis}
   Consider the agent template $t$ in Example~\ref{ex:agent-template}.
 
-  Assume that $e$ is a dummy environment where $\lstates{e}= \{0\}$ and
+  Assume a dummy environment $e$ where $\lstates{e}= \{0\}$ and
   $\acts{e}=\{0\}$ are singleton states, $\prot{e}(0) = \{0\}$ and
   $\tr{e}(0,0,A) = 0$ for all $A\in 2^{\acts{t}}$.
  % 
   Suppose $\atprop = \{\mathsf{a}, \mathsf{d}\}$, where $\mathsf{a}$ stands for
-  alive and $\mathsf{d}$ for dead, and assume a labelling function $\ell$
-  defined as $\ell(\mathsf{a}) = \{(h,S) \mid h > 0 \text{ and }S \neq E_s\}$
-  and $\ell(\mathsf{d}) = \lstates{t} \setminus \ell(\mathsf{a})$.
+  alive and $\mathsf{d}$ for dead, and $\ell$ is a labelling function defined
+  as $\ell(\mathsf{a}) = \{(h,S) \mid h > 0 \text{ and }S \neq E_p\}$ and
+  $\ell(\mathsf{d}) = \lstates{t} \setminus \ell(\mathsf{a})$.
 %
-  Then, $\mathcal{S} = (t,e,\ell)$ is a parameterised NIS for the guarding example.
+  Then $\mathcal{S} = (t,e,\ell)$ is a parameterised NIS for the guarding example.
 \end{example}
 
 A PNIS $\mathcal S$ gives a parametric description of an unbounded collection
 of {\em concrete} NIS. In particular, for any value $n \geq 1$ of the parameter, 
 the concrete system $\sys n$ composes~$n$ copies $\ag 1, \ldots, \ag n$ of the
 agent template with the environment $\ag e$. We write $\agents n$ for the set
-$\agents n = \set{\ag 1, \ldots, \ag n}$ of concrete agents instantiated from
+$\set{\ag 1, \ldots, \ag n}$ of concrete agents instantiated from
 $\ag t$.
 %
 A \emph{global state} $q = \tuple{\lstate 1, \ldots, \lstate n, \lstate e}$ in
 $\sys n$ is a tuple of local states for all the agents and the environment in
 $\sys n$; it describes the system at a particular instant of time.  For a
-global state $g$, we write $\lprv{i}{q}$, $\lper{i}{q}$ and $\ls{i}{q}$ to
+global state $g$, we write $\lprv{i}{g}$, $\lper{i}{g}$ and $\ls{i}{g}$ to
 denote the \emph{private part} $\prv i$ and the \emph{perception part} $\per i$
 of the local state $\ls{i}{g} = \tuple{\prv i, \per i}$ of agent $\ag i$ in
-$g$.  The set $\globalstates{n}=\lstates{1}\times\dots\times\lstates{n}\times L_e$
-of all possible global states is the Cartesian product of the agents' sets of
-local states.
+$g$.  $\globalstates{n}=\lstates{1}\times\dots\times\lstates{n}\times L_e$ is
+the set of all possible global states.
+% is the Cartesian product of the agents' sets of local states.
 % 
 A \emph{joint action} $\alpha = \tuple{\alpha_1, \ldots, \alpha_n, \alpha_e}$
-in $\sys n$ is a tuple of local actions for all the agents and the environment.
+in $\sys n$ is a tuple of local actions for all agents and the environment.
 For a joint action $\alpha$, we write $\la{i}{\alpha}$ to denote the
 \emph{local action} of agent $\ag i$ in~$\alpha$.  
 $\globalacts{n} = \acts{1}\times\dots\times\acts{n}\times\acts{e}$ is the set of all
@@ -603,7 +600,7 @@ that we will use  to interpret our specification language.
 \end{definition}
 
 A \emph{path} in a model $\msys n$ is an infinite sequence of global states and joint
-actions $q^0\alpha^0q^1\alpha^1\ldots$ such that $(q^i,\alpha^i,q^{i+1}) \in
+actions $q^0\alpha^0q^1\alpha^1\dots$ s.t.\ $(q^i,\alpha^i,q^{i+1}) \in
 \globalrel n$ for all $i \geq 0$. Given a global state $q$ in $\msys n$ we write
 $\paths{q}$ for the set of all paths originating from $q$.
 
@@ -616,11 +613,12 @@ $\paths{q}$ for the set of all paths originating from $q$.
   template in Example~\ref{ex:agent-template} and PNIS in
   Example~\ref{ex:pnis}, where $\valuation{2}$ is defined from $\ell$,
   $\globalinit{2} = \tuple{\init{1},\init{2}, \init{e}}$ and
-  $\init{i} = (-G_p+1, G_s)$. Assume that $G_p=-1$, $R_r=1$, $U_p=-2$ and
-  $M_h \geq 4$. For brevity we omit the environment local state $\lstate{e}$.  The
-  model $\msys{2}$ of $\sys{2}$ can be depicted as follows.
+  $\init{i} = (|G_p|+1, G_p)$. For brevity we omit the environment local state
+  $\lstate{e}$.  A model $\msys{2}$ of $\sys{2}$ is depicted in
+  Figure~\ref{fig:model-guarding}.
 
-  \begin{center}
+  \begin{figure}
+    \centering
     \begin{tikzpicture}[yscale=1.2, %
       gg/.style={green!50!red}, %
       gr/.style={green!50!blue}, %
@@ -631,18 +629,18 @@ $\paths{q}$ for the set of all paths originating from $q$.
       ee/.style={orange}, %
       ]
 
-    \foreach \a/\hone/\perone/\htwo/\pertwo/\prop/\x/\y in { %
-      s22gg/2/G_s/2/G_s/{a,a}/0/1.1,%
-      s00/  0/E_s/0/E_s/{d,d}/1.1/0,%
-      s11/  1/R_s/1/R_s/{a,a}/-1.1/0,%
-      s31/  3/G_s/1/R_s/{a,a}/-3.3/0,%
-      s13/  1/R_s/3/G_s/{a,a}/3.3/0,%
-      s10/  1/R_s/0/E_s/{a,d}/-1.2/-0.9,%
-      s01/  0/E_s/1/R_s/{d,a}/1.2/-0.9%
-    }{ %
-      \node[scale=0.7, outer sep=1mm,draw, very thick, rounded corners] (\a) at (\x,\y) {$(\hone,\perone), (\htwo,\pertwo)$};
+      \foreach \a/\hone/\perone/\htwo/\pertwo/\prop/\x/\y in { %
+        s22gg/2/G_s/2/G_s/{a,a}/0/1.1,%
+        s00/  0/E_s/0/E_s/{d,d}/1.1/0,%
+        s11/  1/R_s/1/R_s/{a,a}/-1.1/0,%
+        s31/  3/G_s/1/R_s/{a,a}/-3.3/0,%
+        s13/  1/R_s/3/G_s/{a,a}/3.3/0,%
+        s10/  1/R_s/0/E_s/{a,d}/-1.2/-0.9,%
+        s01/  0/E_s/1/R_s/{d,a}/1.2/-0.9%
+      }{ %
+        \node[scale=0.7, outer sep=1mm,draw, very thick, rounded corners] (\a) at (\x,\y) {$(\hone,\perone), (\htwo,\pertwo)$};
 
-      \node[fill=black, text=white, rounded corners, inner sep=1mm, scale=0.7, xshift=0.3mm, yshift=-1mm] at (\a.south) {$\mathsf{\prop}$};
+        \node[fill=black, text=white, rounded corners, inner sep=1mm, scale=0.7, xshift=0.3mm, yshift=-1mm] at (\a.south) {$\mathsf{\prop}$};
       }
 
       \foreach \from/\to/\lab/\wh in { %
@@ -663,18 +661,23 @@ $\paths{q}$ for the set of all paths originating from $q$.
         \draw[-latex,thick,\lab] (\from) to[out=\out,in=\in, looseness=\loose]  (\to); %
       }
 
-      \begin{scope}[yshift=1.4cm]
+      \begin{scope}[yshift=1.2cm]
         \foreach \col/\y/\lab in { %
           gg/0/{G_a,G_a},
           gr/1/{G_a,R_a}, rg/2/{R_a,G_a}, rr/3/{R_a,R_a}%
-        }{ \draw[-latex, semithick, \col] (2.6,-0.18*\y) -- ++(1,0) node[right, scale=0.6] {$\lab$}; }
+        }{ \draw[-latex, semithick, \col] (2.8,-0.18*\y) -- ++(0.8,0) node[right, scale=0.6] {$\lab$}; }
         \foreach \col/\y/\lab in { %
           re/0/{R_a,E_a}, er/1/{E_a,R_a}, ee/2/{E_a,E_a}%
-        }{ \draw[-latex, semithick, \col] (-4,-0.18*\y) -- ++(1,0) node[right, scale=0.6] {$\lab$}; }
-    \end{scope}
+        }{ \draw[-latex, semithick, \col] (-4.2,-0.18*\y) -- ++(0.8,0) node[right, scale=0.6] {$\lab$}; }
+      \end{scope}
     \end{tikzpicture}
-  \end{center}
- 
+
+    \vspace{-0.3cm}
+    
+    \label{fig:model-guarding}
+    \caption{The model $\msys{2}$ for the guarding example for $G_r=-1$, $R_r=1$,
+      and $U_r=-2$.}
+  \end{figure}
 \end{example}
 
 
@@ -696,27 +699,30 @@ Given a  set $\atprop$ of atomic propositions and a set $\atvar$ of variables,
 the $\bictl$  formulae are defined by the following BNF:
 \[
   \varphi \;   ::= \; (p, v) \mid \varphi \lor \varphi \mid \varphi \land \varphi
-  \mid AX^K \varphi \mid \forall v : \phi,
+  \mid EX^K \varphi \mid AX^K \varphi \mid \forall v \colon \phi,
 \]
 where  $p \in \atprop$, $v \in \atvar$ and $k \geq  1$.
 \end{definition}
 
 The formula $AX^k \varphi$ is read as ``for all paths, $\varphi$ holds at the
-$k$-th step''. We inductively abbreviate bounded until as
-\begin{align*}
- A(\varphi U^1 \psi) &\triangleq \psi \lor (\varphi \land AX^1 \psi) \\
- A(\varphi U^k \psi) &\triangleq \psi \lor (\varphi \land AX^1 (A (\varphi U^{k-1} \psi)).
-\end{align*}
-with the meaning ``there is a path in which $\psi$ holds at some point in the
-$k$ following steps and before then $\varphi$ is true along the path. 
-The dual
-until, prefixed by the existential operator, can be defined analogously.
+$k$-th step'', and $EX^k \varphi$ as ``there exists a path where $\varphi$
+holds at the $k$-th step''.
+% We inductively abbreviate bounded until as
+% \begin{align*}
+%  A(\varphi U^1 \psi) &\triangleq \psi \lor (\varphi \land AX^1 \psi) \\
+%  A(\varphi U^k \psi) &\triangleq \psi \lor (\varphi \land AX^1 (A (\varphi U^{k-1} \psi)).
+% \end{align*}
+% with the meaning ``there is a path in which $\psi$ holds at some point in the
+% $k$ following steps and before then $\varphi$ is true along the path. 
+% The dual
+% until, prefixed by the existential operator, can be defined analogously.
+%
 The logic $\bctl$~\cite{Akintunde+22} is the logic obtained from the above BNF, but
 replacing the first clause with $p$ and removing the last clause.
 
-A $\bictl$ formula is said to be a sentence if every variable appearing the
+A $\bictl$ formula is said to be a \emph{sentence} if every variable appearing in the
 formula is in the scope of a universal quantifier. Hereafter we consider only
-indexed $\bictl$ sentences of the form $\forall v_1 \ldots \forall v_m :
+indexed $\bictl$ sentences of the form $\forall v_1 \cdots \forall v_m \colon
 \varphi$, or, shortly, $\bictlspec$, where $v_i \in \atvar$ for $i \in
 \set{1,\ldots,m}$ and $\varphi$ is either {\em universal} in that it contains
 only universal quantifiers or {\em existential} in that it contains only
@@ -729,9 +735,9 @@ associated with the concrete systems.
 \begin{definition}[Satisfaction]
   \label{def:sat} 
   Given a model $\msys n$, a global state~$q$ and a $\bictl$ sentence
-  $\bictlspec$ with $m \leq n$, the \emph{satisfaction} of $\varphi$ at $q$\nb{E: $q$ or $q^0$?},
+  $\bictlspec$ with $m \leq n$, the \emph{satisfaction} of $\varphi$ at $q$,
   denoted $(\msys n, q) \models\varphi$, or simply $q \models \varphi$ when
-  $\msys n$ is clear from the context, is defined as follows:
+  $\msys n$ is clear from the context, is defined as:
   \begin{description}
   \item[$q \models (p, a)$] \ iff \ $q \in \valuation n((p, i))$, for $p \in
   \atprop$ and $i \in \agents n$; 
@@ -743,7 +749,7 @@ associated with the concrete systems.
   that $\rho(k) \models \varphi$;
   \item[$q \models AX^k  \varphi$] \ iff for all $\rho \in \paths{q}$ we
   have that $\rho(k) \models \varphi$;
-  \item[$q \models \bictlspec$] \ iff for all $h : \set{v_1, \ldots, v_m}
+  \item[$q \models \bictlspec$] \ iff for all $h \colon \set{v_1, \ldots, v_m}
   \rightarrow \set{\ag 1, \ldots,\ag n}$ we have that $q \models 
   \varphi[v_1 \mapsto h(v_1), \ldots v_m \mapsto h(v_m)]$.\nb{E: what is $h$? Would be good to explain it}
 \end{description}
@@ -754,9 +760,9 @@ By the definition above, a $\bictl$ sentence is evaluated only up to a bounded
 number of time steps.  We call this number of steps the {\em temporal depth} of
 a given $\bictl$ sentence which we formally define below.
 
-\begin{definition}[Temporal depth]
-The temporal depth $\td{\varphi}$ of a $\bictl$ sentence $\bictlspec$ is inductively defined as
-follows:
+\begin{definition}%[Temporal depth]
+  The \emph{temporal depth} $\td{\varphi}$ of a $\bictl$ sentence $\bictlspec$ is
+  inductively defined as follows:
 \begin{center}
 \begin{tabular}{lll}
   $\td \varphi = 0$ & if & $\varphi = (p, i)$; \\
@@ -769,13 +775,13 @@ follows:
 \end{center}
 \end{definition}
 
-A sentence $\bictlspec$ is said to \emph{be true} in $\msys n$, denoted $\msys n
-\models \bictlspec$ if $(\msys n, \globalinit n) \models \bictlspec$. The
-sentence is said to \emph{be true} in $\npis$, denoted $\npis \models \bictlspec$, if
-$\bictlspec$ is true in every model induced by every concrete system
-instantiated from $\npis$ with at least $m$ agents, i.e., $\forall n \geq m :
-\msys n \models \bictlspec$.  The {\em parameterised verification problem} is to
-check whether this holds.
+A sentence $\bictlspec$ is said to \emph{be true} in $\msys n$, denoted
+$\msys n \models \bictlspec$ if $(\msys n, \globalinit n) \models
+\bictlspec$. The sentence is said to \emph{be true} in $\npis$, denoted
+$\npis \models \bictlspec$, if $\bictlspec$ is true in every model induced by
+every concrete system instantiated from $\npis$ with at least $m$ agents, i.e.,
+$\msys n \models \bictlspec$ for all $n \geq m$.  The {\em parameterised
+  verification problem} is to check whether this holds.
 
 
 \begin{definition}[Parameterised verification problem]
@@ -785,20 +791,21 @@ check whether this holds.
 
 While solutions to the parameterised verification problem can be used to
 establish whether a property holds for any number of agents, some properties,
-often called emergent properties~\cite{KouvarosLomuscio15b}, are expected to be
-realised only after certain conditions on the number of agents are met. For
-instance, foraging protocols for robot swarms, require a certain number of agent
-to be present for the underlying formation to be established. A natural number
-$th \in \mathbb N$ is an {\em emergence thershold} for a PNIS $\npis$  and a
-$\bictl$ sentence $\bictlspec$  if we have that $\msys n \models \bictlspec$ for
-every $n \geq t$. The emergence identification problem is to compute an
-emergence threshold.
+often called \emph{emergent properties}~\cite{KouvarosLomuscio15b}, are
+expected to be realised only after certain conditions on the number of agents
+are met. For instance, foraging protocols for robot swarms, require a certain
+number of agent to be present for the underlying formation to be established. A
+natural number $\mathit{th} \in \mathbb N$ is an {\em emergence thershold} for
+a PNIS $\npis$ and a $\bictl$ sentence $\bictlspec$ if we have that
+$\msys n \models \bictlspec$ for every $n \geq \mathit{th}$. The emergence
+identification problem is to compute an emergence threshold.
 
 
 \begin{definition}[Emergence identification problem]
   Given an PNIS $\npis$ and a $\bictl$ sentence $\bictlspec$, compute an
-  emergence threshold $th \in \set{0, m, m+1, \ldots}$ for $\npis$ and $\bictl$.
-  (If $th=0$, then $\npis$ admits no threshold for $\bictlspec$.)
+  emergence threshold $\mathit{th} \in \set{0, m, m+1, \ldots}$ for $\npis$ and
+  $\bictl$.  (If $\mathit{th}=0$, then $\npis$ admits no threshold for
+  $\bictlspec$.)
 \end{definition}
   
   % Lomuscio, 2016b]. Given a set IND of indices, a set L AP
