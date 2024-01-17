@@ -3,57 +3,16 @@ In this section we present an evaluation of the parameterised verification
 procedure described in Section~\ref{sec:verification} for the guarding game
 presented in Example~\ref{ex:agent-template}.
 
-% The guarding game is an instance of a social dilemma game, a class of
-% non-zero-sum MAS games characterised by intrinsic tension between individual
-% and collective rationality \cite{VanlangeJPV13}. The guarding game simulates
-% the fundamental forces of a \emph{collective risk dilemma (CRD)}, a type of
-% public goods social dilemma game where a guaranteed tragedy of the commons
-% \cite{Hardin68} is avoided by volunteered loss of utility by a population of
-% agents. The stability of such a system can be curtailed by the immediate
-% advantage of free riding if the agents favour a strategy which neglects the
-% collective interests of maintaining the public good \cite{SantosP11}.
-%
-% In the guarding game, guarding can be considered equivalent to cooperation
-% (acting in collective interest), and regenerating to defection (acting in
-% selfish interest). The arbitrary selection of a subset of guards that volunteer
-% is a necessary artefact of the swarm systems formalism, but does not affect the
-% stability of the system negatively and allows us to reason about its
-% existential properties, as the only event which would incur the tragedy of the
-% commons is the lack of any volunteer guards in the first place.
-%
-% Many real systems exhibit CRD dynamics, one example being the collective
-% maintenance of Earth's habitat by humanity \cite{Smirnov19}. Other examples
-% include nuclear disarmament, responsible AI development, and financing public
-% broadcast TV and radio entertainment. Furthermore, many of these can be
-% directly or indirectly modelled as swarm systems, as we have done with guarding
-% game. One example of this might be the huddling of emperor penguins to conserve
-% energy and incubate eggs \cite{GilbertRLNA06}
-% % The Emperor Penguin, Le Maho, 1977 during the
-% arctic winter, the success of which depends on a slow rotation of members of
-% the formation away from the chilling wind \cite{WatersBK12}.
-%
-% Given the existential nature of some challenges which come in the form of CRDs,
-% it is unacceptable for us as a species to remain unprepared to reliably avoid
-% their worst outcomes. Furthermore, many agents which play in CRD games may
-% increasingly become autonomous given recent technological advances. The
-% possibility of evading the tragedy of the commons through exporting some of our
-% risky decision making to such autonomous agents then emerges if such agents can
-% be verified to be more capable than we are of avoiding mutual defection as the
-% number of agents grows. This work indicates that this possibility, as well as
-% the possibility of better understanding systems which already evade the tragedy
-% of the commmons - such as the aforementioned emperor penguins - may be worthy
-% of pursuit.
 
-
+%%%%
 The guarding game is an instance of a social dilemma game, a class of
-MAS games characterised by tension between individual
+MASs characterised by tension between individual
 and collective rationality \cite{VanlangeJPV13}. The guarding game simulates
 the fundamental forces of a \emph{collective risk dilemma (CRD)}, a type of
-social dilemma where a guaranteed tragedy of the commons
+social dilemma where a guaranteed "tragedy of the commons"
 \cite{Hardin68} is avoided by volunteered loss of utility by a population of
-agents. Such a system can be destabilised by the immediate advantage of
-free riding if the agents favour a strategy which neglects the
-collective interests of personal sacrifice \cite{SantosP11}.
+agents, or brought on by free riding if all the agents favour a strategy which
+neglects the collective interests of personal sacrifice \cite{SantosP11}.
 
 In the guarding game, guarding can be considered equivalent to cooperation
 (acting in collective interest), and regenerating to defection (acting in
@@ -63,49 +22,39 @@ stability of the system negatively and allows us to reason about its
 existential properties, as the only event which would incur the tragedy of the
 commons is the lack of any volunteer guards in the first place.
 
-Many real systems exhibit CRD dynamics, one example being the collective
-maintenance of Earth's habitat by humanity \cite{Smirnov19}. Other examples
-include nuclear disarmament, responsible AI development, and financing public
-broadcast TV and radio entertainment. Furthermore, many of these can be
-directly or indirectly modelled as swarm systems, as we have done with guarding
-game. One example of this might be the huddling of emperor penguins to conserve
+Given the existential nature of some challenges which come in the form of CRDs,
+such as the collective maintenance of Earth's habitat by humanity
+\cite{Smirnov19}, we as a species cannot remain unprepared to reliably avoid
+their worst outcomes. The solution to the verification and
+emergence identification problems presented here is
+provide a framework for creating autonomous agents which can avoid mutual
+defection in CRDs, as well as for analysing models of natural systems which
+already do.
+
+One example of this might be the huddling of emperor penguins to conserve
 energy and incubate eggs \cite{GilbertRLNA06} during the
 % The Emperor Penguin, Le Maho, 1977 
 arctic winter, the success of which depends on a slow rotation of members of
 the formation away from the chilling wind \cite{WatersBK12}.
 
-Given the existential nature of some challenges which come in the form of CRDs,
-it is unacceptable for us as a species to remain unprepared to reliably avoid
-their worst outcomes. Furthermore, many agents which play in CRD games may
-increasingly become autonomous given recent technological advances. The
-possibility of evading the tragedy of the commons through exporting some of our
-risky decision making to such autonomous agents then emerges if such agents can
-be verified to be more capable than we are of avoiding mutual defection as the
-number of agents grows. This work indicates that this possibility, as well as
-the possibility of better understanding systems which already evade the tragedy
-of the commmons - such as the aforementioned emperor penguins - may be worthy
-of pursuit.
-
 To train a neural observation function, we used deep Q-learning, a type of
 reinforcement learning (RL) algorithm, by having a population of agents playing
-the guarding game. The rewards were assigned in a way that
-represented the tension between individual and collective interests. All agents
+the guarding game. The rewards were assigned to
+reflect the tension between individual and collective interests. All agents
 shared the same neural network, creating a system in which the agents were
 learning to play against exact copies of themselves. We
 used an experience replay buffer and a separate target network which
 was updated only periodically, as per Mnih et al 2015, to stabilise
 overestimation of the Q-values \cite{Mnih+15,HaaseltGS16}.
-%
+
 The resulting neural network's architecture had two hidden layers of four
-neurons activated by ReLU.  The input layer consisted of a single neuron,
+neurons activated by ReLU. The input layer consisted of a single neuron,
 representing the normalised health points of the agent and the output layer
 contained two neurons with linear activation functions, representing the
 estimated Q-values of the two actions 'guard' and 'rest'.
-
-
-
-
 %%%%
+
+
 Given the neural network implementing the observation function, we 
 implemented a template agent and a zero-one agent for the guarding game. We
 then used the \venmas toolkit developed for verification of
