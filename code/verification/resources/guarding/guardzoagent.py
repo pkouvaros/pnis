@@ -60,7 +60,7 @@ class GuardingZeroOneAgent(MultiAgent):
 
         import numpy as np
         for health_points in range(1, self.private_dimensions):
-            out = self.observation.forward(np.array([health_points]))
+            out = self.observation.forward(np.array([health_points/GuardingConstants.MAX_HEALTH_POINTS]))
             self.observations[health_points] = np.argmax(out) + 1
 
     def get_constraints_for_obs(self, constrs_manager, input_state_vars):

@@ -143,7 +143,7 @@ def verify_parallel_poly(formula, input_hyper_rectangle, agents, env, timeout):
 def main():
     parser = argparse.ArgumentParser(description="Verify a MANS")
     parser.add_argument("-f", "--formula", type=int, default=0, help="Formula to verify: 0. EX^k alive; 1. AX^k alive;")
-    parser.add_argument("-k", "--step", default=2, type=int, help="The number of time steps to verify for.")
+    parser.add_argument("-k", "--step", default=4, type=int, help="The number of time steps to verify for.")
     parser.add_argument("-a", "--agents_number", default=2, type=int, help="Number of template agents.")
     parser.add_argument("-m", "--method", type=int, default=0, help="Method to run: 0. Monolithic; 1. Parralel-poly;")
     parser.add_argument("-hp", "--initial_health", default=3, type=int, help="Initial health points of a template agent.")
@@ -201,9 +201,6 @@ def main():
         print("Formula to verify", formula)
         # Run a method.
         verification_methods = [verify_single, verify_parallel_poly]
-
-        print("Formula to verify", formula)
-        # Run a method.
         verification_methods[ARGS.method](formula, input_hyper_rectangle, agents, env, ARGS.timeout)
         print("\n")
 

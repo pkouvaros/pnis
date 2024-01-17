@@ -81,6 +81,29 @@ class DepthFirstCompositionalMultiAgentMILPEncoder(FormulaVisitorI):
 
         return self.job_count
 
+    def visitNAryDisjFormula(self, element):
+        state_bounds = self.constrs_manager.get_variable_bounds(self.state_vars)
+
+        # Only add the MILP if the constraint does not clash with
+        # the state bounds. Otherwise, the MILP will be trivially infeasible
+        if element.acceptI(BoundsFormulaSatisfactionVisitor(state_bounds)):
+            deltas = self.constrs_manager.create_binary_variables(len(element.clauses))
+            constrs_to_add = []
+            for i, clause in enumerate(element.clauses):
+
+                constrs_to_add.append(self.constrs_manager.create_indicator_constraint(
+                    deltas[i], 1, clause.get_custom_atomic_constraint(self.state_vars)))
+
+            constrs_to_add.append(self.constrs_manager.get_sum_constraint(deltas, 1))
+
+            self.constrs_stack.append(constrs_to_add)
+            self.splitting_process.add_job(self.job_count, self.constrs_stack,
+                                           self.constrs_manager.get_variable_tracker().get_trace())
+            self.job_count += 1
+            self.constrs_stack.pop()
+
+        return self.job_count
+
     def visitAtomicDisjFormula(self, element):
         state_bounds = self.constrs_manager.get_variable_bounds(self.state_vars)
 

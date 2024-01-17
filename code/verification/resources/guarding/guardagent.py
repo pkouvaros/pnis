@@ -102,8 +102,12 @@ class GuardingAgent(MultiAgent):
         ### before it is created                                                                    ###
         ###############################################################################################
 
+        # Normalise the state variables to feed to the network
+        normalised_inputs, normalised_constrs = self.get_normalised_inputs(constrs_manager, network_input_vars)
+        constrs_to_add.extend(normalised_constrs)
+
         # Compute constraints for the observation neural network
-        q_vars, network_constrs = constrs_manager.get_network_constraints(self.observation.layers, network_input_vars)
+        q_vars, network_constrs = constrs_manager.get_network_constraints(self.observation.layers, normalised_inputs)
         # Add the encoding of argmax for the computed q-values.
         one_hot_argmax_vars, argmax_constrs = constrs_manager.get_argmax_constraints(q_vars, use_q_bounds=True)
         # Return a single integer variable as the output of argmax.
@@ -183,6 +187,27 @@ class GuardingAgent(MultiAgent):
         )
 
         return [integer_obs_var], constrs_to_add
+
+    def get_normalised_inputs(self, constrs_manager, network_input_vars):
+        constrs = []
+
+        raw_bounds = constrs_manager.get_variable_bounds(network_input_vars)
+        raw_l, raw_u = raw_bounds.get_dimension_bounds(0)
+
+        normalised_lb = raw_l / GuardingConstants.MAX_HEALTH_POINTS
+        normalised_ub = raw_u / GuardingConstants.MAX_HEALTH_POINTS
+        normalised_inputs = constrs_manager.create_state_variables(1, lbs=[normalised_lb], ubs=[normalised_ub])
+
+        # next_var == (raw_input_var - input_mean) / input_range
+        constrs.append(
+            constrs_manager.get_linear_constraint([normalised_inputs[0], network_input_vars[0]], [1, -1/GuardingConstants.MAX_HEALTH_POINTS], 0)
+        )
+
+        constrs_manager.update()
+        constrs_manager.add_variable_bounds(normalised_inputs,
+                                            HyperRectangleBounds([normalised_lb], [normalised_ub]))
+
+        return normalised_inputs, constrs
 
     def get_constraints_for_protocol(self, constrs_manager, input_state_vars):
         """
