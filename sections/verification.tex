@@ -1,15 +1,16 @@
-In this section we put forward  procedures for solving the parameterised
+In this section we put forward procedures for solving the parameterised
 verification and emergence identification problems introduced in the previous
-section. For ease of presentation we fix a PNIS $\pnis = \tuple{t, e, \ell}$,
-where $\ag t = \tuple{\lstates t, \init t, \obs t, \acts t, \prot t, \tr t }$,
+section. For ease of presentation, throughout the section we fix a PNIS
+$\pnis = \tuple{t, e, \ell}$, where
+$\ag t = \tuple{\lstates t, \init t, \obs t, \acts t, \prot t, \tr t }$,
 $\ag e = \tuple{\lstates e, \acts e, \prot e, \tr e }$, and a $\bictl$ sentence
-$\bictlspec$ throughout the section. The verification procedure that we
-introduce recasts the parameterised verification  and emergence identification
-problems for $\pnis$ and $\bictlspec$  to a number of  (standard) verification
-problems for  abstract and concrete NIS  against the $\bctl$ formula
+$\bictlspec$. The verification procedure that we introduce recasts the
+parameterised verification and emergence identification problems for $\pnis$
+and $\bictlspec$ to a number of (standard) verification problems for abstract
+and concrete NIS against the $\bctl$ formula
 $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.  We show that the satisfaction
-status of $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ on 
-these systems determines the satisfaction and emergent\nb{E: emergency?} status of
+status of $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ on these systems
+determines the satisfaction and identifies emergence of
 $\bictlspec$ on $\pnis$. This enables us to use previously established
 methodologies for the verification of NIS against $\bctl$~\cite{Akintunde+20b}
 to analyse PNIS.
@@ -31,14 +32,14 @@ The lemma follows from the inherent symmetry present in systems comprising
 homogeneous agents. The Appendix includes the full proof.
 \end{proof}
 
-We next construct the zero-one abstraction of the systems generated from
-$\pnis$. The zero-one abstraction is a NIS comprising a zero-one agent, which is
-an abstraction for arbitrarily many concrete agents, $m$ concrete agents, whose
-local states determines the satisfaction status of the atomic propositions in
-$\varphi[m]$ (see
-Definition~\ref{def:concreteystem}), and the environment. In other words, the
-zero-one agent defined below encodes how an arbitrary number of agents may
-interfere with the temporal evolution of the concrete agents $1, \ldots, m$.
+We next construct the \emph{zero-one abstraction} of the systems generated from
+$\pnis$. The zero-one abstraction is a NIS comprising a zero-one agent, which
+is an abstraction for arbitrarily many, $m$, concrete agents, whose local
+states determine the satisfaction status of the atomic propositions in
+$\varphi[m]$ (see Definition~\ref{def:concreteystem}). %, and the environment.
+In other words, the zero-one agent defined below encodes how an arbitrary
+number of agents may interfere with the temporal evolution of the concrete
+agents $1, \ldots, m$.
 
 \begin{definition}[Zero-one agent]
 Given an agent template $\ag t = \tuple{\lstates t, \init t, \obs t,  \acts t,
@@ -47,24 +48,23 @@ private states, its associated \emph{zero-one agent} is a tuple $\ag{zo} =
 \tuple{\lstates{zo}, \init{zo}, \obs{zo}, \acts{zo}, \prot{zo}, \tr{zo}}$ over
 sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
 2^{\prvs t} \setminus \set{\emptyset}$ of percepts and private states, where:
-\begin{itemize}[$\bullet$]
+\begin{itemize}[$\bullet$]\itemsep 0cm
     \item $\lstates{zo} = 2^{\lstates t} \setminus \set{\emptyset}$ is the set
     of abstract states. An abstract state represents the projection of global
     states in systems of any size onto a set.
 
     \item $\init{zo} = \set{\init t}$ is the unique initial abstract state.
     
-    \item $\obs{zo} : \lstates{zo} \times \lstates e \rightarrow \per{zo}$ is
+    \item $\obs{zo} : \lstates{zo} \times \lstates e \rightarrow \pers{zo}$ is
     abstract observation function. It maps pairs of abstract and environment
     states to sets of percepts, where each set includes the percepts that would
     be collectively generated in a global state represented by the abstract
     state. Formally, the observation function satisfies $\obs{zo}(l_{zo}, l_e) =
     \per{zo}$ if:
-    \begin{itemize}
-        \item for all $l_t \in l_{zo}$ we have that $\obs t(l_t, l_e) \in
-        \per{zo}$;
-        \item for all $\per t \in \per{zo}$ there is $l_t \in
-        l_{zo}$ such that $\obs t(l_t, l_e) = \per t$.
+    \begin{itemize}[\textbf{--}]
+    \item for $l_t \in l_{zo}$ we have that $\obs t(l_t, l_e) \in \per{zo}$;
+      \item for $\per t \in \per{zo}$ there is $l_t \in l_{zo}$ s.t.\
+        $\obs t(l_t, l_e) = \per t$.
     \end{itemize}
 
     \item $\acts{zo} = 2^{\lstates t \times \acts t} \setminus \set{\emptyset}$
@@ -72,7 +72,7 @@ sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
     action represents the projection of joint actions, paired with the local
     states at which they are performed, of arbitrarily many agents onto a set.
 
-    \item $\prot{zo} : \lstates{zo} \rightarrow 2^{\acts{zo}} \setminus
+    \item $\prot{zo} \colon \lstates{zo} \rightarrow 2^{\acts{zo}} \setminus
     \set{\emptyset}$ is the abstract protocol. The protocol prescribes the sets
     of template actions that can be collectively performed at a global state
     represented by a given abstract state. It is defined as $\prot{zo}(l_{zo})
@@ -86,22 +86,22 @@ sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
     abstract state and after they have performed a joint action represented by a
     given abstract action. It is such that $\tr{zo}(l_{zo}, \alpha_{zo}, A, \alpha_e)
     = \prv{zo}$ if the following hold:
-    \begin{itemize}
-        \item $\alpha_{zo} \in \prot{zo}(l_{zo})$; 
-        \item for all $(l_t, \alpha_t) \in \alpha_{zo}$ we have that $\tr t(l_t,
-        \alpha_t, A', \alpha_e) \in \prv{zo}$, where $A' = A \cup \set{\alpha'_t
-        \mid (l'_t, \alpha'_t) \in \alpha_{zo} \text{ for some } l'_t \in \lstates{t}})$;
-        \item for all $\prv t \in \prv{zo}$, there is $(l_t, \alpha_t) \in
-        \alpha_{zo}$ s.t. $\tr t(l_t, \alpha_t, A', \alpha_e) = \prv t$, where
-        $A'$ is as in the above clause.  
+    \begin{itemize}[\textbf{--}]
+    \item $\alpha_{zo} \in \prot{zo}(l_{zo})$; 
+    \item for $(l_t, \alpha_t) \in \alpha_{zo}$, we have
+      $\tr{t}(l_t, \alpha_t, A', \alpha_e) \in \prv{zo}$, where
+      $A' = A \cup \set{\alpha'_t \mid (l'_t, \alpha'_t) \in \alpha_{zo} \text{
+          for some } l'_t \in \lstates{t}}$;
+    \item for $\prv{t} \in \prv{zo}$, there is
+      $(l_t, \alpha_t) \in \alpha_{zo}$ such that
+      $\tr{t}(l_t, \alpha_t, A', \alpha_e) = \prv t$, where $A'$ is as above.
     \end{itemize}
 \end{itemize}
 \end{definition}
 
-The abstract  NIS comprises the zero-one agent and~$m$ concrete agents. It is a
+The abstract  NIS comprises the zero-one agent and~$m$ concrete agents. Specifically, it is a
 tuple $\pnis_{ab} = \tuple{\set{1,\ldots,m,zo,e}, \globalinit{m}_{ab},
-\valuation{m}_{ab}}$, where $\globalinit{m}_{ab} = \tuple{\init 1, \ldots, \init
-m, \init{ab}, \init e}$ is the initial global state and $\valuation{m}_{ab} :
+\valuation{m}_{ab}}$, where $\globalinit{m}_{ab}$ is the initial global state $\tuple{\init 1, \ldots, \init m, \init{ab}, \init e}$  and $\valuation{m}_{ab} \colon
 \atprop \times \set{1, \ldots, m } \rightarrow 2^{\globalstates{m}_{ab}}$ is the
 concrete labelling function satisfying $q \in \valuation{m}_{ab}(p,i)$ iff
 $\ls{i}{q} \in \tlabel i(p)$.  The global transition function is defined as in
@@ -109,47 +109,52 @@ Definition~\ref{def:globaltransition} but replacing $\setprojection{\alpha}$ in
 the environment and concrete agents' clauses $\set{\la{a}{q} \mid a \in
 \set{1,\ldots,n}} \cup \la{zo}{q}$,  and adding analogous conditions for the
 zero-one agent (see the Appendix for the full definition). Given the global
-transition function we can similarly associate a (abstract) model  $\masys m =
+transition function we can similarly associate an (abstract) model  $\masys m =
 \tuple{\aglobalstates m, \aglobalacts m, \aglobalrel m, \avaluation m}$.
 
 We now establish a correspondence between the abstract model and the concrete
-models. We show in particular that (i) the abstract model simulates every
-concrete model with at least~$m+1$ agents; (ii) there is always a concrete model
-with a sufficient number of agents that simulates the abstract model; and (iii)
-a concrete model always simulates a smaller concrete model. A model simulates another
+models. We show in particular that
+\begin{inparaenum}[\it (i)]
+\item the abstract model simulates every concrete model with at least~$m+1$
+  agents;
+\item there is always a concrete model with a sufficient number of agents that
+  simulates the abstract model;
+\item a concrete model always simulates a smaller concrete model.
+\end{inparaenum}
+A model simulates another
 model if every behaviour exhibited by the latter is also admitted by the former.
 As specifications for PNIS are bounded, we consider simulation up to a bounded
 number of steps as defined below.
 
 \begin{definition}[Bounded simulation.]
-A $b$-bounded simulation between two models $\mathcal M = \tuple{G, \it{ACT}, T,
-\ell}$ and $\mathcal{M'} = \tuple{G', \it{ACT'}, T', \ell'}$  with initial
-global states $\iota$ and $\iota'$ is inductively defined on $b \geq 0$ as
-follows.
-\begin{itemize}[$\bullet$]
-    \item A relation $\sim_0 \subseteq G \times G'$ is  $0$-bounded simulation
-    if $(\iota, \iota') \in \sim_0$ and whenever $(q, q') \in \sim_0$, we have
+  A \emph{$b$-bounded simulation} between two models
+  $\mathcal M = \tuple{G, \it{ACT}, T, \ell}$ and
+  $\mathcal{M'} = \tuple{G', \it{ACT'}, T', \ell'}$ with initial global states
+  $\iota$ and $\iota'$ is inductively defined on $b \geq 0$ as follows.
+  \begin{itemize}[$\bullet$]
+  \item A relation $\sim_0 \subseteq G \times G'$ is $0$-bounded simulation if
+    $(\iota, \iota') \in \sim_0$ and whenever $(q, q') \in \sim_0$, we have
     that $q \in \ell(p,i)$ implies that $q' \in \ell'(p, i)$.
-    \item A relation $\sim_b \subseteq G \times G'$ is  $b$-bounded simulation
-    if $(\iota, \iota') \in \sim_b$ and  whenever $(q, q') \in \sim_b$, the
-    following  hold:
-    \begin{enumerate}
+  \item A relation $\sim_b \subseteq G \times G'$ is $b$-bounded simulation if
+    $(\iota, \iota') \in \sim_b$ and whenever $(q, q') \in \sim_b$, the
+    following hold:
+    \begin{enumerate}[1.]
     \item $(q, q') \in \sim_0$.
-    \item If $(q, \alpha, q^1) \in T$ for a joint action $\alpha \in \it{ACT}$ and
-    global state $q^1 \in G$, then there is a joint action
-    $\alpha' \in \it{ACT}'$ and global state $g'^1 \in G'$ such that
-    $(g', \alpha', g'^1) \in T'$ and 
-    $(q^1, q'^1) \in \sim_{b - 1}$.  
-\end{enumerate}
-\end{itemize}
+    \item If $(q, \alpha, q^1) \in T$ for a joint action $\alpha \in \it{ACT}$
+      and global state $q^1 \in G$, then there is a joint action
+      $\alpha' \in \it{ACT}'$ and global state $q'^1 \in G'$ such that
+      $(q', \alpha', q'^1) \in T'$ and $(q^1, q'^1) \in \sim_{b - 1}$.
+    \end{enumerate}
+  \end{itemize}
 \end{definition}
 
-We say that a model $\mathcal{M'}$ simulates a model $\mathcal M$ up to~$b$ time
-steps, denoted $\mathcal M \leq_b \mathcal{M'}$, if there is a $b$-bounded
-simulation relation between $\mathcal M$ and $\mathcal{M'}$.  Universal $\bctl$
-formulae are preserved from the simulating model to the simulated model and
-existential $\bctl$ formulae are preserved from the simulated model to the
-simulating model whenever their temporal depth is at most~$b$. 
+We say that a model $\mathcal{M'}$ \emph{simulates} a model $\mathcal M$ up
+to~$b$ time steps, denoted $\mathcal M \leq_b \mathcal{M'}$, if there is a
+$b$-bounded simulation relation between $\mathcal M$ and $\mathcal{M'}$.
+Universal $\bctl$ formulae are preserved from the simulating model to the
+simulated model and existential $\bctl$ formulae are preserved from the
+simulated model to the simulating model whenever their temporal depth is at
+most~$b$.
 
 \begin{theorem} Let $\mathcal M$ and $\mathcal M'$ be two models such $\mathcal
 M \sim_b  \mathcal M'$. Then, the following hold.
@@ -170,17 +175,18 @@ are evaluated up to bounded temporal depths, they are preserved under bounded
 simulations.
 \end{proof}
 
-We can now show the simulation results pertaining to the abstract and
-concrete model.  We start by showing that the abstract model simulates every
-concrete model with at least~$m+1$ agents.
+We can now show the simulation results pertaining to the abstract and concrete
+model.  We start by showing that the abstract model simulates every concrete
+model with at least~$m+1$ agents. The missing proofs can be found in the
+appendix.
 
 \begin{theorem}
 \label{th:ab-concr-sim}
 $\msys n \leq_b \masys m$ for $n \geq m+1$ and $b \geq 0$.
 \end{theorem}
-\begin{proof}
-The proof proceeds by induction on~$b$ and it is included in the Appendix.
-\end{proof}
+% \begin{proof}
+% The proof proceeds by induction on~$b$ and it is included in the Appendix.
+% \end{proof}
 
 Irrespective of the temporal depth of the specification under
 analysis there is always a concrete model that simulates the abstract model up
@@ -190,9 +196,9 @@ to that depth.
 \label{th:concr-ab-sim}
 There is $n \geq m+1$ such that $\masys m \leq_b \msys n$ for any $b \geq 0$.
 \end{theorem}
-\begin{proof}
-The proof proceeds by induction on~$b$ and it is included in the Appendix.
-\end{proof}
+% \begin{proof}
+% The proof proceeds by induction on~$b$ and it is included in the Appendix.
+% \end{proof}
 
 
 Every concrete model simulates every smaller concrete model.
@@ -202,10 +208,10 @@ Every concrete model simulates every smaller concrete model.
 For every $n' > n$ we have that $\msys n \leq_b \msys{n'}$ for any
 $b \geq 0$.
 \end{theorem}
-\begin{proof}
-The proof proceeds by having every additional agent in $\msys{n'}$ to mimic
-agent~1 in $\msys n$ (see the appendix).
-\end{proof}
+% \begin{proof}
+% The proof proceeds by having every additional agent in $\msys{n'}$ to mimic
+% agent~1 in $\msys n$ (see the appendix).
+% \end{proof}
 
 The above results enable the derivation of procedures for solving
 the parameterised verification and emergence identification problems. In the case
@@ -216,8 +222,7 @@ question.
 
 \begin{corollary}
 \label{cor:universal}
-If $\varphi[m]$ is a universal $\bctl$ formula and we have that $\masys m
-\models  \varphi[m]$, then the following hold:
+For a universal $\bctl$ formula $\varphi[m]$:
 \begin{itemize}
     \item  If $\masys m \models \varphi[m]$, then $m + 1$ is an emergence
     threshold for $\bictlspec$. Otherwise, there is no emergence threshold for
@@ -261,8 +266,8 @@ for the verification of existential properties.
 \begin{corollary}
 \label{cor:existential}
 If $\varphi[m]$ is an existential $\bictl$ formula with temporal depth $b$ and  $n
-= \min_i \left( \masys m \leq_b \msys i \right)$, then the following hold:
-\begin{itemize}
+= \min_i \left( \masys m \leq_b \msys i \right)$, then:
+\begin{itemize}[$\bullet$]
 \item If $\msys n \models \varphi[m]$, then $n$ is an emergence threshold for
 $\bictlspec$. Otherwise, there is no emergence threshold for $\bictlspec$.
 
