@@ -46,14 +46,14 @@ presented in Example~\ref{ex:agent-template}.
 
 
 The guarding game is an instance of a social dilemma game, a class of
-non-zero-sum MAS games characterised by intrinsic tension between individual
+MAS games characterised by tension between individual
 and collective rationality \cite{VanlangeJPV13}. The guarding game simulates
 the fundamental forces of a \emph{collective risk dilemma (CRD)}, a type of
-public goods social dilemma game where a guaranteed tragedy of the commons
+social dilemma where a guaranteed tragedy of the commons
 \cite{Hardin68} is avoided by volunteered loss of utility by a population of
-agents. The stability of such a system can be curtailed by the immediate
-advantage of free riding if the agents favour a strategy which neglects the
-collective interests of maintaining the public good \cite{SantosP11}.
+agents. Such a system can be destabilised by the immediate advantage of
+free riding if the agents favour a strategy which neglects the
+collective interests of personal sacrifice \cite{SantosP11}.
 
 In the guarding game, guarding can be considered equivalent to cooperation
 (acting in collective interest), and regenerating to defection (acting in
@@ -69,8 +69,8 @@ include nuclear disarmament, responsible AI development, and financing public
 broadcast TV and radio entertainment. Furthermore, many of these can be
 directly or indirectly modelled as swarm systems, as we have done with guarding
 game. One example of this might be the huddling of emperor penguins to conserve
-energy and incubate eggs \cite{GilbertRLNA06}
-% The Emperor Penguin, Le Maho, 1977 during the
+energy and incubate eggs \cite{GilbertRLNA06} during the
+% The Emperor Penguin, Le Maho, 1977 
 arctic winter, the success of which depends on a slow rotation of members of
 the formation away from the chilling wind \cite{WatersBK12}.
 
@@ -88,8 +88,8 @@ of pursuit.
 
 To train a neural observation function, we used deep Q-learning, a type of
 reinforcement learning (RL) algorithm, by having a population of agents playing
-the guarding game. The rewards were assigned in a way  to
-represent the tension between individual and collective interests. All agents
+the guarding game. The rewards were assigned in a way that
+represented the tension between individual and collective interests. All agents
 shared the same neural network, creating a system in which the agents were
 learning to play against exact copies of themselves. We
 used an experience replay buffer and a separate target network which
