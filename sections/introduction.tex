@@ -2,7 +2,7 @@ Safety concerns stemming from the increasing development of Multi-agent Systems
 (MAS) have been put under mathematical scrutiny
 %% E: commented out
 % over the past decade
-by automated methods that ascertain their correct behaviour. Verification
+by automated methods which ascertain that MASs behave correctly. Verification
 methods based on SAT and
 BDDs~\cite{KacprzakLomuscioPenczek04b,RaimondiLomuscio05c} have resulted in
 push-button engines such as Verics, MCK and
@@ -29,7 +29,7 @@ therefore be used to verify important classes of MAS, where either the systems
 have arbitrarily many participants or the agents are endowed with machine
 learning components. The former class of systems includes open systems, where
 agent can join and leave the system at runtime, and applications designed
-irrespective of the number of participants such as robot swarms and scenarios
+irrespective of the number of participants such as robot swarms or scenarios
 in the Internet of Things. The latter class comprises forthcoming
 neural-symbolic applications such as autonomous vehicles.
 
@@ -41,9 +41,9 @@ agents, they all rely on either cutoffs or zero-one abstractions whereby
 the unbounded verification problem is reduced to verifying a small
 number of concrete systems or abstractions thereof.  
 
-In a different line of work verification methods for MAS comprising agents with
-neural components were put forward~\cite{Akintunde+20b,Akintunde+22}. To deal
-with the real-valued operational domain of the neural network models, the
+In a different line of work, verification methods for MASs comprising agents
+with neural components were put forward~\cite{Akintunde+20b,Akintunde+22}. To
+deal with the real-valued operational domain of the neural network models, the
 methods recast verification queries for bounded properties into
 Mixed-Integer-Linear-Programming.
 
@@ -59,18 +59,17 @@ methodology for PNIS whereby we derive sound and complete procedures for the
 verification and emergence identification problems with respect to bounded
 universal and existential CTL formulae.
 
-We additionally present an example of this model applied to a social
-dilemma scenario devised to emulate a \emph{collective risk dilemma (CRD)}, a type of
-MAS. We discuss the significance of solutions to the verification and emergence
-identification problems in the context of the subset of CRDs which can be
-modelled as parameterised swarm systems, especially where the agents are
-neural-symbolic in nature.
+We additionally present an example of these procedures applied to
+neural-symbolic agents playing the guarding game, a social dilemma we describe.
+We discuss the significance of solutions to the verification and emergence
+identification problems in the context of the subset of social dilemmas to
+which our methodology is applicable.
 
 % \end{itemize}
 
 The rest of the paper is organised as follows. After discussing related work
 below, we present PNIS in Section~\ref{sec:pnis}, followed by the development of
-their verification and emergence identification procedures in
+the verification and emergence identification procedures in
 Section~\ref{sec:verification}, which we evaluate in Section~\ref{sec:eval}  on
 a social dilemma scenario. We conclude in Section~\ref{sec:conclusions}.
 
@@ -85,7 +84,7 @@ complete verification methods for both universal and existential properties, as
 opposed for only universal properties that typically concerns previous work.
 Verification methods for MAS with neural components were previously put forward.
 These however take as input MAS with a known number of agents. The main
-theoretical findings of this  the paper is that verification in the unbounded
+theoretical findings of this work is that verification in the unbounded
 case can be reduced to the verification of a small number of bounded models from
 the cited work.
 

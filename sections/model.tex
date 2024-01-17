@@ -10,10 +10,10 @@ constructed from an agent template.
 
 In this section we extend parameterised interpreted systems to Parameterised
 Neural-symbolic Interpreted Systems (PNIS), where the template for the agents is
-not purely symbolic but it comprises a perception mechanism that is implemented
+not purely symbolic but comprises a perception mechanism that is implemented
 via neural networks and which is coupled with a symbolic action mechanism. This
 neural-symbolic treatment of the agents follows the Neural Interpreted Systems
-(NIS) model from~\cite{Akintunde+20b}.  Differently from NPIS however, NIS are
+(NIS) model from~\cite{Akintunde+20b}.  Differently from PNIS however, NIS are
 limited to standard non-parametric systems with a pre-defined number of agents.
 
 A PNIS consists of the descriptions of an agent template, from which an
@@ -27,8 +27,8 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
   \item $\lstates t = \prvs t \times \pers t$ is a nonempty (possibly infinite)
   set of template local states.  Each local state  is a pair $\tuple{\prv t, \per t}$ of
   a private state $\prv t \in \prvs t \subseteq \mathbb R^{m_{prv}}$ and a
-  percept $\per t \in \pers t \subseteq \mathbb R^{m_{per}}$ that encodes the
-  perception an agent has about the environment.  
+  percept $\per t \in \pers t \subseteq \mathbb R^{m_{per}}$ that encodes a
+  perception of the environment by the agent.  
 
   \item $\init t \in \lstates t$ is the unique initial template state.
   
