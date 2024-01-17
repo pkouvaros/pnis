@@ -210,3 +210,14 @@ pyrightconfig.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,jupyternotebooks,python
+
+
+main.aux              
+main.bbl                  
+main.blg                  
+main.fdb_latexmk          
+main.fls                  
+main.out                  
+*.pdf                  
+main.synctex(busy)        
+main.synctex.gz           

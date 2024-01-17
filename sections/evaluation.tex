@@ -68,18 +68,26 @@ v9.5.1 to solve MILP \cite{Gurobi+16a}.
 
 \begin{table}
 \centering
-\begin{tabular}{ccrcrc}
+\begin{tabular}{ccrcrcrc}
   \toprule
-  & $k$ & \multicolumn{2}{c}{$m = 2$} & \multicolumn{2}{c}{$m = 3$}  \\\midrule
-  $\varphi_1^k$ & 1 &     0.76s & True    &     2.03s & True   \\
-               & 2 &     4.53s & True    &    20.06s & True   \\
-               & 3 &     8.64s & True    &    31.78s & True   \\
-               & 4 &    28.48s & True    &   Timeout & --     \\
+  & $k$ & \multicolumn{2}{c}{$m = 1$} & \multicolumn{2}{c}{$m = 2$} & \multicolumn{2}{c}{$m = 3$}  \\\midrule
+  $\varphi_1^k$ & 1 &       0.27s & True    &       0.69s & True    &       1.87s & True   \\
+ & 2 &       1.07s & True    &       3.30s & True    &      14.31s & True   \\
+ & 3 &       1.84s & True    &       7.70s & True    &      28.91s & True   \\
+ & 4 &      11.26s & False   &      38.14s & True    &     137.84s & True   \\
+ & 5 &      10.84s & False   &      46.73s & True    &     237.68s & True   \\
+ & 6 &      14.45s & False   &      31.41s & True    &     339.65s & True   \\
+
+
+  
   \midrule
-  $\varphi_2^k$ & 1 &     0.71s & False   &     1.85s & False  \\
-               & 2 &     3.57s & False   &    15.93s & False  \\
-               & 3 &     9.16s & False   &    32.78s & False  \\
-               & 4 &    13.31s & False   &    47.20s & False  \\
+  $\varphi_2^k$ & 1 &    0.65s & False   &     1.79s & False  \\
+               & 2 &     3.32s & False   &    14.67s & False  \\
+               & 3 &  3601.62s & Timeout &     0.00s & False  \\
+               & 4 &    17.12s & False   &     0.00s & False  \\
+               & 5 &    20.50s & False   &     0.00s & False  \\
+               & 6 &  3603.07s & Timeout &     0.00s & False  \\
+
 
 \bottomrule
 \end{tabular}

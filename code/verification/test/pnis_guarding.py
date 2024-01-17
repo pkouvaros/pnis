@@ -140,11 +140,13 @@ def verify_parallel_poly(formula, input_hyper_rectangle, agents, env, timeout):
         print(extra)
     print("")
 
+
 def main():
     parser = argparse.ArgumentParser(description="Verify a MANS")
     parser.add_argument("-f", "--formula", type=int, default=0, help="Formula to verify: 0. EX^k alive; 1. AX^k alive;")
-    parser.add_argument("-k", "--step", default=4, type=int, help="The number of time steps to verify for.")
+    parser.add_argument("-k", "--step", default=5, type=int, help="The number of time steps to verify for.")
     parser.add_argument("-a", "--agents_number", default=2, type=int, help="Number of template agents.")
+    parser.add_argument("-n", "--threshold", default=5, type=int, help="Number of template agents.")
     parser.add_argument("-m", "--method", type=int, default=0, help="Method to run: 0. Monolithic; 1. Parralel-poly;")
     parser.add_argument("-hp", "--initial_health", default=3, type=int, help="Initial health points of a template agent.")
     parser.add_argument("-per", "--initial_percept", default=2, type=int, help="Initial percept of a template agent (one of 0-expired, 1-rest, or 2-volunteer-to-guard).")
@@ -152,30 +154,6 @@ def main():
     parser.add_argument("-to", "--timeout", default=3600, type=int, help="Timeout in minutes.")
 
     ARGS = parser.parse_args()
-    # ** Note ** , when adding a new formula, add appropriate agent config to list.
-    agents, env = initialise_and_get_agent_and_env(ARGS.agents_number)
-
-    ###########################################################################
-    # Compute the initial state, will be used for the lower and upper bounds. #
-    ###########################################################################
-    initial_state = []
-
-    # The template agent components
-    for agent in range(ARGS.agents_number):
-        initial_state.extend([ARGS.initial_health, ARGS.initial_percept])
-
-    # Zero-one initial values
-    # no expired
-    initial_state.append(0)
-    # only one value of health
-    initial_state.extend([0] * (ARGS.initial_health-1) +
-                         [1] +
-                         [0] * (GuardingConstants.MAX_HEALTH_POINTS - ARGS.initial_health))
-    # zero-one percepts
-    initial_state.extend([0, 0, 0])
-
-    # The environment part
-    initial_state.append(0)
 
     ############################################################################
     print(f"========== Parameters of the game:==========\n"
@@ -186,17 +164,19 @@ def main():
 
     print(f"Template agent number: {ARGS.agents_number}\n")
 
-    ############################################################################
-    input_hyper_rectangle = HyperRectangleBounds(initial_state, initial_state)
-    print(input_hyper_rectangle, "\n")
 
     ############################################################################
     # Verify for the given number of steps
-    steps = [ARGS.step]#range(1, ARGS.step + 1)
-    for num_steps in steps:
-        print(num_steps, "steps")
+    steps = [ARGS.threshold]#range(ARGS.agents_number, ARGS.threshold + 1)
+    for agent_count in steps:
+        print(agent_count, "agents in NIS")
 
-        formula = get_formula_and_gamma(ARGS.formula, num_steps, ARGS.agents_number)
+        agents, env = initialise_and_get_agent_and_env(agent_count, ARGS.formula)
+
+        input_hyper_rectangle = get_input_bounds(agent_count, ARGS.formula, ARGS.initial_health, ARGS.initial_percept)
+        print(input_hyper_rectangle, "\n")
+
+        formula = get_formula_and_gamma(ARGS.formula, ARGS.step, ARGS.agents_number)
 
         print("Formula to verify", formula)
         # Run a method.
@@ -227,9 +207,37 @@ def get_formula_and_gamma(formula, num_steps, agents_number):
     return None
 
 
-def initialise_and_get_agent_and_env(agents_number):
+def get_input_bounds(agents_number, formula, initial_health, initial_percept):
+    ###########################################################################
+    # Compute the initial state, will be used for the lower and upper bounds. #
+    ###########################################################################
+    initial_state = []
+
+    # The template agent components
+    for agent in range(agents_number):
+        initial_state.extend([initial_health, initial_percept])
+
+    if formula == 1:
+        # Zero-one initial values
+        # no expired
+        initial_state.append(0)
+        # only one value of health
+        initial_state.extend([0] * (initial_health-1) +
+                             [1] +
+                             [0] * (GuardingConstants.MAX_HEALTH_POINTS - initial_health))
+        # zero-one percepts
+        initial_state.extend([0, 0, 0])
+
+    # The environment part
+    initial_state.append(0)
+
+    return HyperRectangleBounds(initial_state, initial_state)
+
+
+def initialise_and_get_agent_and_env(agents_number, formula):
     """
     Initialise agent and environment.
+    :param formula whether the formula is existential 0 or universal 1
     :return: List of initialised GuardingAgent objects and a GuardingEnv object.
     """
 
@@ -239,7 +247,10 @@ def initialise_and_get_agent_and_env(agents_number):
     network_model = NetworkModel()
     network_model.parse(REL_PATH)
 
-    agents = [GuardingAgent(network_model) for _ in range(agents_number)] + [GuardingZeroOneAgent(network_model)]
+    agents = [GuardingAgent(network_model) for _ in range(agents_number)]
+
+    if formula == 1:
+        agents += [GuardingZeroOneAgent(network_model)]
 
     env = GuardingEnv()
 
