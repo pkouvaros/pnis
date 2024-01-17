@@ -155,13 +155,12 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
   % Version 1, Everybody can guard and rest
   
   We consider the example of a guarding game, an instance of sequential social
-  dilemma games \cite{LeiboZLMG17}.\nb{E: check if this is really an SSD} In
-  this game there is a colony of agents. The colony needs to be
-  guarded. Guarding duty costs the guard some health~$G_p$, while those who
-  are resting improve their health by $R_r$, where the health is limited by a
-  maximum value $M_h$. If no one is guarding the colony, then all the agents in
-  the colony lose some health, $U_p$. When an agent does not have any health
-  left, it \emph{expires}.
+  dilemma games \cite{LeiboZLMG17}. In this game there is a colony of
+  agents. The colony needs to be guarded. Guarding duty costs the guard some
+  health~$G_p$, while those who are resting improve their health by $R_r$,
+  where the health is limited by a maximum value $M_h$. If no one is guarding
+  the colony, then all the agents in the colony lose some health, $U_p$. When
+  an agent does not have any health left, it \emph{expires}.
 
   We formalise the agent template
   $\ag t = \tuple{\lstates{t}, \init{t}, \obs{t}, \acts{t}, \prot{t}, \tr{t} }$
@@ -185,8 +184,8 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
     respectively.
   
 
-  \item Normally, we assume that the observation function is given as a
-    neural network. But for the sake of illustration, we define here the observation
+  \item The observation function is assumed to be given as a neural
+    network. But for the sake of illustration, we define here the observation
     function of a perfectly altruistic agent:
 
     $\obs{t}((h,\per{}), \ \lstate{e}) = \left\{
@@ -212,14 +211,14 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
     percept is $R_s$ or $E_s$, the only available actions are resting and the
     dummy action $E_a$, respectively.
     
-  \item The local transition function ensures that at most one agent guards at
-    any moment. Formally, for $S \in \{G_s,R_s\}$:
+  \item The local transition function updates the health according to the
+    rules. Formally, for $S \in \{G_s,R_s\}$:
 
     $\begin{array}{@{}l@{\quad}l}\small
-       \tr{t}((h,S), G_a, A) = \max(h - G_p,0) &\\% \text{ and } h > G_p\\
+       \tr{t}((h,S), G_a, A) = \max(h + G_p,0) &\\% \text{ and } h > G_p\\
        % \tr{t}((h,S), G_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq G_p\\[2mm]
        \tr{t}((h,S), R_a, A) = \min(h + R_r, M_h) &\text{ if }G_a\in A\\
-       \tr{t}((h,S), R_a, A) = \max(h - U_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > U_p\\
+       \tr{t}((h,S), R_a, A) = \max(h + U_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > U_p\\
        % \tr{t}((h,S), R_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
        
        \tr{t}((h,E_s), E_a, A) = h.\\
@@ -447,8 +446,8 @@ not include a perception mechanism.
 An {\em agent environment} is a tuple $\ag e = \tuple{\lstates e, \acts e, \prot
 e, \tr e }$, where $\lstates e  \subseteq \mathbb R^{m_e}$ is a nonempty
 (possibly) infinite set of local states, $\acts e$ is a nonempty and finite set
-of actions,  $\prot e : 2^{\acts e} \setminus \set{\emptyset}$ is a local
-protocol function, and $\tr e : \lstates e \times \acts e \times 2^{\acts t} 
+of actions,  $\prot{e} \colon\lstates{e}\rightarrow 2^{\acts e} \setminus \set{\emptyset}$ is a local
+protocol function, and $\tr e \colon \lstates e \times \acts e \times 2^{\acts t} 
 \rightarrow \lstates e$ is a local transition function.
 \end{definition}
 
@@ -464,14 +463,18 @@ using in this paper.
 
 \begin{example}
   \label{ex:pnis}
-  Consider the agent template in Example~\ref{ex:agent-template}.
+  Consider the agent template $t$ in Example~\ref{ex:agent-template}.
 
-  Assume that $e$ is.. %any environment (it is irrelevant for this example).
-  
+  Assume that $e$ is a dummy environment where $\lstates{e}= \{0\}$ and
+  $\acts{e}=\{0\}$ are singleton states, $\prot{e}(0) = \{0\}$ and
+  $\tr{e}(0,0,A) = 0$ for all $A\in 2^{\acts{t}}$.
+ % 
   Suppose $\atprop = \{\mathsf{a}, \mathsf{d}\}$, where $\mathsf{a}$ stands for
-  alive and $\mathsf{d}$ for dead. Then we can define the labelling function
-  $\ell$ as $\ell(\mathsf{a}) = \{(h,S) \mid h > 0 \text{ and }S \neq E_s\}$
+  alive and $\mathsf{d}$ for dead, and assume a labelling function $\ell$
+  defined as $\ell(\mathsf{a}) = \{(h,S) \mid h > 0 \text{ and }S \neq E_s\}$
   and $\ell(\mathsf{d}) = \lstates{t} \setminus \ell(\mathsf{a})$.
+%
+  Then, $\mathcal{S} = (t,e,\ell)$ is a parameterised NIS for the guarding example.
 \end{example}
 
 A PNIS $\mathcal S$ gives a parametric description of an unbounded collection
@@ -530,7 +533,7 @@ agents and the environment, the operational cycle of the agents is described as
 follows. First, every agent $\ag i \in \agents n \cup \set{\ag e}$ selects an
 action~$\act{i}$ that is permitted by its protocol, i.e., $\act{i} \in \prot{i}
 (\lstate i)$. Then, the agents synchronously perform the joint action $\alpha =
-\tuple(\alpha_1,\ldots,\alpha_n,\alpha_e)$.  Following  the execution of the
+\tuple{\alpha_1,\ldots,\alpha_n,\alpha_e}$.  Following  the execution of the
 actions each agent $\ag i \in \agents n$ updates the private component of its
 local state as per its local transition function to $\pprv i = \tr{i}(
 \lstate{i}, \act{i}, \setprojection{\alpha}, \act{e})$, where
@@ -565,7 +568,7 @@ $\sys n$.
   The {\em global transition function} $\globaltr n : \globalstates n
   \times \globalacts n \rightarrow \globalstates n$ of a concrete system $\sys n$
   satisfies $\globaltr n(q, \alpha) = q'$ iff the following hold:
-  \begin{itemize}
+  \begin{itemize}[$\bullet$]
   \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$, $\tr e(\ls{e}{q},
   \la{e}{q}, \setprojection{\alpha}) = q'$; i.e., the environment’s action is
   protocol compliant and its local state is updated as per its local transition
@@ -609,14 +612,11 @@ example.
   Consider a concrete neural interpreted system
   $\sys{2}=\tuple{\set{1,2,e}, \globalinit{2}, \valuation{2}}$ for the agent
   template in Example~\ref{ex:agent-template} and PNIS in
-  Example~\ref{ex:pnis}, where
+  Example~\ref{ex:pnis}, where $\valuation{2}$ is defined from $\ell$,
   $\globalinit{2} = \tuple{\init{1},\init{2}, \init{e}}$ and
-  $\init{i} = (G_p+1, G_s)$. Moreover, assume that $\valuation{2}$ is defined
-  from $\ell$.
-
-  Let us assume that $G_p=R_r=1$, $U_p=2$. For brevity we omit the environment
-  local state $\lstate{e}$.  The model $\msys{2}$ of $\sys{2}$ can be depicted
-  as follows.
+  $\init{i} = (-G_p+1, G_s)$. Assume that $G_p=-1$, $R_r=1$, $U_p=-2$ and
+  $M_h \geq 4$. For brevity we omit the environment local state $\lstate{e}$.  The
+  model $\msys{2}$ of $\sys{2}$ can be depicted as follows.
 
   \begin{center}
     \begin{tikzpicture}[yscale=1.2, %
