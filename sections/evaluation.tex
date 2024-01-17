@@ -4,6 +4,7 @@ procedure described in Section~\ref{sec:verification} for the guarding game
 presented in Example~\ref{ex:agent-template}.
 
 
+
 The guarding game is an instance of a social dilemma game, a class of
 non-zero-sum games characterised by intrinsic tension between individual and
 collective rationality \cite{VanlangeJPV13}. The guarding game simulates the
@@ -37,6 +38,8 @@ We used deep Q-learning, a type of algorithm used for reinforcement learning (RL
 The neural network's architecture had two hidden layers of four neurons each, all using ReLU activation functions for the benefit that the function thereby approximated would be piecewise linear [REF?]. The input layer consisted of a single neuron, representing the normalised HP of the agent and the output layer contained two neurons with linear activation functions, representing the estimated Q-values of the two actions. 
 
 We trained the network according to the traditional Q-learning paradigm modified with an experience replay buffer and a separate target network which was updated only periodically, as per Mnih et al 2015, to stabilise overestimation of the Q-values [Human-level control through deep reinforcement learning, Mnih et al, 2015; Deep Reinforcement Learning with Double Q-learning, Hasselt, Guez and Silver, 2015]. 
+
+
 
 Given the neural network implementing the observation function, we 
 implemented a template agent and a zero-one agent for the guarding game. We

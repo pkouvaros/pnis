@@ -1,0 +1,161 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Akintunde \bgroup \em et al.\egroup
+  }{2020a}]{Akintunde+20}
+M.~Akintunde, E.~Botoeva, P.~Kouvaros, and A.~Lomuscio.
+\newblock Formal verification of neural agents in non-deterministic
+  environments.
+\newblock In {\em Proceedings of the 19th International Conference on
+  Autonomous Agents and MultiAgent Systems (AAMAS20)}, page To Appear. ACM,
+  2020.
+
+\bibitem[\protect\citeauthoryear{Akintunde \bgroup \em et al.\egroup
+  }{2020b}]{Akintunde+20b}
+M.~Akintunde, E.~Botoeva, P.~Kouvaros, and A.~Lomuscio.
+\newblock Verifying strategic abilities of neural-symbolic multi-agent systems.
+\newblock In {\em Proceedings of the International Conference on Principles of
+  Knowledge Representation and Reasoning (KR20)}, pages 22--32. {AAAI} Press,
+  2020.
+
+\bibitem[\protect\citeauthoryear{Akintunde \bgroup \em et al.\egroup
+  }{2022}]{Akintunde+22}
+M.~Akintunde, E.~Botoeva, P.~Kouvaros, and A.~Lomuscio.
+\newblock Formal verification of neural agents in non-deterministic
+  environments.
+\newblock {\em Journal of Autonomous Agents and Multi-Agent Systems}, 36(1),
+  2022.
+
+\bibitem[\protect\citeauthoryear{Ball and
+  Kupferman}{2006}]{ball2006abstraction}
+Thomas Ball and Orna Kupferman.
+\newblock An abstraction-refinement framework for multi-agent systems.
+\newblock In {\em 21st Annual IEEE Symposium on Logic in Computer Science
+  (LICS'06)}, pages 379--388. IEEE, 2006.
+
+\bibitem[\protect\citeauthoryear{Clarke \bgroup \em et al.\egroup
+  }{1994}]{ClarkeGrumbergLong94}
+E.~Clarke, O.~Grumberg, and D.~Long.
+\newblock Model checking and abstractions.
+\newblock {\em ACM Transactions on Programming Languages and Systems},
+  16(5):1512--1542, 1994.
+
+\bibitem[\protect\citeauthoryear{Gammie and van~der
+  Meyden}{2004}]{GammieMeyden04a}
+P.~Gammie and R.~van~der Meyden.
+\newblock {MCK}: Model checking the logic of knowledge.
+\newblock In {\em Proceedings of 16th International Conference on Computer
+  Aided Verification (CAV04)}, volume 3114 of {\em Lecture Notes in Computer
+  Science}, pages 479--483. Springer, 2004.
+
+\bibitem[\protect\citeauthoryear{Gu \bgroup \em et al.\egroup
+  }{2016}]{Gurobi+16a}
+Z.~Gu, E.~Rothberg, and R.~Bixby.
+\newblock Gurobi optimizer reference manual.
+\newblock http://www.gurobi.com, 2016.
+
+\bibitem[\protect\citeauthoryear{Hardin}{1968}]{Hardin68}
+Garrett Hardin.
+\newblock The tragedy of the commons.
+\newblock {\em Science}, 162(3859):1243--1248, 1968.
+
+\bibitem[\protect\citeauthoryear{Jamroga \bgroup \em et al.\egroup
+  }{2020}]{jamroga2020towards}
+Wojciech Jamroga, Wojciech Penczek, Teofil Sidoruk, Piotr Dembi{\'n}ski, and
+  Antoni Mazurkiewicz.
+\newblock Towards partial order reductions for strategic ability.
+\newblock {\em Journal of Artificial Intelligence Research}, 68:817--850, 2020.
+
+\bibitem[\protect\citeauthoryear{Kacprzak \bgroup \em et al.\egroup
+  }{2004}]{KacprzakLomuscioPenczek04b}
+M.~Kacprzak, A.~Lomuscio, and W.~Penczek.
+\newblock Verification of multiagent systems via unbounded model checking.
+\newblock In {\em Proceedings of the 3rd International Conference on Autonomous
+  Agents and Multiagent Systems (AAMAS04)}, pages 638--645. ACM, 2004.
+
+\bibitem[\protect\citeauthoryear{Kacprzak \bgroup \em et al.\egroup
+  }{2008}]{Kacprzak+07a}
+M.~Kacprzak, W.~Nabialek, A.~Niewiadomski, W.~Penczek, A.~P{\'o}lrola,
+  M.~Szreter, B.~Wo{\'z}na, and A.~Zbrzezny.
+\newblock Ver{ICS} 2007 - a model checker for knowledge and real-time.
+\newblock {\em Fundamenta Informaticae}, 85(1):313--328, 2008.
+
+\bibitem[\protect\citeauthoryear{Kouvaros and
+  Lomuscio}{2015}]{KouvarosLomuscio15b}
+P.~Kouvaros and A.~Lomuscio.
+\newblock Verifying emergent properties of swarms.
+\newblock In {\em Proceedings of the 24th International Joint Conference on
+  Artificial Intelligence (IJCAI15)}, pages 1083--1089. AAAI Press, 2015.
+
+\bibitem[\protect\citeauthoryear{Kouvaros and
+  Lomuscio}{2016a}]{KouvarosLomuscio16c}
+P.~Kouvaros and A.~Lomuscio.
+\newblock Parameterised model checking for alternating-time temporal logic.
+\newblock In {\em Proceedings of the 22nd European Conference on Artificial
+  Intelligence (ECAI16)}, pages 1230--1238. IOS Press, 2016.
+
+\bibitem[\protect\citeauthoryear{Kouvaros and
+  Lomuscio}{2016b}]{KouvarosLomuscio16a}
+P.~Kouvaros and A.~Lomuscio.
+\newblock Parameterised verification for multi-agent systems.
+\newblock {\em Artificial Intelligence}, 234:152--189, 2016.
+
+\bibitem[\protect\citeauthoryear{Leibo \bgroup \em et al.\egroup
+  }{2017}]{LeiboZLMG17}
+Joel~Z. Leibo, Vinicius Zambaldi, Marc Lanctot, Janusz Marecki, and Thore
+  Graepel.
+\newblock Multi-agent reinforcement learning in sequential social dilemmas.
+\newblock In {\em Proceedings of the 16th Conference on Autonomous Agents and
+  MultiAgent Systems}, AAMAS '17, page 464–473, Richland, SC, 2017.
+  International Foundation for Autonomous Agents and Multiagent Systems.
+
+\bibitem[\protect\citeauthoryear{Lomuscio and
+  Michaliszyn}{2015}]{lomuscio2015verifying}
+Alessio Lomuscio and Jakub Michaliszyn.
+\newblock Verifying multi-agent systems by model checking three-valued
+  abstractions.
+\newblock In {\em Proceedings of the 2015 International Conference on
+  Autonomous Agents and Multiagent Systems}, pages 189--198, 2015.
+
+\bibitem[\protect\citeauthoryear{Lomuscio \bgroup \em et al.\egroup
+  }{2017}]{LomuscioQuRaimondi15}
+A.~Lomuscio, H.~Qu, and F.~Raimondi.
+\newblock {MCMAS}: A model checker for the verification of multi-agent systems.
+\newblock {\em Software Tools for Technology Transfer}, 19(1):9--30, 2017.
+
+\bibitem[\protect\citeauthoryear{Penczek and
+  Lomuscio}{2003}]{penczek2003verifying}
+Wojciech Penczek and Alessio Lomuscio.
+\newblock Verifying epistemic properties of multi-agent systems via bounded
+  model checking.
+\newblock In {\em Proceedings of the second international joint conference on
+  Autonomous agents and multiagent systems}, pages 209--216, 2003.
+
+\bibitem[\protect\citeauthoryear{Raimondi and
+  Lomuscio}{2005}]{RaimondiLomuscio05c}
+F.~Raimondi and A.~Lomuscio.
+\newblock Automatic verification of multi-agent systems by model checking via
+  {OBDD}s.
+\newblock {\em Journal of Applied Logic}, 5(2):235--251, 2005.
+
+\bibitem[\protect\citeauthoryear{Santos and Pacheco}{2011}]{SantosP11}
+Francisco~C. Santos and Jorge~M. Pacheco.
+\newblock Risk of collective failure provides an escape from the tragedy of the
+  commons.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  108(26):10421--10425, 2011.
+
+\bibitem[\protect\citeauthoryear{Smirnov}{2019}]{Smirnov19}
+Oleg Smirnov.
+\newblock Collective risk social dilemma and the consequences of the us
+  withdrawal from international climate negotiations.
+\newblock {\em Journal of Theoretical Politics}, 31(4):660--676, 2019.
+
+\bibitem[\protect\citeauthoryear{{Van Lange} \bgroup \em et al.\egroup
+  }{2013}]{VanlangeJPV13}
+Paul~A.M. {Van Lange}, Jeff Joireman, Craig~D. Parks, and Eric {Van Dijk}.
+\newblock The psychology of social dilemmas: A review.
+\newblock {\em Organizational Behavior and Human Decision Processes},
+  120(2):125--141, 2013.
+\newblock Social Dilemmas.
+
+\end{thebibliography}
