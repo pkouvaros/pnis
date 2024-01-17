@@ -9,18 +9,18 @@ TO_HOURS = 1
 TIMEOUT = 3600 * TO_HOURS 
 
 
-agents = [1, 2, 3]
-THRESHOLD = 6
+agents = [2, 3]
+TEMP_DEPTH = 6
 
-def experiments1():
+def experiments_universal():
 
     for method in [0]:
         print(f"method {method}")
-        for formula in [0, 1]:
+        for formula in [1]:
             print('phi {}'.format(formula+1))
             for agent_count in agents:
-                for k in range(1, THRESHOLD + 1):
-                    f = "results_{}_{}_{}_{}.txt".format(str(method), str(formula), str(agent_count), str(k))
+                for k in range(1, TEMP_DEPTH + 1):
+                    f = "results_m{}_f{}_a{}_k{}.txt".format(str(method), str(formula), str(agent_count), str(k))
                     if os.path.exists(f):
                         txtfile = open(f, 'r')
 
@@ -44,31 +44,34 @@ def experiments1():
                                 got_constrs = True
                         box[formula][key] = (time_taken, (result, maxconstrs, maxvars))
 
-            print("  &          m = {}   &            m = {}      &           m = {} ".format(*map(str, agents)))
-            for k in range(1, THRESHOLD + 1):
+            print(" k & " + " & ".join(["\multicolumn{1}{c}{$k = "+f"{k}"+"$}" for k in range(1, TEMP_DEPTH + 1)]) + "\\\\")
+            for agent_count in agents:
                 line = []
-                for agent_count in agents:
+                for k in range(1, TEMP_DEPTH + 1):
                     c = '--'
                     v = '--'
                     if (agent_count, k) in box[formula]:
                         time, (result, c, v) = box[formula][(agent_count, k)]
-                        line.append('{:10.2f}s & {:7}'.format(time, result))
+                        cellcolor = "         "
+                        if result == 'False':
+                            cellcolor = "\graycell"
+                        line.append('{} {:7.2f}s'.format(cellcolor, time))
                     else:
                         line.append('--')
                 # line.extend([str(c), str(v)])
 
-                print(" & " + str(k) + ' & ' + ' & '.join(line) + "\\\\")
+                print(str(agent_count) + ' & ' + ' & '.join(line) + "\\\\")
 
 
-THRESHOLD = 8
+THRESHOLD = 6
 
+TIME_STEPS = [2,3,4,5]
 
 def experiments_emergence_existential_property():
-    for k in [5,6]:
-        print(f"temporal depth {k}")
-        for formula in [0]:
-            print('phi {}'.format(formula + 1))
-            for agent_count in [2]:
+    for formula in [0]:
+        # print('phi {}'.format(formula + 1))
+        for agent_count in [2]:
+            for k in TIME_STEPS:
                 for n in range(agent_count, THRESHOLD + 1):
                     f = f"results_f{formula}_k{k}_{agent_count}_{n}.txt"
                     if os.path.exists(f):
@@ -94,19 +97,24 @@ def experiments_emergence_existential_property():
                                 got_constrs = True
                         box[formula][key] = (time_taken, (result, maxconstrs, maxvars))
 
-            print("  &" + " & ".join([f"t = {n}" for n in range(agent_count, THRESHOLD + 1)]) + "\\\\")
-            for agent_count in [2]:
+            print(" k &" + " & ".join(["\multicolumn{2}{c}{$t = "+f"{n}"+"$}" for n in range(agent_count, THRESHOLD + 1)]) + "\\\\")
+            for k in TIME_STEPS:
                 line = []
                 for n in range(agent_count, THRESHOLD + 1):
                     c = '--'
                     v = '--'
                     if (k, agent_count, n) in box[formula]:
                         time, (result, c, v) = box[formula][(k, agent_count, n)]
-                        line.append('{:10.2f}s & {:7}'.format(time, result))
+                        cellcolor = "         "
+                        if result == 'False':
+                            cellcolor = "\graycell"
+                        line.append('{} {:7.2f}s'.format(cellcolor, time))
                     else:
                         line.append('--')
                 # line.extend([str(c), str(v)])
 
                 print(" & " + str(k) + ' & ' + ' & '.join(line) + "\\\\")
 
-experiments_emergence_existential_property()
+# experiments_emergence_existential_property()
+
+experiments_universal()

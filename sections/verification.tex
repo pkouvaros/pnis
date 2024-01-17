@@ -47,7 +47,7 @@ private states, its associated \emph{zero-one agent} is a tuple $\ag{zo} =
 \tuple{\lstates{zo}, \init{zo}, \obs{zo}, \acts{zo}, \prot{zo}, \tr{zo}}$ over
 sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
 2^{\prvs t} \setminus \set{\emptyset}$ of percepts and private states, where:
-\begin{itemize} 
+\begin{itemize}[$\bullet$]
     \item $\lstates{zo} = 2^{\lstates t} \setminus \set{\emptyset}$ is the set
     of abstract states. An abstract state represents the projection of global
     states in systems of any size onto a set.
@@ -68,9 +68,9 @@ sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
     \end{itemize}
 
     \item $\acts{zo} = 2^{\lstates t \times \acts t} \setminus \set{\emptyset}$
-    is the set of abstract actions. Analogously to abstract states, an abstract
+    is the set of abstract actions. As with abstract states, an abstract
     action represents the projection of joint actions, paired with the local
-    states at which they are performed,  of arbitrarily many agents onto a set.
+    states at which they are performed, of arbitrarily many agents onto a set.
 
     \item $\prot{zo} : \lstates{zo} \rightarrow 2^{\acts{zo}} \setminus
     \set{\emptyset}$ is the abstract protocol. The protocol prescribes the sets
@@ -126,13 +126,13 @@ A $b$-bounded simulation between two models $\mathcal M = \tuple{G, \it{ACT}, T,
 \ell}$ and $\mathcal{M'} = \tuple{G', \it{ACT'}, T', \ell'}$  with initial
 global states $\iota$ and $\iota'$ is inductively defined on $b \geq 0$ as
 follows.
-\begin{itemize}
+\begin{itemize}[$\bullet$]
     \item A relation $\sim_0 \subseteq G \times G'$ is  $0$-bounded simulation
     if $(\iota, \iota') \in \sim_0$ and whenever $(q, q') \in \sim_0$, we have
     that $q \in \ell(p,i)$ implies that $q' \in \ell'(p, i)$.
     \item A relation $\sim_b \subseteq G \times G'$ is  $b$-bounded simulation
     if $(\iota, \iota') \in \sim_b$ and  whenever $(q, q') \in \sim_b$, the
-    following conditions hold:
+    following  hold:
     \begin{enumerate}
     \item $(q, q') \in \sim_0$.
     \item If $(q, \alpha, q^1) \in T$ for a joint action $\alpha \in \it{ACT}$ and
@@ -176,7 +176,7 @@ concrete model with at least~$m+1$ agents.
 
 \begin{theorem}
 \label{th:ab-concr-sim}
-$\msys n \leq_b \masys m$ for any $n \geq m+1$ and $b \geq 0$.
+$\msys n \leq_b \masys m$ for $n \geq m+1$ and $b \geq 0$.
 \end{theorem}
 \begin{proof}
 The proof proceeds by induction on~$b$ and it is included in the Appendix.
@@ -204,7 +204,7 @@ $b \geq 0$.
 \end{theorem}
 \begin{proof}
 The proof proceeds by having every additional agent in $\msys{n'}$ to mimic
-agent~1 in $\msys n$ and it is included in the Appendix.
+agent~1 in $\msys n$ (see the appendix).
 \end{proof}
 
 The above results enable the derivation of procedures for solving

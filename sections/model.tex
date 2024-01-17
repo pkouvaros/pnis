@@ -23,7 +23,7 @@ which the agents operate. The agent template is defined by the following.
 \begin{definition}[Agent template.]
 An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 \acts t, \prot t, \tr t }$, where:
-\begin{itemize}
+\begin{itemize}[$\bullet$]
   \item $\lstates t = \prvs t \times \pers t$ is a nonempty (possibly infinite)
   set of template local states.  Each local state  is a pair $\tuple{\prv t, \per t}$ of
   a private state $\prv t \in \prvs t \subseteq \mathbb R^{m_{prv}}$ and a
@@ -497,10 +497,12 @@ local states.
 A \emph{joint action} $\alpha = \tuple{\alpha_1, \ldots, \alpha_n, \alpha_e}$
 in $\sys n$ is a tuple of local actions for all the agents and the environment.
 For a joint action $\alpha$, we write $\la{i}{\alpha}$ to denote the
-\emph{local action} of agent $\ag i$ in~$\alpha$.  The set
-$\globalacts{n} = \acts{1}\times\dots\times\acts{n}\times\acts{e}$ of all
-possible joint actions is the Cartesian product of the agents' sets of local
-actions.   We now formally define the concrete NIS.
+\emph{local action} of agent $\ag i$ in~$\alpha$.  
+$\globalacts{n} = \acts{1}\times\dots\times\acts{n}\times\acts{e}$ is the set of all
+joint actions.
+%% E
+% is the Cartesian product of the agents' sets of local actions.
+We now formally define the concrete NIS.
 % A concrete system's global states evolve over time in compliance with
 % the following global transition function.
 
@@ -591,22 +593,22 @@ that we will use  to interpret our specification language.
 
 \begin{definition}[Model]
   \label{def:model}
-  Given a concrete NIS $\sys n$, the induced model of $\sys n$, or simply model,
-  is a tuple $\msys  n = \tuple{\globalstates n, \globalacts n, \globalrel n,
-  \valuation n}$, where $G(n)$ is the set of global states, $\globalacts n$ is the
-  set of joint actions, $\globalrel n$ is the global transition relation defined
-  as $(q, \alpha, q') \in \globalrel n$ iff $\globaltr n(q, \alpha) = q'$, and 
+  Given a concrete NIS $\sys n$, its \emph{(induced) model} $\msys{n}$ is a
+  tuple $(\globalstates n, \globalacts n, \globalrel n, \valuation n)$,
+  where $G(n)$ is the set of global states, $\globalacts n$ is the set
+  of joint actions, $\globalrel n$ is the global transition relation defined as
+  $(q, \alpha, q') \in \globalrel n$ iff $\globaltr n(q, \alpha) = q'$, and
   $\valuation n$ is the labelling function as in
   Definition~\ref{def:concreteystem}.
 \end{definition}
 
-A path in a model $\msys n$ is an infinite sequence of global states and joint
+A \emph{path} in a model $\msys n$ is an infinite sequence of global states and joint
 actions $q^0\alpha^0q^1\alpha^1\ldots$ such that $(q^i,\alpha^i,q^{i+1}) \in
 \globalrel n$ for all $i \geq 0$. Given a global state $q$ in $\msys n$ we write
 $\paths{q}$ for the set of all paths originating from $q$.
 
-We now illustrate Definitions~\ref{def:concreteystem}-\ref{def:model} on our running
-example.
+% We now illustrate Definitions~\ref{def:concreteystem}-\ref{def:model} on our
+% running example.
 
 \begin{example}
   Consider a concrete neural interpreted system
@@ -640,7 +642,7 @@ example.
     }{ %
       \node[scale=0.7, outer sep=1mm,draw, very thick, rounded corners] (\a) at (\x,\y) {$(\hone,\perone), (\htwo,\pertwo)$};
 
-      \node[fill=black, text=white, rounded corners, inner sep=1mm, scale=0.7, xshift=0.3mm, yshift=-2mm] at (\a.north east) {$\mathsf{\prop}$};
+      \node[fill=black, text=white, rounded corners, inner sep=1mm, scale=0.7, xshift=0.3mm, yshift=-1mm] at (\a.south) {$\mathsf{\prop}$};
       }
 
       \foreach \from/\to/\lab/\wh in { %
@@ -648,7 +650,7 @@ example.
         s31/s10/{rr}/left, %
         s13/s01/{rr}/left, %
         s10/s00/{re}/left,%
-        s01/s00/{er}/right%
+        s01.140/s00.210/{er}/right%
       }{ \draw[-latex,thick,\lab] (\from) -- (\to);
       }
 
@@ -664,9 +666,11 @@ example.
       \begin{scope}[yshift=1.4cm]
         \foreach \col/\y/\lab in { %
           gg/0/{G_a,G_a},
-          gr/1/{G_a,R_a}, rg/2/{R_a,G_a}, rr/3/{R_a,R_a}, %
-          re/4/{R_a,E_a}, er/5/{E_a,R_a}, ee/6/{E_a,E_a}%
-        }{ \draw[-latex, semithick, \col] (3.2,-0.18*\y) -- ++(1,0) node[right, scale=0.6] {$\lab$}; }
+          gr/1/{G_a,R_a}, rg/2/{R_a,G_a}, rr/3/{R_a,R_a}%
+        }{ \draw[-latex, semithick, \col] (2.6,-0.18*\y) -- ++(1,0) node[right, scale=0.6] {$\lab$}; }
+        \foreach \col/\y/\lab in { %
+          re/0/{R_a,E_a}, er/1/{E_a,R_a}, ee/2/{E_a,E_a}%
+        }{ \draw[-latex, semithick, \col] (-4,-0.18*\y) -- ++(1,0) node[right, scale=0.6] {$\lab$}; }
     \end{scope}
     \end{tikzpicture}
   \end{center}
@@ -675,14 +679,17 @@ example.
 
 
 We express specifications for PNIS in an indexed and bounded variant of
-Computation Tree Logic ($\ctl$), henceforth $\bictl$. The logic (i) introduces
-indexed atomic propositions that are quantified over the agents of the concrete
-system that the formula in question is evaluated; and (ii) permits only the
-construction of formulae whose evaluation can be realised on paths of bounded
-lengths. The former extends $\ctl$ by allowing the formulation of properties
+Computation Tree Logic ($\ctl$), henceforth $\bictl$. The logic
+\begin{inparaenum}[\it (i)]
+\item introduces indexed atomic propositions that are quantified over the
+  agents of the concrete system that the formula in question is evaluated; and
+\item permits only the construction of formulae whose evaluation can be
+  realised on paths of bounded lengths.
+\end{inparaenum}
+The former extends $\ctl$ by allowing the formulation of properties
 irrespective of the concrete system on which they are evaluated.  The latter
 restricts $\ctl$ to bounded formulae following the undecidability of
-verification for unbounded formulae~\cite{Akintunde+20}.
+verification for unbounded ones~\cite{Akintunde+20}.
 
 \begin{definition}
 Given a  set $\atprop$ of atomic propositions and a set $\atvar$ of variables,

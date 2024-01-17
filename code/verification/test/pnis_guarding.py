@@ -167,22 +167,42 @@ def main():
 
     ############################################################################
     # Verify for the given number of steps
-    steps = [ARGS.threshold]#range(ARGS.agents_number, ARGS.threshold + 1)
-    for agent_count in steps:
-        print(agent_count, "agents in NIS")
+    if ARGS.formula == 0:
+        steps = [ARGS.threshold]#range(ARGS.agents_number, ARGS.threshold + 1)
+        for temp_depth in steps:
+            print(temp_depth, "agents in NIS")
 
-        agents, env = initialise_and_get_agent_and_env(agent_count, ARGS.formula)
+            agents, env = initialise_and_get_agent_and_env(temp_depth, ARGS.formula)
 
-        input_hyper_rectangle = get_input_bounds(agent_count, ARGS.formula, ARGS.initial_health, ARGS.initial_percept)
-        print(input_hyper_rectangle, "\n")
+            input_hyper_rectangle = get_input_bounds(temp_depth, ARGS.formula, ARGS.initial_health, ARGS.initial_percept)
+            print(input_hyper_rectangle, "\n")
 
-        formula = get_formula_and_gamma(ARGS.formula, ARGS.step, ARGS.agents_number)
+            formula = get_formula_and_gamma(ARGS.formula, ARGS.step, ARGS.agents_number)
 
-        print("Formula to verify", formula)
-        # Run a method.
-        verification_methods = [verify_single, verify_parallel_poly]
-        verification_methods[ARGS.method](formula, input_hyper_rectangle, agents, env, ARGS.timeout)
-        print("\n")
+            print("Formula to verify", formula)
+            # Run a method.
+            verification_methods = [verify_single, verify_parallel_poly]
+            verification_methods[ARGS.method](formula, input_hyper_rectangle, agents, env, ARGS.timeout)
+            print("\n")
+
+    else:
+        steps = [ARGS.step]
+        for temp_depth in steps:
+            print(temp_depth, "time steps")
+
+            agents, env = initialise_and_get_agent_and_env(ARGS.agents_number, ARGS.formula)
+
+            input_hyper_rectangle = get_input_bounds(ARGS.agents_number, ARGS.formula, ARGS.initial_health,
+                                                     ARGS.initial_percept)
+            print(input_hyper_rectangle, "\n")
+
+            formula = get_formula_and_gamma(ARGS.formula, temp_depth, ARGS.agents_number)
+
+            print("Formula to verify", formula)
+            # Run a method.
+            verification_methods = [verify_single, verify_parallel_poly]
+            verification_methods[ARGS.method](formula, input_hyper_rectangle, agents, env, ARGS.timeout)
+            print("\n")
 
 
 def get_formula_and_gamma(formula, num_steps, agents_number):
