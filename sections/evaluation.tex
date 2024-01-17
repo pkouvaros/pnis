@@ -6,23 +6,31 @@ presented in Example~\ref{ex:agent-template}.
 
 
 The guarding game is an instance of a social dilemma game, a class of
-non-zero-sum games characterised by intrinsic tension between individual and
-collective rationality \cite{VanlangeJPV13}. The guarding game simulates the
-fundamental forces of a \emph{collective risk dilemma (CRD)}, a type of public
-goods game where a guaranteed tragedy of the commons \cite{Hardin68} is avoided
-by volunteered loss of utility by a population of agents. The stability of a
-such a system can be curtailed by the immediate advantage of free riding if the
-agents favour a strategy which neglects the collective interests of maintaining
-the public good \cite{SantosP11}. In the guarding game, guarding can be
-considered equivalent to cooperation, and regenerating to defection.
+non-zero-sum MAS games characterised by intrinsic tension between individual
+and collective rationality \cite{VanlangeJPV13}. The guarding game simulates
+the fundamental forces of a \emph{collective risk dilemma (CRD)}, a type of
+public goods social dilemma game where a guaranteed tragedy of the commons
+\cite{Hardin68} is avoided by volunteered loss of utility by a population of
+agents. The stability of such a system can be curtailed by the immediate
+advantage of free riding if the agents favour a strategy which neglects the
+collective interests of maintaining the public good \cite{SantosP11}.
 
-Many real systems exhibit these dynamics, one example being the collective
+In the guarding game, guarding can be considered equivalent to cooperation, and
+regenerating to defection. The arbitrary selection of a subset of guards that
+volunteer is a necessary artefact of the swarm systems formalism, but does not
+affect the stability of the system negatively and allows us to reason about its
+existential properties, as the only event which would incur the tragedy of the
+commons is the lack of any volunteer guards in the first place.
+
+Many real systems exhibit CRD dynamics, one example being the collective
 maintenance of Earth's habitat by humanity \cite{Smirnov19}. Other examples
 include nuclear disarmament, responsible AI development, and financing public
 broadcast TV and radio entertainment. Furthermore, many of these can be
 directly or indirectly modelled as swarm systems, as we have done with guarding
-game. One example of this is the huddling of penguins in a cold environment
-[]
+game. One example of this might be the huddling of emperor penguins to conserve
+energy and incubate eggs [The Emperor Penguin, Le Maho, 1977; Huddling behavior in emperor penguins: Dynamics of huddling, Gilbert et al, 2006]
+during the arctic winter, the success of which depends on a slow rotation of
+members of the formation away from the chilling wind [Modelling huddling penguinds, Waters et al, 2012].
 
 Given the existential nature of some challenges which come in the form of CRDs,
 it is unacceptable for us as a species to remain unprepared to reliably avoid
@@ -30,12 +38,15 @@ their worst outcomes. Furthermore, many agents which play in CRD games may
 increasingly become autonomous given recent technological advances. The
 possibility of evading the tragedy of the commons through exporting some of our
 risky decision making to such autonomous agents then emerges if such agents can
-be verified to be reliably capable of avoiding mutual defection. What follows
-indicates that this possibility may be worthy of pursuit.
+be verified to be more capable than we are of avoiding mutual defection as the
+number of agents grows. This work indicates that this possibility, as well as
+the possibility of better understanding systems which already evade the tragedy
+of the commmons - such as the aforementioned emperor penguins - may be worthy
+of pursuit.
 
 We used deep Q-learning, a type of algorithm used for reinforcement learning (RL) to train a neural observation function through a population of agents playing the guarding game. RL works by assigning rewards to state-action pairs, so that agents can learn the value of their behaviour; the rewards given to the network represented the tension between individual and collective interests. All agents shared the same neural network, creating a system in which the agents were learning to play against exact copies of themselves. 
 
-The neural network's architecture had two hidden layers of four neurons each, all using ReLU activation functions for the benefit that the function thereby approximated would be piecewise linear [REF?]. The input layer consisted of a single neuron, representing the normalised HP of the agent and the output layer contained two neurons with linear activation functions, representing the estimated Q-values of the two actions. 
+The neural network's architecture had two hidden layers of four neurons each, all using ReLU activation functions for the benefit that the network's learned function would be piecewise linear in nature and therefore soluble to our formal analysis. The input layer consisted of a single neuron, representing the normalised HP of the agent and the output layer contained two neurons with linear activation functions, representing the estimated Q-values of the two actions 'guard' and 'regenerate'. 
 
 We trained the network according to the traditional Q-learning paradigm modified with an experience replay buffer and a separate target network which was updated only periodically, as per Mnih et al 2015, to stabilise overestimation of the Q-values [Human-level control through deep reinforcement learning, Mnih et al, 2015; Deep Reinforcement Learning with Double Q-learning, Hasselt, Guez and Silver, 2015]. 
 
