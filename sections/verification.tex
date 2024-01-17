@@ -137,8 +137,8 @@ number of steps as defined below.
     \item $(q, q') \in \sim_0$.
     \item If $(q, \alpha, q^1) \in T$ for a joint action $\alpha \in \it{ACT}$
       and global state $q^1 \in G$, then there is a joint action
-      $\alpha' \in \it{ACT}'$ and global state $g'^1 \in G'$ such that
-      $(g', \alpha', g'^1) \in T'$ and $(q^1, q'^1) \in \sim_{b - 1}$.
+      $\alpha' \in \it{ACT}'$ and global state $q'^1 \in G'$ such that
+      $(q', \alpha', q'^1) \in T'$ and $(q^1, q'^1) \in \sim_{b - 1}$.
     \end{enumerate}
   \end{itemize}
 \end{definition}
@@ -217,8 +217,7 @@ question.
 
 \begin{corollary}
 \label{cor:universal}
-If $\varphi[m]$ is a universal $\bctl$ formula and we have that $\masys m
-\models  \varphi[m]$, then the following hold:
+If $\varphi[m]$ is a universal $\bctl$ formula, then the following hold:
 \begin{itemize}
     \item  If $\masys m \models \varphi[m]$, then $m + 1$ is an emergence
     threshold for $\bictlspec$. Otherwise, there is no emergence threshold for
