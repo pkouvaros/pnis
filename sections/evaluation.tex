@@ -9,64 +9,33 @@ The guarding game is an instance of a social dilemma game, a class of
 MASs characterised by tension between individual
 and collective rationality \cite{VanlangeJPV13}. The guarding game simulates
 the fundamental forces of a \emph{collective risk dilemma (CRD)}, a type of
-social dilemma where a guaranteed "tragedy of the commons"
+social dilemma where a guaranteed ``tragedy of the commons''
 \cite{Hardin68} is avoided by personal sacrifice by a population of
 agents, or brought on by free riding if all the agents favour a strategy which
 neglects the collective interests of that personal sacrifice \cite{SantosP11}.
+%
+Namely, guarding can be considered equivalent to cooperation (acting in
+collective interest), and resting to defection (acting in selfish
+interest).
 
-In the guarding game, guarding can be considered equivalent to cooperation
-(acting in collective interest), and regenerating to defection (acting in
-selfish interest). The arbitrary selection of a subset of guards that volunteer
-is a necessary artefact of the swarm systems formalism, but does not affect the
-mutual defection outcome and allows us to reason about the swarm's
-existential properties, as the only event which would incur the tragedy of the
-commons is the lack of any volunteer guards in the first place.
-
-Given the existential nature of some challenges which come in the form of CRDs,
-such as the collective maintenance of Earth's habitat by humanity
-\cite{Smirnov19}, we as a species cannot remain unprepared to reliably avoid
-their worst outcomes. The solution to the verification and
-emergence identification problems presented here
-provides a framework for creating autonomous agents which can avoid mutual
-defection in CRDs, as well as for analysing models of natural systems which
-already do.
-
-One example of this might be the huddling of emperor penguins to conserve
-energy and incubate eggs \cite{GilbertRLNA06,LeMaho1977} during the
-arctic winter, the success of which depends on a slow rotation of members of
-the formation away from the chilling wind \cite{WatersBK12}.
 
 To train a neural observation function, we used deep Q-learning, a type of
-reinforcement learning (RL) algorithm, by having a population of agents play
-the guarding game. The rewards were assigned to
-reflect the tension between individual and collective interests. All agents
-shared the same neural network, creating a system in which the agents were
-learning to play against exact copies of themselves. We
-used an experience replay buffer and a separate target network which
-was updated only periodically, as per Mnih et al 2015, to stabilise
-overestimation of the Q-values \cite{Mnih+15,HaaseltGS16}.
-
-The resulting neural network's architecture had two hidden layers of four
-neurons activated by ReLU. The input layer consisted of a single neuron,
-representing the normalised health points of the agent and the output layer
-contained two neurons with linear activation functions, representing the
-estimated Q-values of the two actions 'guard' and 'rest'.
+reinforcement learning (RL) algorithm. During the training, the game was played
+by 3 agents, and the parameters were set as $M_h = 4$, $G_r = -2$, $R_r = 1$
+and $U_r = -3$. The rewards were assigned to reflect the tension between
+individual and collective interests. All agents shared the same neural network,
+creating a system in which the agents were learning to play against exact
+copies of themselves. We used an experience replay buffer and a separate target
+network which was updated only periodically to stabilise overestimation of the
+Q-values \cite{Mnih+15,HaaseltGS16}. More details about the training can be
+found in the appendix.
+%
+The produced neural network has two hidden layers of four ReLU activated
+neurons, takes as input a single neuron, representing the normalised health
+points of the agent, and outputs the estimated Q-values of the two actions
+`rest' and `guard'.
 %%%%
 
-
-Given the neural network implementing the observation function, we 
-implemented a template agent and a zero-one agent for the guarding game. We
-then used the \venmas toolkit developed for verification of
-NISs~\cite{Akintunde+20b} to verify $\bctl$ properties checking whether it is
-possible for a colony of agents to survive after a number of time steps.
-%
-The experiments have been performed on a standard PC running Ubuntu 22.04 with
-16GB RAM and processor Intel(R) Core i5-4460 CPU @ 3.20GHz. We relied on Gurobi
-v10.0 to solve MILP \cite{Gurobi+16a}.
-
-We assume that $M_h = 4$, $G_r = -2$, $R_r = 1$ and $U_r = -3$. 
-
-Consider the guarding example PNIS $\pnis$ from Example~\ref{ex:pnis}, and recall that the proposition $\mathsf{a}$ labels all states with positive health (``alive'') and the proposition $\mathsf{d}$ all other states (``dead'').
 
 \begin{table}
 \centering
@@ -86,17 +55,30 @@ Consider the guarding example PNIS $\pnis$ from Example~\ref{ex:pnis}, and recal
   \label{tab:results-existential}
 \end{table}
 
+Given the learned neural network, we implemented a template agent and a
+zero-one agent for the guarding game. We then used the \venmas toolkit
+developed for verification of NISs~\cite{Akintunde+20b} to verify whether it is
+possible for a colony of agents to survive after a number of time steps.
+%
+Specifically, recall from Example~\ref{ex:pnis} the proposition $\mathsf{a}$
+that labels all states with positive health (``alive'') and the proposition
+$\mathsf{d}$ that labels all other states (``dead'').
+%
 Let $m$ be the number of agent variables. We are interested in verifying two
-specifications:
+specifications (for $v_i \in\atvar$):
 \begin{inparaenum}[\it (i)]
 \item existential property
-  $\varphi^k_E = EX^k \bigwedge_{i=1}^m(\mathsf{a},v_i)$ for $v_i \in\atvar$
+  $\varphi^k_E = EX^k \bigwedge_{i=1}^m(\mathsf{a},v_i)$ 
   expressing there is an evolution where at least $m$ agents are alive after
   $k$ time steps,
 \item universal property $\varphi^k_A = AX^k \bigwedge_{i=1}^m(\mathsf{a},v_i)$
   expressing that in every possible evolution at least $m$ agents are alive
   after $k$ time steps.
 \end{inparaenum}
+%
+The experiments have been performed on a standard PC running Ubuntu 22.04 with
+16GB RAM and processor Intel(R) Core i5-4460 CPU @ 3.20GHz. We relied on Gurobi
+v10.0 to solve MILP \cite{Gurobi+16a}.
 
 For the existential property, we consider the case of $m=2$ and are interested
 in finding the minimal number of agents in the colony that is required to
@@ -116,6 +98,13 @@ result is what we would expect from a cooperative template agent for the given
 parameters of the guarding game. We can therefore conclude that the RL
 procedure has been adequate for training altruistic agents.
 
+The arbitrary selection of a subset of guards that volunteer is a
+necessary artefact of the interpreted systems, but does not affect the
+stability of the system negatively and allows us to reason about its
+existential properties, as the only event which would incur the tragedy of the
+commons is the lack of any volunteer guards in the first place.
+
+
 For the universal property, we verified $\varphi^k_A[m]$ against $\masys{m}$
 for temporal depth $k = 1,\dots,6$ and the number of agents $m=2,3$. The
 verification results can be found in Table~\ref{tab:results-universal}.  When
@@ -129,7 +118,7 @@ settings rather than the system evolving due to pure chance.
 
 \begin{table}
   \centering
-  \begin{tabular}{crrrrrr}
+  \begin{tabular}{@{}crrrrrr@{}}
     \toprule
     % $k$ & \multicolumn{1}{c}{$m = 2$} & \multicolumn{1}{c}{$m = 3$}\\
     % \midrule
@@ -142,8 +131,8 @@ settings rather than the system evolving due to pure chance.
 
     m & \multicolumn{1}{c}{$k = 1$} & \multicolumn{1}{c}{$k = 2$} & \multicolumn{1}{c}{$k = 3$} & \multicolumn{1}{c}{$k = 4$} & \multicolumn{1}{c}{$k = 5$} & \multicolumn{1}{c}{$k = 6$}\\
     \midrule
-2 & \graycell    0.66s & \graycell    3.60s &            \multicolumn{1}{c}{--} & \graycell   16.90s & \graycell   20.59s &            \multicolumn{1}{c}{--}\\
-3 & \graycell    1.75s & \graycell   16.03s & -- & \graycell 42.74s & \graycell 2196.70s & --\\
+2 & \graycell    0.66s & \graycell    3.60s & \multicolumn{1}{c}{--} & \graycell   16.90s & \graycell   20.59s & \multicolumn{1}{c}{--}\\
+3 & \graycell    1.75s & \graycell   16.03s & \multicolumn{1}{c}{--} & \graycell 42.74s & \graycell 2196.70s & \multicolumn{1}{c}{--} \\
     \bottomrule
   \end{tabular}
   \caption{ Verification times for $\masys{m} \models \varphi^k_A[m]$ for various
