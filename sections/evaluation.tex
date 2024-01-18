@@ -18,7 +18,7 @@ In the guarding game, guarding can be considered equivalent to cooperation
 (acting in collective interest), and regenerating to defection (acting in
 selfish interest). The arbitrary selection of a subset of guards that volunteer
 is a necessary artefact of the swarm systems formalism, but does not affect the
-stability of the system negatively and allows us to reason about its
+mutual defection outcome and allows us to reason about the swarm's
 existential properties, as the only event which would incur the tragedy of the
 commons is the lack of any volunteer guards in the first place.
 
@@ -32,13 +32,12 @@ defection in CRDs, as well as for analysing models of natural systems which
 already do.
 
 One example of this might be the huddling of emperor penguins to conserve
-energy and incubate eggs \cite{GilbertRLNA06} during the
-% The Emperor Penguin, Le Maho, 1977 
+energy and incubate eggs \cite{GilbertRLNA06,LeMaho1977} during the
 arctic winter, the success of which depends on a slow rotation of members of
 the formation away from the chilling wind \cite{WatersBK12}.
 
 To train a neural observation function, we used deep Q-learning, a type of
-reinforcement learning (RL) algorithm, by having a population of agents playing
+reinforcement learning (RL) algorithm, by having a population of agents play
 the guarding game. The rewards were assigned to
 reflect the tension between individual and collective interests. All agents
 shared the same neural network, creating a system in which the agents were
@@ -87,7 +86,7 @@ Consider the guarding example PNIS $\pnis$ from Example~\ref{ex:pnis}, and recal
   \label{tab:results-existential}
 \end{table}
 
-Let $m$ be the number of agent variables. We are interesting in verifying two
+Let $m$ be the number of agent variables. We are interested in verifying two
 specifications:
 \begin{inparaenum}[\it (i)]
 \item existential property
@@ -120,14 +119,13 @@ procedure has been adequate for training altruistic agents.
 For the universal property, we verified $\varphi^k_A[m]$ against $\masys{m}$
 for temporal depth $k = 1,\dots,6$ and the number of agents $m=2,3$. The
 verification results can be found in Table~\ref{tab:results-universal}.  When
-we could get the result within the timeout, none of the properties has been
+we could not get the result within the timeout, none of the properties has been
 satisfied. This is a consequence of the semantics of our PNIS, where even when
 the agents volunteer to guard, they can choose either to rest or to guard, and
 so there is a path in the model where nobody is guarding and a path where
 everybody is guarding, thus everyone's health deteriorates. This result
-highlights the need for some arbitration in the social dilemma settings that
-would follow some reasonable strategy instead of letting the system evolve due
-to a chance.
+highlights the need for some arbitration or communication in the social dilemma
+settings rather than the system evolving due to pure chance.
 
 \begin{table}
   \centering

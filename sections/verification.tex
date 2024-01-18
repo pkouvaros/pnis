@@ -56,7 +56,7 @@ sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
     \item $\init{zo} = \set{\init t}$ is the unique initial abstract state.
     
     \item $\obs{zo} : \lstates{zo} \times \lstates e \rightarrow \pers{zo}$ is
-    abstract observation function. It maps pairs of abstract and environment
+    the abstract observation function. It maps pairs of abstract and environment
     states to sets of percepts, where each set includes the percepts that would
     be collectively generated in a global state represented by the abstract
     state. Formally, the observation function satisfies $\obs{zo}(l_{zo}, l_e) =
@@ -156,7 +156,7 @@ simulated model and existential $\bctl$ formulae are preserved from the
 simulated model to the simulating model whenever their temporal depth is at
 most~$b$.
 
-\begin{theorem} Let $\mathcal M$ and $\mathcal M'$ be two models such $\mathcal
+\begin{theorem} Let $\mathcal M$ and $\mathcal M'$ be two models such that $\mathcal
 M \sim_b  \mathcal M'$. Then, the following hold.
 \label{th:sim}
 \begin{enumerate}

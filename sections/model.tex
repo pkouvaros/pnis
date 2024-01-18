@@ -151,8 +151,8 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 \begin{example}\em
   \label{ex:agent-template}
 
-  We consider the example of a guarding game, an instance of sequential social
-  dilemma games \cite{LeiboZLMG17}. In this game there is a colony of agents
+  We consider the example of a guarding game, an instance of a collective risk
+  dilemma \cite{MilinskiSKRM2008}. In this game there is a colony of agents
   that needs to be guarded. Guarding duty costs a guard some health~$G_r$,
   resting improves agent's health by $R_r$, however if no one is guarding, then
   it costs all agents in the colony some health~$U_r$. The maximum value of
@@ -522,7 +522,7 @@ $\ls{i}{q} \in \tlabel i(p)$.
 So the atomic propositions in a concrete system are indexed by each of the
 concrete agents: $(p, i)$ holds in a global state if the agent $i$ is at a local
 state labelled with $p$ by the template labelling function. This will enable us
-to construct specifications independently of the size of the concrete system on
+to construct specifications independent of the size of the concrete system on
 which they are evaluated.
 
 
@@ -550,7 +550,7 @@ obtaining a new local state $\pplstate i = \tuple{ \pprv i, \pper{i}}$.
 Differently from the standard treatment of interpreted systems, the
 transition function of a concrete agent in PNIS  does not depend on the joint
 action performed in the system, but it depends on the local action performed by
-the  agent and on the on the set of actions performed by all of the agents
+the  agent and on the set of actions performed by all of the agents
 and the environment.  Thus, the identities of the agents are abstracted away in
 a joint action, thereby reflecting the unbounded nature of PNIS. In other words,
 whereas  a concrete agent can observe which actions were performed in the system
@@ -571,14 +571,14 @@ $\sys n$.
   \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$, $\tr e(\ls{e}{q},
   \la{e}{q}, \setprojection{\alpha}) = q'$; i.e., the environment’s action is
   protocol compliant and its local state is updated as per its local transition
-  function as per the set of actions that were performed in the round.
+  function and the set of actions that were performed in the round.
 
   \item For all $i \in \set{1,\ldots,n}$, we have that $\la{i}{\alpha} \in
   \prot{i}(\ls{i}{q})$, $\tr i (\ls{i}{q}, \la{i}{\alpha},
   \setprojection{\alpha}, \la{e}{\alpha}) = \lprv{i}{q'}$, and $\obs
   i((\lprv{i}{q'},\lper{i}{q}),\ls{e}{q'}) = \lper{i}{q'}$; i.e., the agent's
   action is protocol compliant, the private part of its local state is updated
-  as per its local transition function as per the set of actions performed by
+  as per its local transition function and the set of actions performed by
   all the agents, and the perception part of its local state is updated as per
   its observation function.
   \end{itemize}
@@ -685,7 +685,7 @@ We express specifications for PNIS in an indexed and bounded variant of
 Computation Tree Logic ($\ctl$), henceforth $\bictl$. The logic
 \begin{inparaenum}[\it (i)]
 \item introduces indexed atomic propositions that are quantified over the
-  agents of the concrete system that the formula in question is evaluated; and
+  agents of the concrete system the formula in question is evaluated on; and
 \item permits only the construction of formulae whose evaluation can be
   realised on paths of bounded lengths.
 \end{inparaenum}
@@ -802,7 +802,7 @@ identification problem is to compute an emergence threshold.
 
 
 \begin{definition}[Emergence identification problem]
-  Given an PNIS $\npis$ and a $\bictl$ sentence $\bictlspec$, compute an
+  Given a PNIS $\npis$ and a $\bictl$ sentence $\bictlspec$, compute an
   emergence threshold $\mathit{th} \in \set{0, m, m+1, \ldots}$ for $\npis$ and
   $\bictl$.  (If $\mathit{th}=0$, then $\npis$ admits no threshold for
   $\bictlspec$.)
