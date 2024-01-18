@@ -212,10 +212,10 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
     rules. Formally, for $P \in \{G_p,R_p\}$:
 
     $\begin{array}{@{}l@{\quad}l}\small
-       \tr{t}((h,P), G_a, A) = \max(h + G_p,0) &\\% \text{ and } h > G_p\\
+       \tr{t}((h,P), G_a, A) = \max(h + G_r,0) &\\% \text{ and } h > G_p\\
        % \tr{t}((h,P), G_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq G_p\\[2mm]
        \tr{t}((h,P), R_a, A) = \min(h + R_r, M_h) &\text{ if }G_a\in A\\
-       \tr{t}((h,P), R_a, A) = \max(h + U_p,0) &\text{ if }G_a\notin A\\% \text{ and } h > U_p\\
+       \tr{t}((h,P), R_a, A) = \max(h + U_r,0) &\text{ if }G_a\notin A\\% \text{ and } h > U_p\\
        % \tr{t}((h,P), R_a, A) = 0     &\text{ if }G_a\notin A \text{ and } h \leq U_p\\[2mm]
        
        \tr{t}((h,E_s), E_a, A) = h.\\
@@ -630,13 +630,13 @@ $\paths{q}$ for the set of all paths originating from $q$.
       ]
 
       \foreach \a/\hone/\perone/\htwo/\pertwo/\prop/\x/\y in { %
-        s22gg/2/G_s/2/G_s/{a,a}/0/1.1,%
-        s00/  0/E_s/0/E_s/{d,d}/1.1/0,%
-        s11/  1/R_s/1/R_s/{a,a}/-1.1/0,%
-        s31/  3/G_s/1/R_s/{a,a}/-3.3/0,%
-        s13/  1/R_s/3/G_s/{a,a}/3.3/0,%
-        s10/  1/R_s/0/E_s/{a,d}/-1.2/-0.9,%
-        s01/  0/E_s/1/R_s/{d,a}/1.2/-0.9%
+        s22gg/2/G_p/2/G_p/{a,a}/0/1.1,%
+        s00/  0/E_p/0/E_p/{d,d}/1.1/0,%
+        s11/  1/R_p/1/R_p/{a,a}/-1.1/0,%
+        s31/  3/G_p/1/R_p/{a,a}/-3.3/0,%
+        s13/  1/R_p/3/G_p/{a,a}/3.3/0,%
+        s10/  1/R_p/0/E_p/{a,d}/-1.2/-0.9,%
+        s01/  0/E_p/1/R_p/{d,a}/1.2/-0.9%
       }{ %
         \node[scale=0.7, outer sep=1mm,draw, very thick, rounded corners] (\a) at (\x,\y) {$(\hone,\perone), (\htwo,\pertwo)$};
 

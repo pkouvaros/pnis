@@ -88,33 +88,35 @@ total number $n$ of agents from 2 to 6, and verify the property against
 concrete NISs $\sys{n}$ composed of $n$ concrete agents.  The outcomes of the
 verification queries are presented in Table~\ref{tab:results-existential}.
 %
-For temporal depth $k=2$, we have that
-$\pnis\models \forall_{v_1,v_2}\varphi^k_E$. However, for $k\geq 3$,
-$\pnis\not\models\forall_{v_1,v_2}\varphi^k_E$ as a system composed of two
-agents only does not satisfy it, i.e.,
-$\msys{2}\not\models\forall_{v_1,v_2}\varphi^k_E$. On the other hand, $n=3$ is
-the emergence threshold for $\forall_{v_1,v_2}\varphi^k_E$ when $k\geq 3$. This
-result is what we would expect from a cooperative template agent for the given
-parameters of the guarding game. We can therefore conclude that the RL
-procedure has been adequate for training altruistic agents.
-
-The arbitrary selection of a subset of guards that volunteer is a
-necessary artefact of the interpreted systems, but does not affect the
-stability of the system negatively and allows us to reason about its
-existential properties, as the only event which would incur the tragedy of the
-commons is the lack of any volunteer guards in the first place.
-
+For temporal depth $k=2$, we have that $\pnis$ satisfies
+$\forall_{v_1,v_2}\varphi^k_E$. However, it is no longer the case for 3 time
+steps as a system composed of two agents only does not satisfy the property,
+i.e., $\msys{2}\not\models\forall_{v_1,v_2}\varphi^k_E$. On the other hand, we
+can see that $n=3$ is the emergence threshold for
+$\forall_{v_1,v_2}\varphi^k_E$ when $k\geq 3$. This result shows that for the
+colony to be viable there need to be at least 3 agents.
 
 For the universal property, we verified $\varphi^k_A[m]$ against $\masys{m}$
 for temporal depth $k = 1,\dots,6$ and the number of agents $m=2,3$. The
-verification results can be found in Table~\ref{tab:results-universal}.  When
-we could not get the result within the timeout, none of the properties has been
-satisfied. This is a consequence of the semantics of our PNIS, where even when
-the agents volunteer to guard, they can choose either to rest or to guard, and
-so there is a path in the model where nobody is guarding and a path where
-everybody is guarding, thus everyone's health deteriorates. This result
-highlights the need for some arbitration or communication in the social dilemma
-settings rather than the system evolving due to pure chance.
+verification times and results can be found in
+Table~\ref{tab:results-universal}. First, we note that due to the presence of
+zero-one agent, the verification times are longer than the ones observed in
+Table~\ref{tab:results-existential}. Secondly, the property is not satisfied
+even after 1 time step.
+%
+The arbitrary selection of a subset of guards that volunteer is a necessary
+artefact of the interpreted systems. Therefore, a universal property like
+$\varphi^k_A[m]$ will have no choice but consider paths where nobody is
+guarding even when there are volunteers. Nevertheless, we are able to reason
+about existential properties in a meaningful way, as the only event which would
+incur the tragedy of the commons is the lack of any volunteer guards in the
+first place. 
+% The arbitrary selection of a subset of guards that volunteer is a
+% necessary artefact of the interpreted systems, but does not affect the
+% stability of the system negatively and allows us to reason about its
+% existential properties, as the only event which would incur the tragedy of the
+% commons is the lack of any volunteer guards in the first place.
+
 
 \begin{table}
   \centering
