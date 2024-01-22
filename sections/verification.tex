@@ -1,16 +1,17 @@
 In this section we put forward procedures for solving the parameterised
 verification and emergence identification problems introduced in the previous
-section. For ease of presentation, throughout the section we fix a PNIS
-$\pnis = \tuple{t, e, \ell}$, where
-$\ag t = \tuple{\lstates t, \init t, \obs t, \acts t, \prot t, \tr t }$,
+section. For ease of presentation,  we fix a PNIS $\pnis = \tuple{t, e, \ell}$,
+where $\ag t = \tuple{\lstates t, \init t, \obs t, \acts t, \prot t, \tr t }$,
 $\ag e = \tuple{\lstates e, \acts e, \prot e, \tr e }$, and a $\bictl$ sentence
-$\bictlspec$. The verification procedure that we introduce recasts the
+$\bictlspec$ throughout the section. 
+
+The verification procedure that we introduce recasts the
 parameterised verification and emergence identification problems for $\pnis$
 and $\bictlspec$ to a number of (standard) verification problems for abstract
 and concrete NIS against the $\bctl$ formula
 $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.  We show that the satisfaction
 status of $\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ on these systems
-determines the satisfaction and identifies emergence of
+determines the satisfaction and existence of emergence thresholds  for 
 $\bictlspec$ on $\pnis$. This enables us to use previously established
 methodologies for the verification of NIS against $\bctl$~\cite{Akintunde+20b}
 to analyse PNIS.
@@ -19,7 +20,7 @@ to analyse PNIS.
 We start by reducing the problem of checking the $\bictl$ sentence in
 question to that of checking a $\bctl$ formula that is a ground
 instantiation of $\bictlspec$.  We fix it to
-$\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ and for brevity denote
+$\varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$ and for brevity denote it 
 as $\varphi[m]$.
 
 
@@ -99,18 +100,22 @@ sets $\pers{zo} = 2^{\pers t} \setminus \set{\emptyset}$ and $\prvs{zo}=
 \end{itemize}
 \end{definition}
 
-The abstract  NIS comprises the zero-one agent and~$m$ concrete agents. Specifically, it is a
-tuple $\pnis_{ab} = \tuple{\set{1,\ldots,m,zo,e}, \globalinit{m}_{ab},
-\valuation{m}_{ab}}$, where $\globalinit{m}_{ab}$ is the initial global state $\tuple{\init 1, \ldots, \init m, \init{ab}, \init e}$  and $\valuation{m}_{ab} \colon
-\atprop \times \set{1, \ldots, m } \rightarrow 2^{\globalstates{m}_{ab}}$ is the
-concrete labelling function satisfying $q \in \valuation{m}_{ab}(p,i)$ iff
-$\ls{i}{q} \in \tlabel i(p)$.  The global transition function is defined as in
+The abstract  NIS comprises the zero-one agent and~$m$ concrete agents.
+Formally, it is a tuple $\pnis_{ab} = \tuple{\set{1,\ldots,m,zo,e},
+\globalinit{m}_{ab}, \valuation{m}_{ab}}$, where $\globalinit{m}_{ab} =
+\tuple{\init 1, \ldots, \init m, \init{ab}, \init e}$ is the initial global
+state   and $\valuation{m}_{ab} \colon \atprop \times \set{1, \ldots, m }
+\rightarrow 2^{\globalstates{m}_{ab}}$ is the abstract labelling function
+satisfying $q \in \valuation{m}_{ab}(p,i)$ iff $\ls{i}{q} \in \tlabel i(p)$. 
+The abstract global transition function is defined as in
 Definition~\ref{def:globaltransition} but replacing $\setprojection{\alpha}$ in
-the environment and concrete agents' clauses $\set{\la{a}{q} \mid a \in
+the environment and concrete agents' clauses with $\set{\la{a}{q} \mid a \in
 \set{1,\ldots,n}} \cup \la{zo}{q}$,  and adding analogous conditions for the
-zero-one agent (see the Appendix for the full definition). Given the global
-transition function we can similarly associate an (abstract) model  $\masys m =
-\tuple{\aglobalstates m, \aglobalacts m, \aglobalrel m, \avaluation m}$.
+zero-one agent (we refer to the Appendix for the full definition).  
+Given the
+abstract global transition function we can similarly associate an (abstract)
+model  $\masys m = \tuple{\aglobalstates m, \aglobalacts m, \aglobalrel m,
+\avaluation m}$ to the abstract NIS.
 
 We now establish a correspondence between the abstract model and the concrete
 models. We show in particular that
@@ -176,9 +181,9 @@ simulations.
 \end{proof}
 
 We can now show the simulation results pertaining to the abstract and concrete
-model.  We start by showing that the abstract model simulates every concrete
-model with at least~$m+1$ agents. The missing proofs can be found in the
-appendix.
+models. The proofs of these results can be found in the Appendix. 
+We start by showing that the abstract model simulates every concrete
+model with at least~$m+1$ agents. 
 
 \begin{theorem}
 \label{th:ab-concr-sim}
@@ -201,7 +206,7 @@ There is $n \geq m+1$ such that $\masys m \leq_b \msys n$ for any $b \geq 0$.
 % \end{proof}
 
 
-Every concrete model simulates every smaller concrete model.
+Finally, we show that every concrete model simulates every smaller concrete model.
 
 \begin{theorem}
 \label{th:concr-sim}
@@ -259,9 +264,9 @@ Lemma~\ref{lemma:symmetry} we obtain that there is $n \geq m$ such that $\msys n
 % and the concrete model of $m$ agents is also satisfied by the parameterised
 % system. This also implies that~$m$ is an emergence threshold for the formula.
 
-Theorems~\ref{th:ab-concr-sim},~\ref{th:concr-ab-sim} and
-~\ref{th:concr-sim},additionally enable the derivation of  simple procedure
-for the verification of existential properties.
+Theorems~\ref{th:ab-concr-sim},~\ref{th:concr-ab-sim} and~\ref{th:concr-sim},
+additionally enable the derivation of  procedures for the verification of
+existential properties.
 
 \begin{corollary}
 \label{cor:existential}
@@ -302,18 +307,22 @@ $\msys i \not \models \bictlspec$, which trivially implies that $\pnis \not
 
 In summary, Corollaries~\ref{cor:universal} and~\ref{cor:existential} provide
 constructive, sound and complete methodologies for checking universal and 
-existential specifications for PNIS.  For universal properties, verification can
-be conducted by constructing and checking the abstract model and the concrete
-model with~$m$ agents, where $m$ is the the number of index variables in the
-specification in question. The specification is satisfied by the abstract and
-concrete models iff the specification is satisfied in general for any number of
-agents.  The satisfaction of the specification by the abstract model is also
-connected by biconditional implication with the existence of an emergent
-threshold for the specification. For existential properties, verification can be
-performed by enumerating all concrete models, identifying the smallest one that simulates the abstract model,
- and checking all concrete models up to the simulating one. 
- The specification is satisfied by all these
-concrete models iff the specification is satisfied in general for any number of
+existential $\bictl$ formulae for PNIS.  
+
+For the case of universal properties,
+verification can be conducted by constructing and checking the abstract model
+and the concrete model with~$m$ agents, where $m$ is the the number of index
+variables present in the specification in question. The specification is satisfied by
+the abstract and concrete models if and only if the specification is satisfied in general
+for any number of agents.  The satisfaction of the specification by the abstract
+model is also connected by biconditional implication with the existence of an
+emergent threshold for the specification.
+
+For the case of  existential properties,
+verification can be performed by enumerating all concrete models, identifying
+the smallest one that simulates the abstract model, and checking all concrete
+models up to the simulating one.  The specification is satisfied by all these
+concrete models if and only if the specification is satisfied in general for any number of
 agents.   The satisfaction of the specification by the concrete model that
 simulates the abstract model is also connected by biconditional implication with
 the existence of an emergent threshold for the specification. 

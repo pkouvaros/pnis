@@ -672,7 +672,7 @@ $\paths{q}$ for the set of all paths originating from $q$.
       \end{scope}
     \end{tikzpicture}
 
-    \vspace{-0.3cm}
+    % \vspace{-0.3cm}
     
     \caption{The model $\msys{2}$ for the guarding example for $G_r=-1$, $R_r=1$,
       and $U_r=-2$.}
@@ -720,13 +720,17 @@ holds at the $k$-th step''.
 The logic $\bctl$~\cite{Akintunde+22} is the logic obtained from the above BNF, but
 replacing the first clause with $p$ and removing the last clause.
 
-A $\bictl$ formula is said to be a \emph{sentence} if every variable appearing in the
-formula is in the scope of a universal quantifier. Hereafter we consider only
-indexed $\bictl$ sentences of the form $\forall v_1 \cdots \forall v_m \colon
-\varphi$, or, shortly, $\bictlspec$, where $v_i \in \atvar$ for $i \in
-\set{1,\ldots,m}$ and $\varphi$ is either {\em universal} in that it contains
-only universal quantifiers or {\em existential} in that it contains only
-existential quantifiers.
+A $\bictl$ formula is said to be a \emph{sentence} if every variable appearing
+in the formula is in the scope of either a universal or an existential
+quantifier. Hereafter we consider only indexed $\bictl$ sentences of the form
+$\forall v_1 \cdots \forall v_m \colon \varphi$, or, shortly, $\bictlspec$,
+where:
+\begin{inparaenum}[\it (i)]
+\item $v_i \in \atvar$ for $i \in \set{1,\ldots,m}$,
+\item $\varphi$ is either {\em
+universal} in that it contains only universal quantifiers or {\em existential}
+in that it contains only existential quantifiers.
+\end{inparaenum}
 
 
 We now define the satisfaction relation for $\bictl$ on the temporal models
@@ -751,14 +755,15 @@ associated with the concrete systems.
   have that $\rho(k) \models \varphi$;
   \item[$q \models \bictlspec$] \ iff for all $h \colon \set{v_1, \ldots, v_m}
   \rightarrow \set{\ag 1, \ldots,\ag n}$ we have that $q \models 
-  \varphi[v_1 \mapsto h(v_1), \ldots v_m \mapsto h(v_m)]$.\nb{E: what is $h$? Would be good to explain it}
+  \varphi[v_1 \mapsto h(v_1), \ldots v_m \mapsto h(v_m)]$.
+  % \nb{E: what is $h$? Would be good to explain it}
 \end{description}
 \end{definition}
 
 
 By the definition above, a $\bictl$ sentence is evaluated only up to a bounded
-number of time steps.  We call this number of steps the {\em temporal depth} of
-a given $\bictl$ sentence which we formally define below.
+number of time steps.  Given a $\bictl$ sentence, we call this number of steps
+the {\em temporal depth} of the sentence, which we formally define below.
 
 \begin{definition}%[Temporal depth]
   The \emph{temporal depth} $\td{\varphi}$ of a $\bictl$ sentence $\bictlspec$ is
@@ -791,10 +796,10 @@ $\msys n \models \bictlspec$ for all $n \geq m$.  The {\em parameterised
 
 While solutions to the parameterised verification problem can be used to
 establish whether a property holds for any number of agents, some properties,
-often called \emph{emergent properties}~\cite{KouvarosLomuscio15b}, are
+often called \emph{emergent properties}~\cite{Bonabeau99} are
 expected to be realised only after certain conditions on the number of agents
 are met. For instance, foraging protocols for robot swarms, require a certain
-number of agent to be present for the underlying formation to be established. A
+number of agents to be present for the underlying formations to be established. A
 natural number $\mathit{th} \in \mathbb N$ is an {\em emergence thershold} for
 a PNIS $\npis$ and a $\bictl$ sentence $\bictlspec$ if we have that
 $\msys n \models \bictlspec$ for every $n \geq \mathit{th}$. The emergence
