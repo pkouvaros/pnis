@@ -548,34 +548,44 @@ $\masys m \leq_{b+1} \msys{n'}$.
 
 Here we provide more details regarding the training of the neural observation
 function for the guarding game.
-%
+
 We used deep Q-learning, a type of reinforcement learning (RL) algorithm.
 During the training, the game was played by 4 agents (in the main paper
 mistakenly specified as 3), and the game parameters were set as $M_h = 4$,
 $G_r = -2$, $R_r = 1$ and $U_r = -3$.
 % The rewards were assigned to reflect the tension between individual and
 % collective interests.
+%
+At the beginning, the agents' health was $M_h$.
+%
+At each turn of the game, the agents that were alive could decide whether they
+volunteer to guard or not. When there were volunteers, a seperate arbitration
+function decided randomly how many of the volunteers undertook the guarding
+action (the other volunteers took the resting action). Each agent had a 50\%
+chance of being selected if it volunteered, but it was impossible for no agent
+to be selected as long as there were volunteers.
+
+The reward function for each agent consisted of
+\begin{inparaenum}[\it (i)]
+\item  a social reward,
+\item an individual reward,
+\item desire to personally live, and
+\item fear of collective failure.
+\end{inparaenum}
+The social reward for an agent was expressed as the average change in every
+other agent's health, minus the fraction of agents who are dead at the end of
+the turn, divided by two (to provide an arithmetic average of the two
+values). This was scaled by the agent's current normalised health. The
+individual reward was expressed as the change in the agent's health. The desire
+to personally live was expressed as plus one point if the agent is alive at the
+end of the turn and minus one if it is not, and the fear of collective failure
+as minus two if all agents are dead at the end of the turn.
+
+
+
 All agents shared the same neural network, creating a system in which the
 agents were learning to play against exact copies of themselves.
-
-When the agents volunteered to act, a seperate arbitration function decided
-randomly how many of the volunteers undertook the guarding action. Each agent
-had a 0.5 chance of being selected if it volunteered, but it was impossible for
-no agent to be selected as long as there were volunteers.
-
-The reward function for each agent consisted of a social reward, an individual
-reward, desire to personally live and fear of collective failure. The social
-reward for an agent was expressed as the average change in every other agent's
-health, minus the fraction of agents who are dead at the end of the turn,
-divided by two (to provide an arithmetic average of the two values). This was
-scaled by the agent's current normalised health. The individual reward was
-expressed as the change in the agent's health. The desire to personally live
-was expressed as plus one point if the agent is alive at the end of the turn
-and minus one if it is not, and the fear of collective failure as minus two if
-all agents are dead at the end of the turn. 
-
-\textcolor{red}{Probably here we should see more details about the simulations. How it was chosen who guards. What the rewards are}
-
+%
 We used an experience replay buffer and a separate, periodically updated target
 network for providing estimations.
 %
