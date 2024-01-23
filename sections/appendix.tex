@@ -544,3 +544,65 @@ $\masys m \leq_{b+1} \msys{n'}$.
 
 
 
+\subsection*{Training of a neural observation function for the Guarding Game} 
+
+Here we provide more details regarding the training of the neural observation
+function for the guarding game.
+%
+We used deep Q-learning, a type of reinforcement learning (RL) algorithm.
+During the training, the game was played by 4 agents (in the main paper
+mistakenly specified as 3), and the game parameters were set as $M_h = 4$,
+$G_r = -2$, $R_r = 1$ and $U_r = -3$.
+% The rewards were assigned to reflect the tension between individual and
+% collective interests.
+All agents shared the same neural network, creating a system in which the
+agents were learning to play against exact copies of themselves. \textcolor{red}{Probably here we should see more details about the simulations. How it was chosen who guards. What the rewards are}
+
+We used an experience replay buffer and a separate, periodically updated target
+network for providing estimations.
+%
+Each time the policy network was trained, a random minibatch of experiences
+(tuples consisting of a state transition and associated reward) was selected
+from the replay buffer as training data.
+%
+Specifically, minibatches consisted of predictions made by the \emph{policy
+  network} for the Q-values of each action in the \emph{starting state} of each
+experience in the minibatch.
+
+\nb{E: I don't understand this part. }%
+Then, predictions are made for the Q-value of the \emph{most valuable} action
+given the next state of each experience, and this is multiplied by the discount
+factor and then added to the prediction previously made by the \emph{policy
+  network} that corresponds to the estimated value of the action that was taken
+in that transition.
+%
+This way, the Q-value of each action is stabilised, as the estimated value of
+continuing to follow the policy is always produced by an `old' copy of the
+policy net.
+
+The reinforcement learning procedure ran for 1024 episodes of a maximum length
+of 16 turns each, if the agents did not all expire. There were 4 agents in the
+training simulation. The target network was updated every 32 turns, the replay
+buffer held 4096 experiences and was sampled in minibatches of size 16.
+
+The network contained two hidden layers each four units wide and using ReLU
+activation functions. The output layer used linear activation and had two units
+corresponding to the two actions (rest and guard) available while the agent had
+not expired. We used RMSProp gradient descent in minibatches corresponding to
+those described in the process of experience replay; the batch size was set to
+the number of experiences in each replay sample. The loss function used was
+Huber loss, and the actions taken during training utilised an epsilon-greedy
+exploration schedule \cite{Mnih+15,HaaseltGS16}.
+% This is as per the original deep Q-learning paper \cite{Mnih+15} and the
+% follow up proposing double deep Q-learning, \cite{HaaseltGS16}.
+%
+For RMSProp, a learning rate of 0.0025 was used, with the default $\rho$ of 0.9
+and momentum of 0. For epsilon-greedy exploration, the starting epsilon was 1.0
+and it decayed by a factor of 0.999 every turn to a minimum of 0.01. We built
+and trained the network using the TensorFlow Keras library.
+
+%%% Local Variables:
+%%% mode: latex
+%%% fill-column: 79
+%%% TeX-master: "../main"
+%%% End:
