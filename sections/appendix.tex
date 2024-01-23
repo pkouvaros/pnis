@@ -567,11 +567,12 @@ The reward function for each agent consisted of a social reward, an individual
 reward, desire to personally live and fear of collective failure. The social
 reward for an agent was expressed as the average change in every other agent's
 health, minus the fraction of agents who are dead at the end of the turn,
-divided by two (to provide an arithmetic average of the two values). The
-individual reward was expressed as the change in the agent's health. The
-desire to personally live was expressed as plus one point if the agent is alive
-at the end of the turn and minus one if it is not, and the fear of collective
-failure as minus two if all agents are dead at the end of the turn. 
+divided by two (to provide an arithmetic average of the two values). This was
+scaled by the agent's current normalised health. The individual reward was
+expressed as the change in the agent's health. The desire to personally live
+was expressed as plus one point if the agent is alive at the end of the turn
+and minus one if it is not, and the fear of collective failure as minus two if
+all agents are dead at the end of the turn. 
 
 \textcolor{red}{Probably here we should see more details about the simulations. How it was chosen who guards. What the rewards are}
 
