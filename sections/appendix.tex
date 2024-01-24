@@ -589,21 +589,18 @@ agents were learning to play against exact copies of themselves.
 We used an experience replay buffer and a separate, periodically updated target
 network for providing estimations.
 %
+Every turn, all of the experiences (consisting of a state transition and an
+associated reward) of the agents in that round were appended to the replay
+buffer, which was implemented as a deque. 
+%
 Each time the policy network was trained, a random minibatch of experiences
 (tuples consisting of a state transition and associated reward) was selected
 from the replay buffer as training data.
 %
-Each experience's starting state was then input into the \emph{policy network}
-to produce an array of target Q-values for each action. The estimate for
-the action which was taken was then modified with the \emph{target network's}
-estimate of the \emph{value of the most valuable action in the next state},
-multiplied by the discount factor. This produces, for each experience and
-therefore starting state in the minibatch, Q-value targets for each action.
+The training then proceeded as per \cite{Mnih+15}, and the use of a target
+network to stabilise the Q-value estimates during training is described in
+the original paper \cite{HaaseltGS16}.
 %
-This way, the Q-value of each action is stabilised, as the estimated value of
-continuing to follow the policy is always produced by an `old' copy of the
-policy net.
-
 The reinforcement learning procedure ran for 1024 episodes of a maximum length
 of 16 turns each, if the agents did not all expire. There were 4 agents in the
 training simulation. The target network was updated every 32 turns, the replay
@@ -616,7 +613,7 @@ not expired. We used RMSProp gradient descent in minibatches corresponding to
 those described in the process of experience replay; the batch size was set to
 the number of experiences in each replay sample. The loss function used was
 Huber loss, and the actions taken during training utilised an epsilon-greedy
-exploration schedule \cite{Mnih+15,HaaseltGS16}.
+exploration schedule.
 % This is as per the original deep Q-learning paper \cite{Mnih+15} and the
 % follow up proposing double deep Q-learning, \cite{HaaseltGS16}.
 %
