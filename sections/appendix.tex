@@ -593,9 +593,9 @@ Each time the policy network was trained, a random minibatch of experiences
 (tuples consisting of a state transition and associated reward) was selected
 from the replay buffer as training data.
 %
-Each experience's starting state is then input into the \emph{policy network}
+Each experience's starting state was then input into the \emph{policy network}
 to produce an array of target Q-values for each action. The estimate for
-the action which was taken is then modified with the \emph{target network's}
+the action which was taken was then modified with the \emph{target network's}
 estimate of the \emph{value of the most valuable action in the next state},
 multiplied by the discount factor. This produces, for each experience and
 therefore starting state in the minibatch, Q-value targets for each action.
