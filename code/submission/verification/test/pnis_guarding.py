@@ -8,10 +8,6 @@ from resources.guarding.guardagent import GuardingAgent, GuardingConstants
 from resources.guarding.guardzoagent import GuardingZeroOneAgent
 from resources.guarding.guardenv import GuardingEnv
 from src.utils.formula_visitors.immutable_nnf_visitor import FormulaVisitorNNF
-from src.verification.complete.constrmanager.custom_constraints_manager import CustomConstraintsManager
-from src.verification.complete.verifier.aesverifier import AESVerifier
-from src.verification.complete.verifier.depth_first_compositional_multi_agent_milp_encoder import \
-    DepthFirstCompositionalMultiAgentMILPEncoder
 from src.verification.complete.verifier.monolithic_nis_ctl_milp_encoder import MonolithicMultiAgentCTLMILPEncoder
 
 
@@ -31,18 +27,15 @@ TO_USER_RESULT = {"True": "False", "False": "True", "Timeout": "Timeout", "Inter
 def verify_single(formula, input_hyper_rectangle, agents, env, timeout):
     """
     Verify using the monolithic approach.
-    :param formula: An ATL formula
+    :param formula: A CTL formula
     :param input_hyper_rectangle: Hyperrectangle representing initial state.
-    :param gamma: Group of agents in coalition.
-    :param not_gamma: Group of agents in complement of gamma.
+    :param agents: All agents.
     :param env: Multi-agent environment.
     :param timeout: Timeout in minutes.
 
     :return: Void.
     """
     start = timer()
-    print("Formula ", formula)
-
     print("Start: ", datetime.datetime.now())  # Do not delete
 
     # Create the Gurobi constraints manager to get a single program
@@ -95,59 +88,13 @@ def verify_single(formula, input_hyper_rectangle, agents, env, timeout):
         print("\t", "state", depth - 1, ":", [round(item) for item in stats.witness_states[depth - 1]])
 
 
-def verify_parallel_poly(formula, input_hyper_rectangle, agents, env, timeout):
-    """
-    Verify a multi-agent neural system using polylithic approach using parallel execution.
-    :param formula: An ATL formula
-    :param input_hyper_rectangle: Hyperrectangle representing initial state.
-    :param agents: Group of agents.
-    :param env: Multi-agent environment.
-    :param timeout: Timeout in minutes.
-    :return: Void.
-    """
-    # Create the custom constraints manager to get a number of (small) programs
-    constraints_manager = CustomConstraintsManager()
-
-    # Create a MILP builder visitor using the variables for the initial state
-    initial_state_vars, _ = env.get_constraints_for_initial_state(constraints_manager, input_hyper_rectangle)
-    atlverifier_encoder = DepthFirstCompositionalMultiAgentMILPEncoder(constraints_manager, initial_state_vars, agents, env)
-
-    if isinstance(formula, ENextFormula):
-        aesverifier = AESVerifier(atlverifier_encoder, formula, 4)
-    elif isinstance(formula, ANextFormula):
-        # Create a pool verifier for the MILP encoder and for the negation of the formula in NNF
-        negated_formula = NegationFormula(formula).acceptI(FormulaVisitorNNF())
-        aesverifier = AESVerifier(atlverifier_encoder, negated_formula, 4)
-    else:
-        aesverifier = None
-
-    AESVerifier.TIME_LIMIT = timeout
-
-    start = timer()
-    print("Formula ", formula)
-    print("Start: ", datetime.datetime.now())  # Do not delete
-    result, job_id, extra = aesverifier.verify()
-    print("End: ", datetime.datetime.now())  # Do not delete
-    end = timer()
-    runtime = end - start
-
-    # Negate the result
-    result = TO_USER_RESULT[result]
-
-    print("Overall result and time:", result, runtime, "job n", job_id)
-    if result == "False":
-        print("\t\tCounter-example:")
-        print(extra)
-    print("")
-
-
 def main():
     parser = argparse.ArgumentParser(description="Verify a MANS")
     parser.add_argument("-f", "--formula", type=int, default=0, help="Formula to verify: 0. EX^k alive; 1. AX^k alive;")
     parser.add_argument("-k", "--step", default=4, type=int, help="The number of time steps to verify for.")
     parser.add_argument("-a", "--agents_number", default=2, type=int, help="Number of template agents.")
     parser.add_argument("-n", "--threshold", default=3, type=int, help="Number of template agents.")
-    parser.add_argument("-m", "--method", type=int, default=0, help="Method to run: 0. Monolithic; 1. Parralel-poly;")
+    parser.add_argument("-m", "--method", type=int, default=0, help="Method to run: 0. Monolithic.;")
     parser.add_argument("-hp", "--initial_health", default=3, type=int, help="Initial health points of a template agent.")
     parser.add_argument("-per", "--initial_percept", default=2, type=int, help="Initial percept of a template agent (one of 0-expired, 1-rest, or 2-volunteer-to-guard).")
     parser.add_argument("-w", "--workers", default=2, type=int, help="Number of workers.")
@@ -181,7 +128,7 @@ def main():
 
             print("Formula to verify", formula)
             # Run a method.
-            verification_methods = [verify_single, verify_parallel_poly]
+            verification_methods = [verify_single]
             verification_methods[ARGS.method](formula, input_hyper_rectangle, agents, env, ARGS.timeout)
             print("\n")
 
@@ -200,7 +147,7 @@ def main():
 
             print("Formula to verify", formula)
             # Run a method.
-            verification_methods = [verify_single, verify_parallel_poly]
+            verification_methods = [verify_single]
             verification_methods[ARGS.method](formula, input_hyper_rectangle, agents, env, ARGS.timeout)
             print("\n")
 
