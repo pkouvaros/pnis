@@ -1,0 +1,77 @@
+% IJCAI 2024 Author's response
+
+% Template file with author's response
+
+\documentclass{article}
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+\usepackage{ijcai24-authors-response}
+
+
+\usepackage{times}
+\usepackage{soul}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[small]{caption}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{lipsum}
+\urlstyle{same}
+
+\newtheorem{example}{Example}
+\newtheorem{theorem}{Theorem}
+
+\begin{document}
+
+\noindent\fbox{
+	\parbox{\linewidth}{
+		{\bf IMPORTANT NOTE (YOU CAN DELETE IT AFTER READING)}
+
+		The response to the reviews {\bf cannot} include links to external resources. Your paper may be summarily rejected if you include such links in your response.
+
+		Furthermore, it {\bf must be one page-only} and use this template without altering fonts, font sizes, or margins.
+
+		In our experience, it is more efficient to focus on explicit questions asked in the reviews (especially those listed in the box ``Questions for the authors response'') than to enter into an argument with the reviewers about the significance/novelty of your results. However, feel free to use this space as you see fit, subject to the constraints above.
+	}
+}
+
+\section*{Rebuttal}
+\subsection*{Reviewer 1}
+\textbf{Q4 and Q5} In Corollaries 1 and 2 we show how parameterised
+verification can be reduced to non-parameterised verification. Each
+single cell in Tables 1 and 2 reports the result of verifying a
+concrete system. From these we draw conclusions regarding
+parameterised verification.
+
+In Table 1, in all experiments $m=2$.
+%
+For $k=2$, $n$ from Corollary 2 equals 2. So according to Corollary 2,
+from $\mathcal{S}^{(n)} \models \varphi^2_E[2]$ we conclude that
+$\mathcal{S}$ satisfies $\forall_{v_1,v_2} \varphi^2_E$ (at least two
+agents survive after 2 time steps).
+
+As for 3 time steps, $k=3$, $n$ from Corollary 2 equals 3. So we
+obtain that $\mathcal{S}$ does not satisfy
+$\forall_{v_1,v_2} \varphi^3_E$ (it is not the case that at least two
+agents survive after 3 time steps) because of the concrete system with
+2 agents. On the other hand we obtain that $n$ is an \emph{emergence
+  threshold}. Similarly for $k>3$.
+
+% Strictly speaking, in Table 1 the results for $n\geq 4$ are not used
+% to conclude about parameterised verification and are included to give
+% an idea about computational efficiency.
+
+From Table 2, we conclude that
+$\mathcal{S}\not\models\forall_{v_1,\dots,v_m}\varphi^k_A$ for any of
+$k=1,\dots,5$ and $m=2,3$ and that there is no emergence threshold. We
+will make it more clear should the paper be accepted.
+
+
+
+\end{document}
+
