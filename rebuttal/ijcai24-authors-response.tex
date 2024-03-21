@@ -28,21 +28,24 @@
 
 \begin{document}
 
-\noindent\fbox{
-	\parbox{\linewidth}{
-		{\bf IMPORTANT NOTE (YOU CAN DELETE IT AFTER READING)}
+% \noindent\fbox{
+% 	\parbox{\linewidth}{
+% 		{\bf IMPORTANT NOTE (YOU CAN DELETE IT AFTER READING)}
 
-		The response to the reviews {\bf cannot} include links to external resources. Your paper may be summarily rejected if you include such links in your response.
+% 		The response to the reviews {\bf cannot} include links to external resources. Your paper may be summarily rejected if you include such links in your response.
 
-		Furthermore, it {\bf must be one page-only} and use this template without altering fonts, font sizes, or margins.
+% 		Furthermore, it {\bf must be one page-only} and use this template without altering fonts, font sizes, or margins.
 
-		In our experience, it is more efficient to focus on explicit questions asked in the reviews (especially those listed in the box ``Questions for the authors response'') than to enter into an argument with the reviewers about the significance/novelty of your results. However, feel free to use this space as you see fit, subject to the constraints above.
-	}
-}
+% 		In our experience, it is more efficient to focus on explicit questions asked in the reviews (especially those listed in the box ``Questions for the authors response'') than to enter into an argument with the reviewers about the significance/novelty of your results. However, feel free to use this space as you see fit, subject to the constraints above.
+% 	}
+% }
 
 \section*{Rebuttal}
+We thank the reviewers for insightful comments. 
+
 \subsection*{Reviewer 1}
-\textbf{Q4 and Q5} In Corollaries 1 and 2 we show how parameterised
+\textbf{Q4 and Q5}
+In Corollaries 1 and 2 we show how parameterised
 verification can be reduced to non-parameterised verification. Each
 single cell in Tables 1 and 2 reports the result of verifying a
 concrete system. From these we draw conclusions regarding
@@ -62,14 +65,18 @@ agents survive after 3 time steps) because of the concrete system with
 2 agents. On the other hand we obtain that $n$ is an \emph{emergence
   threshold}. Similarly for $k>3$.
 
-% Strictly speaking, in Table 1 the results for $n\geq 4$ are not used
-% to conclude about parameterised verification and are included to give
-% an idea about computational efficiency.
+In Table 1 the results for $n\geq 4$ are not used to reason about
+parameterised verification. Instead they are included to demonstrate
+the increasing computational cost of verifying concrete systems for
+increasing number of agents. This further justifies the need for
+parameterised verification. 
 
 From Table 2, we conclude that
 $\mathcal{S}\not\models\forall_{v_1,\dots,v_m}\varphi^k_A$ for any of
-$k=1,\dots,5$ and $m=2,3$ and that there is no emergence threshold. We
-will make it more clear should the paper be accepted.
+$k=1,\dots,5$ and $m=2,3$ and that there is no emergence threshold.
+
+We will make these explanations explicit in the final
+version of the paper should it be accepted.
 
 
 
