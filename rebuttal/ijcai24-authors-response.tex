@@ -57,33 +57,34 @@ accepted.
 
 \subsection*{Reviewer 1} 
 
-\textbf{Q1}.  Theoretically the observation function is any deterministic
-function, including concrete neural network models. In practice, verification
-for concrete models is only complete for piecewise-linear functions. These
-include ReLU-based neural networks. We refer the reviewer to (Akintunde et al.,
-2020a) for a detailed discussion.
+\textbf{Q1}.  Our parameterised results hold for  any deterministic observation
+function, including concrete neural network models. Verification for concrete
+models however, on which our methods rely, is only complete for
+piecewise-linear functions (Akintunde et al., 2020a). These include the popular
+ReLU-based neural networks. We will clarify this point, should the paper be
+accepted.
 
 \noindent
 \textbf{Q2}. {\em Negation.} All of our results still hold if
-negation would be allowed in our syntax. However, verification methods for
+negation would be allowed in our syntax. Verification methods for
 concrete models, including VENMAS used in the present contribution, do not
 support negation without hindering the completeness of verification (Akintunde
 et al., 2020a). 
 
 {\em Quantification.} The universal quantification of the variables indexing
-the atomic propositions is standard in parameterised verification (R. Bloem, et
-al., Decidability of Parameterized Verification)  and aims at the expression of
-collective properties for the systems. Still, following the symmetry reduction
-lemma (Lemma 1), a universally quantified formula holds iff  an existentially
-quantified formula holds, so no expressitivity is lost with our syntax.
-We will clarify the above points, should the
-paper be accepted.
+the atomic propositions in prenex form is standard in parameterised
+verification (R. Bloem, et al., Decidability of Parameterized Verification)
+and aims at the expression of collective properties for the systems. Still,
+following the symmetry reduction lemma (Lemma 1), a universally quantified
+formula holds iff  an existentially quantified formula holds, so no
+expressitivity is lost with our syntax. We will clarify the above points,
+should the paper be accepted.
 
 \noindent
 \textbf{Q3}. The  work cited by the reviewer considers systems with a known
 number of agents operating within an environment of arbitrary size. Differently
 from the cited work our systems are composed of an arbitrary number of agents
-operating in an environment of a known size. We add a discussion on the cited
+operating in an environment of a known size. We will add a discussion on the cited
 work,  should the paper be accepted.
 
 
@@ -125,6 +126,7 @@ $k=1,\dots,5$ and $m=2,3$ and that there is no emergence threshold.
 We will make these explanations explicit in the final
 version of the paper should it be accepted.
 
+\noindent
 \textbf{Other minor comments.} Noted with thanks.
 
 
@@ -156,13 +158,14 @@ verification for unbounded until is undecidable (Akintunde et al., 2020a). We
 will describe the above abbreviations in the final version of  the paper,
 should it be accepted.
 
-\textbf{Experimental results.} We refer the reviewer to the answers to the
-questions Q4 and Q5 of Reviewer 1 for a short discussion. The results show the
+\noindent
+\textbf{Experimental results.} We refer the reviewer to the answers to 
+questions Q4 and Q5 of Reviewer 1. The experimental results indeed show  the
 intractability of verification for concrete models as the number of agents
 grows, thereby motivating the need for the parameterised verification methods
-that we put forward. As explained above our methods reduce verification for
+that we put forward. As explained above, our methods reduce verification for
 systems of any size to verifying only a small number of systems with a small
-number of constituents.
+number of constituents.  
 
 
 \subsection*{Reviewer 3}
