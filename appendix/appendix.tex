@@ -1,6 +1,6 @@
 %%%% ijcai24.tex
 
-\typeout{Appendix for Paper \#6775}
+%\typeout{Appendix for Paper \#6775}
 
 % These are the instructions for authors for IJCAI-23.
 
@@ -125,17 +125,41 @@ fourth@example.com
 
 \begin{document}
 
-\maketitle
+%\maketitle
+
+\appendix
+%\section{Introduction}
+
+%This Appendix includes the full definition of the abstact global transition
+%function, the full proofs of Lemma~1 and Theorems~2,~3,~4, and furher details
+%pertaining to the training of the neural networks used in the evaluation
+%section.
 
 
-\section{Introduction}
+\section{Abstract global transition function} 
+We give the full formal definition of the abstract global transition function.
+\begin{definition}
+  The {\em abstract global transition function} $\globaltr{m}_{ab} : \globalstates{m}_{ab}
+  \times \globalacts{m}_{ab} \rightarrow \globalstates{m}_{ab}$ of the abstract 
+  system $\sys{m}_{ab}$ satisfies $\globaltr{m}_{ab}(q, \alpha) = q'$ iff the
+  following hold:
+  \begin{itemize}
+    \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$ and $\tr e(\ls{e}{q},
+        \la{e}{\alpha}, A) = \ls{e}{q'}$, where
+    $A = \set{\la{i}{\alpha} \mid i \in \set{1,\ldots,m}} \cup
+\la{zo}{\alpha}$.
+    \item For all $i \in \set{1,\ldots,m, \it{zo}}$, we have that
+    $\la{i}{\alpha} \in \prot{i}(\ls{i}{q})$, $\tr i (\ls{i}{q}, \la{i}{\alpha},
+    A, \la{e}{\alpha}) = \lprv{i}{q'}$, where  $A = \set{\la{i}{\alpha} \mid i \in
+    \set{1,\ldots,m}} \cup \la{zo}{\alpha}$, and $\obs
+    i((\lprv{i}{q'},\lper{i}{q}),\ls{e}{q'}) = \lper{i}{q'}$.
+  \end{itemize}
+\end{definition}
 
-This Appendix includes the full definition of the abstact global transition
-function, the full proofs of Lemma~1 and Theorems~2,~3,~4, and furher details
-pertaining to the training of the neural networks used in the evaluation
-section.
+\section{Proofs}
+We give the full proofs of Lemma~1 and Theorems~2,~3,~4.
 
-\section{Proof of Lemma 1} 
+\subsection{Proof of Lemma 1} 
 We prove the symmetry reduction Lemma which we restate here for convenience.
 \begin{customlemma}{1}
 $\pnis \models \bictlspec$ iff $\pnis \models \varphi[v_1 \mapsto 1, \ldots, v_m
@@ -175,29 +199,7 @@ For the right to left direction assume that
 \ldots, v_m \mapsto \sigma(m)]$. Since the set of indices $I$ was arbitrary, we
 conclude that $\msys n \models \bictlspec$.  \end{proof}
 
-
-\section{Formal definition of the abstract global transition function} 
-We give the full formal definition of the abstract transition function.
-\begin{definition}
-  The {\em abstract global transition function} $\globaltr{m}_{ab} : \globalstates{m}_{ab}
-  \times \globalacts{m}_{ab} \rightarrow \globalstates{m}_{ab}$ of the abstract 
-  system $\sys{m}_{ab}$ satisfies $\globaltr{m}_{ab}(q, \alpha) = q'$ iff the
-  following hold:
-  \begin{itemize}
-    \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$ and $\tr e(\ls{e}{q},
-        \la{e}{\alpha}, A) = \ls{e}{q'}$, where
-    $A = \set{\la{i}{\alpha} \mid i \in \set{1,\ldots,m}} \cup
-\la{zo}{\alpha}$.
-    \item For all $i \in \set{1,\ldots,m, \it{zo}}$, we have that
-    $\la{i}{\alpha} \in \prot{i}(\ls{i}{q})$, $\tr i (\ls{i}{q}, \la{i}{\alpha},
-    A, \la{e}{\alpha}) = \lprv{i}{q'}$, where  $A = \set{\la{i}{\alpha} \mid i \in
-    \set{1,\ldots,m}} \cup \la{zo}{\alpha}$, and $\obs
-    i((\lprv{i}{q'},\lper{i}{q}),\ls{e}{q'}) = \lper{i}{q'}$.
-  \end{itemize}
-\end{definition}
-
-
-\section{Proof of Theorem 2}
+\subsection{Proof of Theorem 2}
 We prove Theorem~2 which we restate here for convenience.
 \begin{customthm}{2}
 $\msys n \leq_b \masys m$ for any $n \geq m+1$ and $b \geq 0$.
@@ -266,7 +268,7 @@ We have thus proven that for any $b \geq 0$, $\sim_b = \set{(q, \gamma_n(q))
 \end{proof}
 
 
-\section{Proof of Theorem 3}
+\subsection{Proof of Theorem 3}
 We prove Theorem~3 which we restate here for convenience.
 \begin{customthm}{3}
 There is $n \geq m+1$ such that $\masys m \leq_b \msys n$ for any $b \geq 0$.
@@ -443,7 +445,7 @@ $\masys m \leq_{b+1} \msys{n'}$.
 \end{proof}
 
 
-\section*{Proof of Theorem 4}
+\subsection{Proof of Theorem 4}
 We prove Theorem~4 which we restate here for convenience.
 \begin{customthm}{4}
 For every $n' > n$ we have that $\msys n \leq_b \msys{n'}$ for any $b \geq 0$.

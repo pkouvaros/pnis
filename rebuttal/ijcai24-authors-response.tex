@@ -21,6 +21,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{lipsum}
+\usepackage{amsmath,amssymb,mathtools}
 \urlstyle{same}
 
 \newtheorem{example}{Example}
@@ -41,35 +42,81 @@
 % }
 
 \section*{Rebuttal}
-We thank the reviewers for insightful comments. 
+We thank the reviewers for the insightful comments and for their time in
+reviewing a highly technical paper.
 
-\subsection*{Reviewer 1}
+
+\subsection*{Reviewers 1 and 2}
+All restrictions to our specification language are concomitant to previous
+results pertaining to either undecidability or incompleteness of verification.
+In particular, the restriction to bounded properties follows the undecidability
+of verification for the unbounded case and the exclusion of negation follows
+the incompleteness of verification for concrete models (Akintunde et al.,
+2020a). We will give more emphasis to these limitations, should the paper be
+accepted.
+
+\subsection*{Reviewer 1} 
+
+\textbf{Q1}.  Theoretically the observation function is any deterministic
+function, including concrete neural network models. In practice, verification
+for concrete models is only complete for piecewise-linear functions. These
+include ReLU-based neural networks. We refer the reviewer to (Akintunde et al.,
+2020a) for a detailed discussion.
+
+\noindent
+\textbf{Q2}. {\em Negation.} All of our results still hold if
+negation would be allowed in our syntax. However, verification methods for
+concrete models, including VENMAS used in the present contribution, do not
+support negation without hindering the completeness of verification (Akintunde
+et al., 2020a). 
+
+{\em Quantification.} The universal quantification of the variables indexing
+the atomic propositions is standard in parameterised verification (R. Bloem, et
+al., Decidability of Parameterized Verification)  and aims at the expression of
+collective properties for the systems. Still, following the symmetry reduction
+lemma (Lemma 1), a universally quantified formula holds iff  an existentially
+quantified formula holds, so no expressitivity is lost with our syntax.
+We will clarify the above points, should the
+paper be accepted.
+
+\noindent
+\textbf{Q3}. The  work cited by the reviewer considers systems with a known
+number of agents operating within an environment of arbitrary size. Differently
+from the cited work our systems are composed of an arbitrary number of agents
+operating in an environment of a known size. We add a discussion on the cited
+work,  should the paper be accepted.
+
+
+\noindent
+\textbf{Work by Pedersen and Dyrkolboth.} We thank the reviewer for bringing to
+our attention this work. Similarly to our contribution the work considers
+systems with homogeneous agents. But, differently from this submission, it is
+concerned with purely symbolic and non-parameterised systems. We will discuss
+the relevance of the work to ours, should the paper be accepted.
+
+
+\noindent
 \textbf{Q4 and Q5}
 In Corollaries 1 and 2 we show how parameterised
 verification can be reduced to non-parameterised verification. Each
 single cell in Tables 1 and 2 reports the result of verifying a
-concrete system. From these we draw conclusions regarding
+concrete system. From these we can draw conclusions regarding
 parameterised verification.
 
-In Table 1, in all experiments $m=2$.
-%
-For $k=2$, $n$ from Corollary 2 equals 2. So according to Corollary 2,
-from $\mathcal{S}^{(n)} \models \varphi^2_E[2]$ we conclude that
-$\mathcal{S}$ satisfies $\forall_{v_1,v_2} \varphi^2_E$ (at least two
-agents survive after 2 time steps).
+In particular, in Table 1, we have that $m=2$ for all experiments $m=2$. For
+$k=2$, $n$ from Corollary 2 equals 2. So, as per Corollary 2, from
+$\mathcal{S}^{(n)} \models \varphi^2_E[2]$ we conclude that $\mathcal{S}$
+satisfies $\forall_{v_1,v_2} \varphi^2_E$ (at least two agents survive after 2
+time steps). As for 3 time steps, $k=3$, $n$ from Corollary 2 equals 3. So we
+obtain that $\mathcal{S}$ does not satisfy $\forall_{v_1,v_2} \varphi^3_E$ (it
+is not the case that at least two agents survive after 3 time steps) because of
+the concrete system with 2 agents not satisfying the formula. On the other hand
+we obtain that $n$ is an \emph{emergence threshold}. Similarly for $k>3$.
 
-As for 3 time steps, $k=3$, $n$ from Corollary 2 equals 3. So we
-obtain that $\mathcal{S}$ does not satisfy
-$\forall_{v_1,v_2} \varphi^3_E$ (it is not the case that at least two
-agents survive after 3 time steps) because of the concrete system with
-2 agents. On the other hand we obtain that $n$ is an \emph{emergence
-  threshold}. Similarly for $k>3$.
-
-In Table 1 the results for $n\geq 4$ are not used to reason about
-parameterised verification. Instead they are included to demonstrate
-the increasing computational cost of verifying concrete systems for
-increasing number of agents. This further justifies the need for
-parameterised verification. 
+We note that in Table 1 the results for $n\geq 4$ are not used to reason about
+parameterised verification. They are instead  included to demonstrate the
+increasing computational cost of verifying concrete systems for increasing
+number of agents, thereby justifying the need for parameterised verification. 
 
 From Table 2, we conclude that
 $\mathcal{S}\not\models\forall_{v_1,\dots,v_m}\varphi^k_A$ for any of
@@ -77,6 +124,59 @@ $k=1,\dots,5$ and $m=2,3$ and that there is no emergence threshold.
 
 We will make these explanations explicit in the final
 version of the paper should it be accepted.
+
+\textbf{Other minor comments.} Noted with thanks.
+
+
+\subsection*{Reviewer 2}
+
+\textbf{Q1}. Yes, thanks for spotting this!
+
+\noindent
+\textbf{Q2}.  
+Concerning universal properties, the size of the abstract model from
+Corollary~1  is exponential in the size of the agent template, and its
+verification is in {\sc coNExpTime} and {\sc PSpace-hard} [Akintunde et al.,
+2020a]. The analysis of the complexity of verifying existential properties
+(Corollary~2) is more involved and beyond the scope of the paper. We agree with
+the reviewer  that this is an important direction for future work.  
+We will add a short discussion on complexity, should the
+paper be accepted.
+
+\noindent
+\textbf{Q3}. Bounded until $A(\varphi U^k \psi)$ can be inductively abbreviated
+using our syntax as follows:
+ \begin{align*}
+  A(\varphi U^1 \psi) &\triangleq \psi \lor (\varphi \land AX^1 \psi) \\
+  A(\varphi U^k \psi) &\triangleq \psi \lor (\varphi \land AX^1 (A (\varphi U^{k-1} \psi)).
+ \end{align*}
+The dual until, prefixed by the existential operator, can be defined
+analogously. Unbounded until cannot be supported in our framework since
+verification for unbounded until is undecidable (Akintunde et al., 2020a). We
+will describe the above abbreviations in the final version of  the paper,
+should it be accepted.
+
+\textbf{Experimental results.} We refer the reviewer to the answers to the
+questions Q4 and Q5 of Reviewer 1 for a short discussion. The results show the
+intractability of verification for concrete models as the number of agents
+grows, thereby motivating the need for the parameterised verification methods
+that we put forward. As explained above our methods reduce verification for
+systems of any size to verifying only a small number of systems with a small
+number of constituents.
+
+
+\subsection*{Reviewer 3}
+
+\textbf{Novelty:} the paper is the first to enable the formal verification of
+multi-agent systems with an unbounded number of neural-symbolic agents. This
+required the construction of a novel zero-one abstraction methodology for
+parameterised neural interpreted systems.
+
+\noindent
+\textbf{Significance:} The contribution reduces an  infinite-state verification
+problem to a finite-state one for an important class of multi-agent systems.
+
+
 
 
 
