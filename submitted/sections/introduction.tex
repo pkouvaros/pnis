@@ -1,0 +1,203 @@
+Safety concerns stemming from the increasing development of Multi-agent Systems
+(MAS) have been put under mathematical scrutiny
+%% E: commented out
+% over the past decade
+by automated methods which ascertain that MASs behave correctly. Verification
+methods based on SAT and
+BDDs~\cite{KacprzakLomuscioPenczek04b,RaimondiLomuscio05c} have resulted in
+push-button engines such as Verics, MCK and
+MCMAS~\cite{GammieMeyden04a,Kacprzak+07a,LomuscioQuRaimondi15}.  In conjunction
+with increasingly sophisticated state-space reduction techniques, such as
+predicate abstraction~\cite{lomuscio2015verifying} and partial order
+reductions~\cite{jamroga2020towards}, the verifiers have been able to scale to
+the analysis of systems with very large state spaces.
+
+
+While the different methods target the provision of effective solutions to
+different types of analyses, e.g., fast search for
+counterexamples~\cite{penczek2003verifying} as opposed to fast correctness
+proofs~\cite{ball2006abstraction}, and for different classes of MAS, e.g., MAS
+defined over infinite-state as opposed to finite-state
+variables~\cite{lomuscio2015verifying}, all methods make two fundamental
+assumptions. The first is that the MAS under analysis is composed of a known
+number of agents specified at design time. The second is that the agents
+composing the MAS are specified using traditional programming languages.  The
+approaches cannot
+%% E
+% in principle
+therefore be used to verify important classes of MAS, where either the systems
+have arbitrarily many participants or the agents are endowed with machine
+learning components. The former class of systems includes open systems, where
+agent can join and leave the system at runtime, and applications designed
+irrespective of the number of participants such as robot swarms or scenarios
+in the Internet of Things. The latter class comprises forthcoming
+neural-symbolic applications such as autonomous vehicles.
+
+More recent methods have addressed the verification of systems with an unbounded
+number of constituents against agent-based
+specifications~\cite{KouvarosLomuscio16a,KouvarosLomuscio15b,KouvarosLomuscio16c}.
+While the different methods focus on different communication primitives for the
+agents, they all rely on either cutoffs or zero-one abstractions whereby
+the unbounded verification problem is reduced to verifying a small
+number of concrete systems or abstractions thereof.  
+
+In a different line of work, verification methods for MASs comprising agents
+with neural components were put forward~\cite{Akintunde+20b,Akintunde+22}. To
+deal with the real-valued operational domain of the neural network models, the
+methods recast verification queries for bounded properties into
+Mixed-Integer-Linear-Programming.
+
+While these lines of work independently tackle unbounded and neural-symbolic
+MAS, none of the underlying methods can be used for analysis of systems that are
+both unbounded and neural-symbolic.  In this paper we overcome this limitation.
+Specifically, we introduce \emph{Parameterised Neural Interpreted Systems (PNIS)}, a
+formal model
+%% E:
+% based on neural interpreted systems 
+for modelling unbounded neural-symbolic MAS.  We develop an abstraction
+methodology for PNIS whereby we derive sound and complete procedures for the
+verification and emergence identification problems with respect to bounded
+universal and existential CTL formulae.  We utilise an implementation of these
+procedures to solve the verification and emergence identification problems for a
+social dilemma scenario.
+
+% to analyse the temporal and emergent properties of 
+% neural-symbolic agents playing a social dilemma game,
+% We discuss the significance of solutions to the verification and emergence
+% identification problems in the context of the subset of social dilemmas to
+% which our methodology is applicable.
+
+% We additionally present an example of these procedures applied to
+% neural-symbolic agents playing the guarding game, a social dilemma game we describe.
+% We discuss the significance of solutions to the verification and emergence
+% identification problems in the context of the subset of social dilemmas to
+% which our methodology is applicable.
+
+% \end{itemize}
+
+The rest of the paper is organised as follows. After discussing related work
+below, we present PNIS in Section~\ref{sec:pnis}, followed by the development of
+the verification and emergence identification procedures in
+Section~\ref{sec:verification}, which we evaluate in Section~\ref{sec:eval}  on
+a social dilemma scenario. We conclude in Section~\ref{sec:conclusions}.
+
+
+{\bf Related Work.}  The contribution is related to the two lines of work
+discussed above, namely parameterised verification and verification for
+neural-symbolic MAS. Previous models in parameterised verification do not
+include neural components, which require the formulation of novel abstractions.
+The neural components here considered additionally restrict the analysis to
+bounded temporal formulae, thereby however enabling the derivation of sound and
+complete verification methods for both universal and existential properties, as
+opposed for only universal properties that typically concerns previous work.
+Verification methods for MAS with neural components were previously put forward.
+These however take as input MAS with a known number of agents. The main
+theoretical finding of this work is that verification in the unbounded
+case can be reduced to the verification of a small number of bounded models from
+the cited work.
+
+% hese include
+% SAT-based and BDD-based verification methods (Kacprzak,
+% Lomuscio, and Penczek 2004; Raimondi and Lomuscio
+% 2005). Current model checkers, such as Verics, MCK and
+% MCMAS (Kacprzak et al. 2008; Gammie and van der Mey-
+% den 2004; Lomuscio, Qu, and Raimondi 2015), can effi-
+% ciently verify large state-spaces.
+
+% Recent advances in  Artificial Intelligence (AI)  enabled the automation of
+% challenging tasks, such as computer vision, that have been traditionally
+% difficult to tackle for decades. This accelerated the incorporation of  AI
+% components in  diverse applications, including ones situated within domains, such as
+% healthcare and transportation, where the impact to society can be significant.
+% While however AI has the potential of revolutionising society,  its inherent
+% fragility and opacity   hinders its adoption in safety-critical applications.
+% The associated risks are compounded in an increasingly inter-connected
+%Still, even though there is an increasing consensus in AI being beneficial for
+%society,  its inherent fragility and opacity hinders its adoption in
+%safety-critical applications. The associated risks are compounded in an
+%increasingly inter-connected
+% socio-techno-economic
+% world, where systems of
+% multiple interacting intelligent agents, or multi-agent systems (MAS),
+% constitute a paradigm shift from object-oriented to interaction-oriented design
+% standards. 
+
+% In response to these concerns the area of formal verification of AI has grown
+% rapidly over the past few years to provide methods to automatically verify that
+% AI systems robustly behave as intended.
+% One of the key techniques that has emerged in the area is that of {\em model
+% checking}~\cite{Clarke+99a}. Model checking provides automated solutions to 
+% the problem of establishing whether a model $M_S$ representing a system $S$ satisfies a
+% logical formula $\phi_P$ encoding a specification $P$. In the case of MAS,
+% the formula $\varphi$ does not simply express temporal properties of systems, as
+% in reactive systems, but it may also be accounting for high-level attitudes of
+% agency, such as knowledge and strategies, which can be described in
+% temporal-epistemic logic~\cite{Fagin+95b} and alternating-time
+% logic~\cite{Alur+98a}.
+
+% Whilst methods such as binary binary decision diagrams~\cite{GammieMeyden04a}
+% and bounded model checking~\cite{PenczekLomuscio03b}   enabled the  model
+% checking  of systems of large state spaces, a main drawback of the approach
+% remains the state-space explosion problem, whereby the state-space grows
+% exponentially in the number of variables encoding the agents.
+
+%growth of the state space in the number of
+%variables encoding the agents.
+
+% Notwithstanding that in practice this limits model checking to the verification
+% of systems with only few constituents, the analysis of  systems with arbitrarily many
+% participants, such as robot swarms  and  applications in the Internet of Things, 
+% raises a principal barrier to its application.  Indeed, 
+% verifying systems of this kind, henceforth {\em unbounded multi-agent systems}
+% (UMAS), requires checking whether any system for any number of agents satisfies
+% the specification in question. This  renders model checking intractable when 
+% enumerating and analysing all individual systems. 
+
+
+% The formal verification problem is concerned withV
+% $S$ satisfies a safety property $P$. {\em Model checking}, a key method for the
+% formal verification of reactive systems, has also been used in the past fifteen
+% years to provide automated solutions to this problem~\cite{Clarke+99a}. In
+% model checking, the system is represented as a model $M_S$, the specification
+% is encoded as formula $\varphi$ and it is then checked whether $M_S$ satisfies
+% $\varphi$. 
+
+% In these cases, one could encode a system with a given number of agents and
+% verify that a specification holds. However, additional agents may possibly
+% interfere with the system in unpredictable ways resulting in the specifications
+% being violated. Therefore, to fully verify the system, the process would have to
+% be repeated for any possible number of components
+
+% Another key limitation of model checking is the requirement that the systems are
+% given in traditional, agent-based programming languages, thereby not accounting for  
+%  agents endowed with neural network components.
+% Systems of this kind, henceforth {\em neuro-symbolic multi-agent systems}
+% (NMAS), constitute important forthcoming applications, such as autonomous
+% vehicles, where the neural components are responsible for automating complex tasks such
+% as perception and control. 
+
+% Even though neural networks exhibit remarkable performance on these tasks,
+% their fragility to adversarial attacks~\cite{Szegedy+14} and
+% their lack of interpretability~\cite{VelizKim17} raise additional concerns
+% regarding the overall system safety, thereby strengthening the need for the
+% principled analysis of NMAS before deployment.
+
+% This paper gives an overview of the methods that we developed within the
+% Verification of Autonomous Systems Research
+% Group, Imperial College London, 
+% %~\footnote{\url{https://vas.doc.ic.ac.uk}} 
+% towards the formal verification
+% of UMAS and NMAS.  Our pioneering work in the verification of UMAS, discussed in
+% Section~2, overcomes the model checking barrier with the development of methods
+% that enable the derivation of the number of agents that is sufficient to
+% consider when evaluating a specification. Our studies in the analysis of NMAS,
+% outlined in Section~3, include efficient methods for the verification of neural
+% networks and mixed-integer linear programming (MILP) formulations for checking
+% system-level specifications.  The paper concludes in Section~4 with directions
+% for future work.
+
+%%% Local Variables:
+%%% mode: latex
+%%% fill-column: 79
+%%% TeX-master: "../main"
+%%% End:

@@ -1,0 +1,105 @@
+%\ifdraft
+\makeatletter
+\if@twocolumn
+  \setlength{\marginparwidth}{12mm}
+  \newcommand{\nb}[1]
+  {%
+   \begingroup%
+   \ifodd\value{page}
+     \if@firstcolumn\reversemarginpar\fi
+   \else
+     \if@firstcolumn\else\reversemarginpar\fi
+   \fi
+   \textcolor{red}{\bf!!}%{\color{red}\it\par[[#1]]\par}
+   \marginnote[%\parbox{\marginparwidth}
+{\scriptsize\textcolor{red}{#1}}]%
+   {%\parbox{\marginparwidth}
+{\scriptsize\textcolor{red}{#1}}}%
+   \endgroup%
+  }
+\else
+  \setlength{\marginparwidth}{48mm}
+  \newcommand{\nb}[1]{\textcolor{red}{\bf!}%
+    \reversemarginpar
+    \marginpar[\parbox{\marginparwidth}{\scriptsize\textcolor{red}{\raggedleft #1}}]%
+    {\parbox{\marginparwidth}{\scriptsize\textcolor{red}{\raggedright #1}}}}
+\fi
+\makeatother
+%\else
+%  \newcommand{\nb}[1]{}
+%\fi
+
+\newcommand{\setprojection}[1]{#1_{\rightarrow\{\}}}
+\newcommand{\tuple}[1]{\left ( #1  \right )}
+\newcommand{\set}[1]{\left \{ #1  \right \}}
+\newcommand{\ags}[0]{\it{Ag}}
+\newcommand{\ag}[1]{{#1}}
+\newcommand{\lstates}[1]{L_{#1}}
+\newcommand{\lstate}[1]{l_{#1}}
+\newcommand{\init}[1]{\iota_{#1}}
+\newcommand{\plstate}[1]{l'_{#1}}
+\newcommand{\pplstate}[1]{l''_{#1}}
+\newcommand{\prvs}[1]{\mathit{Prv}_{#1}}
+\newcommand{\pers}[1]{\mathit{Per}_{#1}}
+\newcommand{\prv}[1]{\mathit{prv}_{#1}}
+\newcommand{\per}[1]{\mathit{per}_{#1}}
+\newcommand{\pprv}[1]{\mathit{prv}'_{#1}}
+\newcommand{\pper}[1]{\mathit{per}'_{#1}}
+\newcommand{\prot}[1]{\mathit{prot}_{#1}}
+\newcommand{\obs}[1]{\mathit{obs}_{#1}}
+\newcommand{\tr}[1]{\mathit{tr}_{#1}}
+\newcommand{\sys}[1]{\mathcal{S}^{(#1)}}
+\newcommand{\asys}[1]{\mathcal{S}_{ab}^{(#1)}}
+\newcommand{\npis}{\mathcal{S}}
+\newcommand{\agents}[1]{\mathit{Ag}^{(n)}}
+\newcommand{\ls}[2]{\it{ls}_{#1}(#2)}
+\newcommand{\lprv}[2]{\it{lprv}_{#1}(#2)}
+\newcommand{\lper}[2]{\it{lper}_{#1}(#2)}
+\newcommand{\globalacts}[1]{\mathit{ACT}^{(#1)}}
+\newcommand{\aglobalacts}[1]{\mathit{ACT}^{(#1)}_{ab}}
+\newcommand{\acts}[1]{\mathit{Act}_{#1}}
+\newcommand{\act}[1]{\it{\alpha}_{#1}}
+\newcommand{\la}[2]{\it{la}_{#1}({#2})}
+\newcommand{\msys}[1]{\mathcal{M}_{\sys{#1}}}
+\newcommand{\masys}[1]{\mathcal{M}_{\mathcal{S}_{ab}^{(#1)}}}
+\newcommand{\globalstates}[1]{G^{(#1)}}
+\newcommand{\globalinit}[1]{\iota^{({#1})}}
+\newcommand{\globaltr}[1]{\it{tr}^{(#1)}}
+\newcommand{\globalrel}[1]{T^{(#1)}}
+\newcommand{\valuation}[1]{\ell^{(#1)}}
+\newcommand{\aglobalstates}[1]{G^{(#1)}_{ab}}
+\newcommand{\aglobaltr}[1]{\it{tr}^{(#1)}_{ab}}
+\newcommand{\aglobalrel}[1]{T^{(#1)}_{ab}}
+\newcommand{\aglobalinit}[1]{\iota^{({#1})}_{ab}}
+\newcommand{\avaluation}[1]{\ell^{(#1)}_{ab}}
+\newcommand{\tlabel}[1]{\ell_{#1}}
+\newcommand{\prop}[0]{\it{AP}}
+\newcommand{\ctl}[0]{\sf{CTL}}
+\newcommand{\bctl}[0]{\sf{bCTL}}
+\newcommand{\bictl}[0]{\sf{bICTL}}
+\newcommand{\bictlspec}[0]{\forall_{v_1,\ldots,v_m} \varphi}
+\newcommand{\atprop}{\it{AP}}
+\newcommand{\atvar}{\it{VAR}}
+% \newcommand{\paths}[1]{\Pi_{\sys n}(#1)}
+% \newcommand{\apaths}[2]{\Pi_{\asys m}^{#2}(#1)}
+\newcommand{\paths}[1]{\Pi(#1)}
+\newcommand{\apaths}[2]{\Pi^{#2}(#1)}
+\newcommand{\pathstates}[2]{\it{States}(\Pi^{#2}(#1))}
+
+\newcommand{\pnis}{\mathcal S}
+\newcommand{\apnis}{\overline{\mathcal S}}
+\newcommand{\astates}{\overline{G}}
+\newcommand{\aact}{\overline{ACT}}
+\newcommand{\atr}{\overline{\it{tr}}}
+\newcommand{\alabel}{\overline{{\ell}}}
+\newcommand{\abstate}{q_{ab}}
+\newcommand{\abstatep}{q_{ab}'}
+\newcommand{\abaction}{\alpha_{ab}}
+\newcommand{\abactionp}{\alpha_{ab}'}
+\newcommand{\abpath}{\rho_{ab}}
+\newcommand{\td}[1]{\it{td}(#1)}
+\newcommand{\projection}[2]{#1_{\rightarrow #2}}
+
+\newcommand{\venmas}{\textsc{Venmas}\xspace}
+\newcommand{\guard}[1]{\textsc{Guard}$[m]$}
+\newcommand{\graycell}{\cellcolor[HTML]{C0C0C0}}

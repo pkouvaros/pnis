@@ -1,0 +1,574 @@
+%%%% ijcai24.tex
+
+%\typeout{Appendix for Paper \#6775}
+
+% These are the instructions for authors for IJCAI-23.
+
+\documentclass{article}
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+
+% The file ijcai23.sty is a copy from ijcai22.sty
+% The file ijcai22.sty is NOT the same as previous years'
+\usepackage{ijcai23}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,mathtools}
+
+% Use the postscript times font!
+\usepackage{times}
+\usepackage{soul}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[small]{caption}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xspace}
+\usepackage{paralist}
+\usepackage[switch]{lineno}
+\usepackage{tikz}
+\usetikzlibrary{shapes}
+\usepackage{marginnote}
+
+% Comment out this line in the camera-ready submission
+% \linenumbers
+
+\urlstyle{same}
+
+% the following package is optional:
+%\usepackage{latexsym}
+
+% See https://www.overleaf.com/learn/latex/theorems_and_proofs
+% for a nice explanation of how to define new theorems, but keep
+% in mind that the amsthm package is already included in this
+% template and that you must *not* alter the styling.
+\newtheorem{example}{Example}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{innercustomthm}{Theorem}
+\newenvironment{customthm}[1]
+  {\renewcommand\theinnercustomthm{#1}\innercustomthm}
+  {\endinnercustomthm}
+\newtheorem{innercustomlemma}{Lemma}
+\newenvironment{customlemma}[1]
+  {\renewcommand\theinnercustomlemma{#1}\innercustomlemma}
+  {\endinnercustomlemma}
+
+
+% Following comment is from ijcai97-submit.tex:
+% The preparation of these files was supported by Schlumberger Palo Alto
+% Research, AT\&T Bell Laboratories, and Morgan Kaufmann Publishers.
+% Shirley Jowell, of Morgan Kaufmann Publishers, and Peter F.
+% Patel-Schneider, of AT\&T Bell Laboratories collaborated on their
+% preparation.
+
+% These instructions can be modified and used in other conferences as long
+% as credit to the authors and supporting agencies is retained, this notice
+% is not changed, and further modification or reuse is not restricted.
+% Neither Shirley Jowell nor Peter F. Patel-Schneider can be listed as
+% contacts for providing assistance without their prior permission.
+
+% To use for other conferences, change references to files and the
+% conference appropriate and use other authors, contacts, publishers, and
+% organizations.
+% Also change the deadline and address for returning papers and the length and
+% page charge instructions.
+% Put where the files are available in the appropriate places.
+
+
+% PDF Info Is REQUIRED.
+% Please **do not** include Title and Author information
+\pdfinfo{
+/TemplateVersion (IJCAI.2023.0)
+}
+
+\title{Appendix for Paper \#6775}
+
+% Single author syntax
+\author{
+    %Panagiotis Kouvaros
+    %\affiliations
+    %Imperial College London, London, UK
+    %\emails
+    %p.kouvaros@imperial.ac.uk
+}
+
+% Multiple author syntax (remove the single-author syntax above and the \iffalse ... \fi here)
+\iffalse
+\author{
+First Author$^1$
+\and
+Second Author$^2$\and
+Third Author$^{2,3}$\And
+Fourth Author$^4$
+\affiliations
+$^1$First Affiliation\\
+$^2$Second Affiliation\\
+$^3$Third Affiliation\\
+$^4$Fourth Affiliation
+\emails
+\{first, second\}@example.com,
+third@other.example.com,
+fourth@example.com
+}
+\fi
+
+\input{../preamble.tex}
+
+\begin{document}
+
+%\maketitle
+
+\appendix
+%\section{Introduction}
+
+%This Appendix includes the full definition of the abstact global transition
+%function, the full proofs of Lemma~1 and Theorems~2,~3,~4, and furher details
+%pertaining to the training of the neural networks used in the evaluation
+%section.
+
+
+\section{Abstract global transition function} 
+We give the full formal definition of the abstract global transition function.
+\begin{definition}
+  The {\em abstract global transition function} $\globaltr{m}_{ab} : \globalstates{m}_{ab}
+  \times \globalacts{m}_{ab} \rightarrow \globalstates{m}_{ab}$ of the abstract 
+  system $\sys{m}_{ab}$ satisfies $\globaltr{m}_{ab}(q, \alpha) = q'$ iff the
+  following hold:
+  \begin{itemize}
+    \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$ and $\tr e(\ls{e}{q},
+        \la{e}{\alpha}, A) = \ls{e}{q'}$, where
+    $A = \set{\la{i}{\alpha} \mid i \in \set{1,\ldots,m}} \cup
+\la{zo}{\alpha}$.
+    \item For all $i \in \set{1,\ldots,m, \it{zo}}$, we have that
+    $\la{i}{\alpha} \in \prot{i}(\ls{i}{q})$, $\tr i (\ls{i}{q}, \la{i}{\alpha},
+    A, \la{e}{\alpha}) = \lprv{i}{q'}$, where  $A = \set{\la{i}{\alpha} \mid i \in
+    \set{1,\ldots,m}} \cup \la{zo}{\alpha}$, and $\obs
+    i((\lprv{i}{q'},\lper{i}{q}),\ls{e}{q'}) = \lper{i}{q'}$.
+  \end{itemize}
+\end{definition}
+
+\section{Proofs}
+We give the full proofs of Lemma~1 and Theorems~2,~3,~4.
+
+\subsection{Proof of Lemma 1} 
+We prove the symmetry reduction Lemma which we restate here for convenience.
+\begin{customlemma}{1}
+$\pnis \models \bictlspec$ iff $\pnis \models \varphi[v_1 \mapsto 1, \ldots, v_m
+\mapsto m]$.
+\end{customlemma}
+\begin{proof}
+Let  $n \geq m$ be arbitrary. We show that $\msys n
+\models \bictlspec$ iff $\msys n \models \varphi[v_1 \mapsto 1, \ldots, v_m
+\mapsto m]$. The Lemma then follows.
+
+For the left to right direction assume that $\msys n \models \bictlspec$. Then,
+    by the definition of satisfaction of $\bictl$, we have that for all $h:
+    \set{v_1, \ldots, v_m} \rightarrow \set{1,\ldots,n}$,  it holds that $\msys
+    n \models \varphi[v_1 \mapsto h(v_1), \ldots, v_m \mapsto h(v_m)]$.  Hence,
+    $\msys n \models \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$.
+
+For the right to left direction assume that
+    $\msys n \models \varphi[v_1 \mapsto 1, \ldots, v_m \mapsto m]$. Let $I =
+    \set{i_1, \ldots, i_m} \in \set{1, \ldots, n}^m$ be an arbitrary set of $m$
+    distinct integers within $\set{1,\ldots,n}$.  Consider $\sigma : \set{1,
+    \ldots, n} \rightarrow \set{1, \ldots, n}$ to be a bijective mapping such
+    that $\sigma(j) = i_j$ for all $j$ with $1 \leq j \leq m$. For a global
+    state $q$, denote by $\pi(q)$ the global state obtained by replacing every
+    $i$-th local state in $q$ with the $\sigma(i)$-th local state in $q$.
+    Similarly, for a joint action $\alpha$, denote by $\pi(\alpha)$ the joint
+    action obtained by replacing every $i$-th local action in $\alpha$ with the
+    $\sigma(i)$-th local action in $\alpha$. Then, by the definition of the
+    global transition function, we have that $\globaltr n(q, \alpha) = q'$  iff
+    $\globaltr n(\pi(q), \pi(\alpha)) = \pi(q')$.  Hence,  $(q, \alpha, q') \in
+    \globalrel n$ iff $(\pi(q), \pi(\alpha), \pi(q')) \in \globalrel n$.
+    Therefore, ($\msys n, q) \models  \varphi[v_1 \mapsto 1, \ldots, v_m
+    \mapsto m]$ iff ($\msys n, \pi(q)) \models  \varphi[v_1 \mapsto \sigma(1),
+    \ldots, v_m \mapsto \sigma(m)]$. So, by the initial assumption,  it follows
+    that ($\msys n, \pi(\globalinit{n})) \models  \varphi[v_1 \mapsto \sigma(1),
+    \ldots, v_m \mapsto \sigma(m)]$. As $\pi(\globalinit{n}) = \globalinit{n}$, we
+    have that ($\msys n, \globalinit{n}) \models  \varphi[v_1 \mapsto \sigma(1),
+\ldots, v_m \mapsto \sigma(m)]$. Since the set of indices $I$ was arbitrary, we
+conclude that $\msys n \models \bictlspec$.  \end{proof}
+
+\subsection{Proof of Theorem 2}
+We prove Theorem~2 which we restate here for convenience.
+\begin{customthm}{2}
+$\msys n \leq_b \masys m$ for any $n \geq m+1$ and $b \geq 0$.
+\end{customthm}
+\begin{proof}
+Let $n \geq m+1$. We show that $\msys n
+\leq_b \masys m$ for any $b \geq 0$.
+ Define $\gamma_n
+\colon \globalstates n \rightarrow \aglobalstates m$ to map concrete states in
+$\msys n$ to abstract states in $\masys m$ as follows:
+\begin{align*}
+  \gamma_n(q) =  \langle &\ls{1}{q}, \ldots, \ls{m}{q}, \\
+  &\set{\ls{i}{q} \mid i \in \set{m + 1, \ldots, n}}, \\
+  &\ls{e}{q}  \rangle.
+\end{align*}
+
+For any $b \geq 0$, define $\sim_b = \set{(q, \gamma_n(q)) \mid q \in
+    \globalstates n }$. We show that for any $b \geq 0$, $\sim_b$ is a
+    $b$-bounded simulation relation between $\msys n$ and $\masys m$. There are
+    two cases: $b=0$ and $b >0$. Consider the case where $b=0$. By the
+    definitions of initial concrete and abstract global states we have that
+    $(\globalinit n, \aglobalinit m) \in \sim_0$. Let $(q, \abstate) \in
+    \sim_0$ be arbitrary. As $\gamma_n$ preserves the local states of the
+    agents $1, \ldots, m$, we have that $q \in \valuation n(p, i)$ implies that
+    $\abstate \in \avaluation m(p, i)$ for any $p \in \atprop$ and $i \in
+    \set{1, \ldots, m}$, thus $\sim_0$ is $0$-bounded simulation between $\msys
+    n$ and $\masys m$.  
+
+For the case where $b >0$, 
+     we
+    show that $\sim_{b}$ is a $b$-bounded simulation relation  between
+    $\msys n$ and $\masys m$.  By the definitions of initial concrete and
+    abstract global states we have that $(\globalinit n, \aglobalinit m) \in
+    \sim_{b}$.  Let $(q, \abstate) \in \sim_b$ be arbitrary. As $\sim_{b} =
+    \sim_0$, $(q, q') \in \sim_0$, so $\sim_{b}$ satisfies the
+    first condition of bounded simulation. To show that
+    it satisfies the second condition,  assume that $(q, \alpha, q') \in
+    \globalrel n$ for some joint action $\alpha$ and global state $q'$. We need
+    to show that there is an abstract joint action $\abaction$ and an abstract
+    global state $\abstatep$ such that $(\abstate, \abaction, \abstatep) \in
+    \aglobalrel m$ and $(q', \abstatep) \in \sim_{b-1}$.  Define $\delta_n \colon
+    \globalacts n \rightarrow \aglobalacts m$ to map joint actions in $\msys n$
+    to joint actions in $\masys m$ as follows:
+\begin{align*}
+  \delta_n(\alpha) =  \langle &\la{1}{\alpha}, \ldots, \la{m}{\alpha}, \\
+    &\set{(\ls{i}{q}, \la{i}{\alpha}) \mid i \in \set{m + 1, \ldots, n}}, \\
+  &\la{e}{q}  \rangle.
+\end{align*}
+Let $\abaction = \delta_n(\alpha)$. By the definition of the abstract protocol
+function we have that $\abaction \in \prot{ab}(\abstate)$. So $(\abstate,
+\abaction, \abstatep) \in \aglobalrel m$, where $\abstatep = \aglobaltr m
+(\abstate, \abaction)$. By the definition of the concrete and abstract local
+transition functions, and since the set $\set{\la{i}{\alpha} \mid i \in
+\set{1,\ldots,n}}$ of actions in $\alpha$ equals the set $\set{\la{i}{q} \mid i
+\in \set{1,\ldots,m}} \cup \set{\alpha_t \mid \exists l_t \colon (l_t, \alpha_t)
+\in \la{zo}{\abaction}}$ of actions in $\abaction$, we have that $\ls{i}{q'} =
+\ls{i}{\abstate}$ for $i \in \set{1,\ldots,m}$, and $\set{\ls{i}{q'} \mid i \in
+\set{m+1,\ldots,n}} = \ls{zo}{\abstate'}$.  Therefore $(q', \abstatep) \in
+    \sim_{b-1}$ as required.
+
+We have thus proven that for any $b \geq 0$, $\sim_b = \set{(q, \gamma_n(q))
+    \mid q \in \globalstates n }$ is a $b$-bounded simulation relation between
+    $\msys n$ and $\masys m$. It follows that $\msys b \leq_b \masys n$ for any
+    $b \geq 0$.
+
+\end{proof}
+
+
+\subsection{Proof of Theorem 3}
+We prove Theorem~3 which we restate here for convenience.
+\begin{customthm}{3}
+There is $n \geq m+1$ such that $\masys m \leq_b \msys n$ for any $b \geq 0$.
+\end{customthm}
+
+\begin{proof}
+
+The proof of the Theorem is by induction on~$b$. For any $n \geq m+1$,  define
+$\gamma_n \colon \globalstates n \rightarrow \aglobalstates m$ to map concrete
+states in $\msys n$ to abstract states in $\masys m$ as follows:
+\begin{align*}
+  \gamma_n(q) =  \langle &\ls{1}{q}, \ldots, \ls{m}{q}, \\
+  &\set{\ls{i}{q} \mid i \in \set{m + 1, \ldots, n}}, \\
+  &\ls{e}{q}  \rangle.
+\end{align*}
+
+For the base step, let $b = 0$. Set $n = m+1$. Define $\sim_0 \subseteq 
+    \aglobalstates m \times \globalstates{m+1}$ by $(q_{ab}, q) \in \sim_0$ if 
+$\gamma_{m+1}(q) = \abstate.$
+By the definitions of
+    initial concrete and abstract global states we have that $(\aglobalinit m,
+    \globalinit {m+1}) \in \sim_0$.  
+    As $\gamma_{m+1}$ preserves
+the local states of the agents $1, \ldots, m$, we additionally have that $\abstate \in
+\avaluation m(p, a)$ implies that $q \in \valuation{m+1}(p, a)$ for any $p \in
+\atprop$ and $a \in \set{1, \ldots, m}$. Thus,  $\sim_0$ is $0$-bounded
+simulation relation between $\masys m$ and $\msys{m+1}$, hence $\masys m \leq_0 \msys{m+1}$.
+
+ For the inductive step, assume that for each $i \in
+    \set{1, \ldots, b}$ there is $n_i \geq m + 1$ such that $\masys m \leq_b
+    \msys{n_i}$ by means of a relation $\sim_{n_i}$ satisfying
+    $\gamma_{n_i}(q)=q_{ab}$ whenever $(q_{ab}, q) \in \sim_{n_i}$.
+    %$$\sim_i =
+%\set{(\abstate, q) \mid \abstate \in \aglobalstates{m}, q \in
+%\globalstates{n}, \gamma_{n}(q) = \abstate}.$$ 
+    We show that there is $n' \geq n_b$ such that $\masys m \leq_{b+1}
+    \msys{n'}$ by means of a relation $\sim'_{b+1}$ satisfying
+$\gamma_{n'}(q)=q_{ab}$ whenever  $(q_{ab}, q) \in
+    \sim_{b+1}$.
+    
+
+    Let $|\prot t| = \max \set{|\prot t(l_t)| \mid l_t \in \lstates{t}}$ be the
+    maximum number of actions enabled by the template protocol at any local
+    state. Set $n' = n_b +  (n_b -m) |\prot t|$.  Given a
+    global state $q$ (either concrete or abstract) and $i > 0$, let
+    $\projection{q}{i}$ denote the projection of $q$ to the first~$i$ agents,
+    i.e. $\projection{q}{i} = \tuple{\ls{1}{q}, \ldots, \ls{i}{q}, \ls{e}{q}}$.
+    Define the following relations $\sim'_i \subseteq \aglobalstates{m} \times
+    \globalstates{n'}$ between the abstract global states in $\masys{m}$ and the
+    concrete global states in $\msys{n'}$:
+
+\begin{itemize}
+
+    \item  $\sim'_0 = \set{(\abstate, q) \mid  \gamma_{n'}(q) = \abstate}$.
+        %where $q_{ab \rightarrow m}$ and $\projection{q}{m}$
+  %is the projection of $q_{ab}$ and $q$ onto the first~$m$ agents, e.g.,
+  %$\projection{q}{m} = \tuple{\ls{1}{q}, \ldots, \ls{m}{q}, \ls{e}{q}}$.
+
+
+  \item for $i \in \set{1, \ldots, b + 1}$, we have that $(\abstate, q) \in
+  \sim'_i$ if:
+  \begin{itemize}
+    \item  $(\abstate,\projection{q}{n_b}) \in \sim_{i-1}$, and 
+    \item  for $j \in \set{1,\ldots,n_b - m}$ and $k \in \set{1,\ldots,|\prot t|}$, 
+    $\ls{n_b + (j - 1) |\prot t| + k}{q} = \ls{m+j}{q}$; i.e., there are
+          additional $|\prot t|$  agents in each of the local state of each of
+          the agents in $\set{m+1,\ldots,n_b}$.
+  \end{itemize}
+\end{itemize}
+
+We show that for every $x \in \set{0, \ldots, b+1}$, $\sim'_x$ is an
+$x$-bounded simulation between $\masys m$ and $\msys{n'}$. There are three
+cases: $x=0$, $x=1$, and $x \in \set{2,\ldots,b+1}$.
+    
+\begin{itemize}
+  \item Case 1: $x=0$. By the definition of the abstract and concrete initial
+      global states, we have that $(\aglobalinit m, \globalinit{n'}) \in
+        \sim'_0$. Let $(q_{ab}, q) \in \sim'_0$ be arbitrary. Since
+        $\gamma_{n'}(q) = \abstate$, it follows that $\abstate \in \avaluation m(p,
+        i)$ implies that $q \in \valuation n (p, i)$ for any $p \in \atprop$
+        and $i \in \set{1,\ldots,m}$, thus $\sim'_0$ is a $0$-bounded
+        simulation between $\masys m$ and $\msys{n'}$.
+
+
+  \item Case 2: $x = 1$.   By the definition of the abstract and concrete
+      initial global states, we have that $(\aglobalinit m, \globalinit{n'})
+        \in \sim'_1$. Let $(q_{ab}, q) \in \sim'_1$ be arbitrary. By the
+        definition of $\sim'_1$, it follows that $(\abstate,
+        \projection{q}{n_b}) \in \sim_{0}$, thus $\gamma_{n'}(q) = \abstate$,
+        hence  $(\abstate, q) \in \sim'_0$, so $\sim'_1$ satisfies the first
+        condition of bounded simulation. 
+
+
+  To show that it satisfies the second condition, assume that $(\abstate,
+  \abaction, \abstatep) \in \aglobalrel m$ for some abstract joint action
+  $\abaction$ and abstract global state $\abstatep$. We need to show that there
+  is a joint action $\alpha$ and a  global state $q'$ such that $(q, \alpha, q')
+  \in \globalrel{n'}$ and $(\abstatep, q') \in \sim'_0$.  
+Define $\alpha$ as
+  follows:
+
+  \begin{itemize}
+      \item $\la{i}{\alpha} = \la{i}{\abaction}$, for $i \in \set{1,\ldots,m}$.
+      \item  for $i \in \set{m+1,\ldots,n_b}$, consider the set $\set{a_t \mid (\ls{i}{q},\alpha_t) \in \la{zo}{\abaction}}$ of template actions
+          that are paired with the template state of one of the agents in $\set{1,\ldots,n_b}$
+    in the action of the zero-one agent. Assume an ordering $\alpha_1, \ldots,
+    \alpha_j$ of this set of  actions and define
+    \begin{itemize}
+        \item $\la{i}{\alpha} = \alpha_1$.
+        \item  $\la{n_b + (i -1) |\prot t| + k}{\alpha} = \alpha_k$  for $k \in \set{1,\ldots,j}$.
+    \item $\la{n_b + (i-1) |\prot t| + k}{\alpha} = \alpha_1$ for $k \in
+    \set{j+1, \ldots, |\prot t|}$.
+    \end{itemize}
+  \end{itemize}
+
+So the additional $|\prot t|$ agents for each of the agents in
+        $\set{m+1,\ldots,n_b}$ collectively perform in $\alpha$ all of the template actions
+        that are paired with a local state in the action of  the zero-one
+        agent. By the definition of $\alpha$, we have that $\la{i}{\alpha} \in \prot
+        i(\ls{i}{q})$ for every $i \in \set{1,\ldots,n'}$. So $(q, \alpha, q') \in \globalrel
+  {n'}$, where $q' = \globaltr{n'} (q, \alpha)$. By the definition of the
+  concrete and abstract local transition functions, and since the set
+        $\set{\la{i}{\alpha} \mid i \in \set{1,\ldots,n'}}$ of actions in $\alpha$ equals the set
+  $\set{\la{i}{q} \mid i \in \set{1,\ldots,m}} \cup \set{\alpha_t \mid \exists
+  l_t \colon (l_t, \alpha_t) \in \la{zo}{\abaction}}$ of actions in $\abaction$,
+        we have that $\gamma_{n'}(q'_{ab}) = q'$, therefore
+  $(\abstatep, q') \in \sim'_0$, as required. 
+
+
+  \item Case 3: $x \in \set{2, \ldots, b+1}$.  By the definition of the
+      abstract and concrete initial global states, we have that $(\aglobalinit
+        m, \globalinit{n'}) \in \sim'_x$. Let $(q_{ab}, q) \in \sim'_x$ be
+        arbitrary. By the definition of $\sim'_x$ we have that $(\abstate,
+        \projection{q}{n_b}) \in \sim_{x-1}$, thus $\gamma_{n_b}(\abstate) =
+        q$, so $\gamma_{n'}(\abstate) = q$, hence $(\abstate, q) \in \sim'_0$,
+        and therefore $\sim'_{x}$ satisfies the first condition of bounded
+        simulation. 
+
+
+  To show that it satisfies the second condition, assume that $(\abstate,
+  \abaction, \abstatep) \in \aglobalrel m$ for some abstract joint action
+  $\abaction$ and abstract global state $\abstatep$. We need to show that there
+  is a joint action $\alpha$ and a  global state $q'$ such that $(q, \alpha, q')
+  \in \globalrel{n'}$ and $(\abstatep, q') \in \sim'_{x-1}$. Since $(\abstate,
+  \projection{q}{n_b}) \in \sim_{x-1}$, we have that there is a joint action
+  $\beta$ and a global state $r$ such that $(\projection{q}{n_b}, \beta, r) \in
+  \globalrel{n_b}$ and $(\abstate, r) \in \sim_{x-2}$. Define a joint action
+  $\alpha \in \globalacts{n'}$ such that
+  
+  \begin{itemize}
+      \item for $i \in \set{1,\ldots,n_b}$, $\la{i}{\alpha} = \la{i}{\beta}$, 
+      \item  for $i \in \set{1, \ldots, n_b-m}$ and $j \in \set{1,\ldots,|\prot
+          t|}$, $\la{n_b + (i-1)|\prot t| + j}{\alpha} = \la{m+i}{\beta}$.
+  \end{itemize}
+
+  By the definition of $\alpha$, we have that $(q, \alpha, q')  \in
+  \globalrel{n'}$ for a global state $q'$ that satisfies
+
+  \begin{itemize}
+    \item  $(\abstate',\projection{q'}{n_b}) \in \sim_{x-1}$, and 
+    \item  for $j \in \set{1, \ldots, n_b-m}$ and $k \in \set{1,\ldots,|\prot t|}$, 
+        $\ls{n_b + (j-1)|\prot t| + k}{q'} = \ls{m+j}{q'}$.
+  \end{itemize}
+
+  It follows that $(q'_{ab}, q') \in \sim'_{x-1}$. Consequently, $\sim'_{x}$
+  is an $x$-bounded simulation between $\masys m$ and $\msys{n'}$.
+
+\end{itemize}
+
+We have thus proven that for every $x \in \set{0, \ldots, b+1}$, $\sim'_x$ is an
+$x$-bounded simulation between $\masys m$ and $\msys{n'}$.  It follows  that
+$\masys m \leq_{b+1} \msys{n'}$.
+
+\end{proof}
+
+
+\subsection{Proof of Theorem 4}
+We prove Theorem~4 which we restate here for convenience.
+\begin{customthm}{4}
+For every $n' > n$ we have that $\msys n \leq_b \msys{n'}$ for any $b \geq 0$.
+\end{customthm}
+\begin{proof}
+Let $n' > n$. For any $b \geq 0$, define $\sim_b \subseteq \globalstates n
+    \times \globalstates{n'}$ by $(q,q') \in \sim_b$ if
+\begin{itemize}
+    \item $\ls{1}{q} = \ls{1}{q'}, \ldots, \ls{n}{q} = \ls{n}{q'}$,
+    \item $\ls{n+1}{q'}=\ls{1}{q'}, \ldots, \ls{n'}{q'}=\ls{1}{q'}$.
+\end{itemize}
+We show that $\sim_b$ is a $b$-bounded simulation relation between $\msys n$
+    and $\msys{n'}$. By the definition of the initial concrete global states we
+    have that $(\globalinit n, \globalinit{n'}) \in \sim_b$. Let $(q, q') \in
+    \sim_b$ be arbitrary. For the case of $b=0$, by the definition of the concrete labelling function, 
+    it follows that $q \in \valuation n(p, i)$ implies that $q' \in \valuation
+    {n'}(p, i)$ for any $p \in \atprop$, $i \in \set{1,\ldots,n}$, thus $\sim_0$ is a $0$-bounded simulation between $\msys n$ and $\msys{n'}$. 
+
+    For the case of $b > 0$, since $\sim_b = \sim_0$, $\sim_b$ satisfies the first condition of bounded simulation. To show that it satisfies the second condition, assume that $(q, \alpha, q^1) \in \globalrel n$ for some joint action
+    $\alpha \in \globalacts n$ and global state $q^1 \in \globalstates n$. We
+    need to show that there is a joint action $\alpha' \in \globalacts{n'}$ and
+    global state $q'^1 \in \globalstates{n'}$ such that $(q', \alpha', q'^1)
+    \in \globalrel{n'}$ and  $(q^1, q'^1) \in \sim_{b-1}$.  Define $\alpha'$ by 
+    \begin{itemize}
+        \item $\la{1}{\alpha'} = \la{1}{\alpha}, \ldots \la{n}{\alpha'}=\la{n}{\alpha}$,
+        \item $\la{n+1}{\alpha'} = \la{1}{\alpha}, \ldots, \la{n'}{\alpha'} = \la{1}{\alpha}$.
+    \end{itemize}
+    By the definition of the conrete transition function we have that $(q',
+    \alpha', q'^1) \in \globalrel{n'}$, where $\ls{1}{q'^1} = \ls{1}{q^1},
+    \ldots, \ls{n}{q'^1}=\ls{n}{q^1},
+    \ls{n+1}{q'^1}=\ls{1}{q'^1},\ldots,\ls{n'}{q'^1}=\ls{1}{q'^1}$. Hence $(q',
+    \alpha', q'^1) \in \sim_{b-1}$, and therefore $\sim_b$ is a $b$-bounded simulation relation between $\msys n$ and $\msys{n'}$. 
+
+We have thus proven that for every $b > 0$, there  is a $b$-bounded simulation
+    relation between $\msys n$ and $\msys{n'}$. It follows that  $\msys n
+    \leq_b \msys{n'}$ for any $b \geq 0$.
+\end{proof}
+
+
+\section{Training of a neural observation function for the Guarding Game} 
+
+We provide more details regarding the training of the neural observation
+function for the guarding game.
+
+We used deep Q-learning, a type of reinforcement learning (RL) algorithm.
+During the training, the game was played by 4 agents (in the main paper
+mistakenly specified as 3), and the game parameters were set as $M_h = 4$,
+$G_r = -2$, $R_r = 1$ and $U_r = -3$.
+% The rewards were assigned to reflect the tension between individual and
+% collective interests.
+%
+At the beginning, the agents' health was $M_h$.
+%
+At each turn of the game, the agents that were alive could decide whether they
+volunteer to guard or not. When there were volunteers, a seperate arbitration
+function decided randomly how many of the volunteers undertook the guarding
+action (the other volunteers took the resting action). Each agent had a 50\%
+chance of being selected if it volunteered, but it was impossible for no agent
+to be selected as long as there were volunteers.
+
+The reward function for each agent consisted of the sum of
+\begin{inparaenum}[\it (i)]
+\item  a social reward,
+\item an individual reward,
+\item desire to personally live, and
+\item fear of collective failure.
+\end{inparaenum}
+The social reward for an agent was expressed as the average change in every
+other agent's health, minus the fraction of other agents who are dead at the
+end of the turn, divided by two (to provide an arithmetic average of the two
+values). This was scaled by the agent's normalised health at the end of the
+turn. The individual reward was expressed as the change in the agent's health.
+The desire to personally live was expressed as plus one point if the agent is
+alive at the end of the turn and minus one if it is not, and the fear of
+collective failure as minus two if all agents are dead at the end of the turn.
+
+
+
+All agents shared the same neural network, creating a system in which the
+agents were learning to play against exact copies of themselves.
+%
+We used an experience replay buffer and a separate, periodically updated target
+network for providing estimations.
+%
+At every turn, all of the experiences (consisting of a state transition and an
+associated reward) of the agents in that round were appended to the replay
+buffer, which was implemented as a deque. 
+%
+Each time the policy network was trained, a random minibatch of experiences
+(tuples consisting of a state transition and associated reward) was selected
+from the replay buffer as training data.
+%
+The training then proceeded as per \cite{Mnih+15}, and the use of a target
+network to stabilise the Q-value estimates during training is described in
+the original paper \cite{HaaseltGS16}.
+%
+The reinforcement learning procedure ran for 1024 episodes of a maximum length
+of 16 turns each, if the agents did not all expire. There were 4 agents in the
+training simulation. The target network was updated every 32 turns, the replay
+buffer held 4096 experiences and was sampled in minibatches of size 16.
+
+The network contained two hidden layers each four units wide and using ReLU
+activation functions. The output layer used linear activation and had two units
+corresponding to the two actions (rest and guard) available while the agent had
+not expired. We used RMSProp gradient descent in minibatches corresponding to
+those described in the process of experience replay; the batch size was set to
+the number of experiences in each replay sample. The loss function used was
+Huber loss, and the actions taken during training utilised an epsilon-greedy
+exploration schedule.
+% This is as per the original deep Q-learning paper \cite{Mnih+15} and the
+% follow up proposing double deep Q-learning, \cite{HaaseltGS16}.
+%
+For RMSProp, a learning rate of 0.0025 was used, with the default $\rho$ of 0.9
+and momentum of 0. For epsilon-greedy exploration, the starting epsilon was 1.0
+and it decayed by a factor of 0.999 every turn to a minimum of 0.01. We built
+and trained the network using the TensorFlow Keras library.
+
+
+
+
+%% The file named.bst is a bibliography style file for BibTeX 0.99c
+\bibliographystyle{named}
+\bibliography{../bib}
+
+\end{document}
+

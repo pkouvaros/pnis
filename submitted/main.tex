@@ -1,0 +1,179 @@
+%%%% ijcai24.tex
+
+\typeout{Formal Verification of  Parameterised Neural-symbolic Multi-agent Systems}
+
+% These are the instructions for authors for IJCAI-23.
+
+\documentclass{article}
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+
+% The file ijcai23.sty is a copy from ijcai22.sty
+% The file ijcai22.sty is NOT the same as previous years'
+\usepackage{ijcai23}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,mathtools}
+
+% Use the postscript times font!
+\usepackage{times}
+\usepackage{soul}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[small]{caption}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xspace}
+\usepackage{paralist}
+\usepackage[switch]{lineno}
+\usepackage{tikz}
+\usetikzlibrary{shapes}
+\usepackage{marginnote}
+
+% Comment out this line in the camera-ready submission
+% \linenumbers
+
+\urlstyle{same}
+
+% the following package is optional:
+%\usepackage{latexsym}
+
+% See https://www.overleaf.com/learn/latex/theorems_and_proofs
+% for a nice explanation of how to define new theorems, but keep
+% in mind that the amsthm package is already included in this
+% template and that you must *not* alter the styling.
+\newtheorem{example}{Example}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{innercustomthm}{Theorem}
+\newenvironment{customthm}[1]
+  {\renewcommand\theinnercustomthm{#1}\innercustomthm}
+  {\endinnercustomthm}
+\newtheorem{innercustomlemma}{Lemma}
+\newenvironment{customlemma}[1]
+  {\renewcommand\theinnercustomlemma{#1}\innercustomlemma}
+  {\endinnercustomlemma}
+
+
+% Following comment is from ijcai97-submit.tex:
+% The preparation of these files was supported by Schlumberger Palo Alto
+% Research, AT\&T Bell Laboratories, and Morgan Kaufmann Publishers.
+% Shirley Jowell, of Morgan Kaufmann Publishers, and Peter F.
+% Patel-Schneider, of AT\&T Bell Laboratories collaborated on their
+% preparation.
+
+% These instructions can be modified and used in other conferences as long
+% as credit to the authors and supporting agencies is retained, this notice
+% is not changed, and further modification or reuse is not restricted.
+% Neither Shirley Jowell nor Peter F. Patel-Schneider can be listed as
+% contacts for providing assistance without their prior permission.
+
+% To use for other conferences, change references to files and the
+% conference appropriate and use other authors, contacts, publishers, and
+% organizations.
+% Also change the deadline and address for returning papers and the length and
+% page charge instructions.
+% Put where the files are available in the appropriate places.
+
+
+% PDF Info Is REQUIRED.
+% Please **do not** include Title and Author information
+\pdfinfo{
+/TemplateVersion (IJCAI.2023.0)
+}
+
+\title{Formal Verification of  Parameterised Neural-symbolic Multi-agent Systems}
+
+% Single author syntax
+\author{
+    %Panagiotis Kouvaros
+    %\affiliations
+    %Imperial College London, London, UK
+    %\emails
+    %p.kouvaros@imperial.ac.uk
+}
+
+% Multiple author syntax (remove the single-author syntax above and the \iffalse ... \fi here)
+\iffalse
+\author{
+First Author$^1$
+\and
+Second Author$^2$\and
+Third Author$^{2,3}$\And
+Fourth Author$^4$
+\affiliations
+$^1$First Affiliation\\
+$^2$Second Affiliation\\
+$^3$Third Affiliation\\
+$^4$Fourth Affiliation
+\emails
+\{first, second\}@example.com,
+third@other.example.com,
+fourth@example.com
+}
+\fi
+
+\input{preamble.tex}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+We study the problem of verifying multi-agent systems composed of arbitrarily
+many neural-symbolic agents. We introduce a novel parameterised model, where the
+parameter denotes the number of agents in the system, each homogeneously
+constructed from an agent template equipped with a neural network-based
+perception unit  and traditionally programmed action selection mechanism. We
+define the verification and emergence identification problems for these models
+against a bounded fragment of CTL. We put forward an abstraction methodology
+that enables us to recast both problems to the problem of checking Neural
+Interpreted Systems with a bounded number of agents. We present an
+implementation and discuss experimental results obtained using a social dilemma
+game based on guarding.
+
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+\input{sections/introduction.tex}
+
+\section{Parameterised Neural-symbolic Interpreted Systems}
+\label{sec:pnis}
+\input{sections/model.tex}
+
+\section{Parameterised Verification Procedure}
+\label{sec:verification}
+\input{sections/verification.tex}
+
+\section{Evaluation}
+\label{sec:eval}
+\input{sections/evaluation.tex}
+
+\section{Conclusions}
+\label{sec:conclusions}
+\input{sections/conclusions}
+
+% \section*{Acknowledgments}
+% Acks..
+
+
+%% The file named.bst is a bibliography style file for BibTeX 0.99c
+\bibliographystyle{named}
+\bibliography{bib}
+
+\section*{Appendix}
+\input{sections/appendix.tex}
+
+
+\end{document}
+
