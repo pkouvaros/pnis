@@ -36,9 +36,10 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
   observation function that maps pairs of template local states $\lstates t
   \subseteq \mathbb{R}^{m_{prv} + m_{per}}$ and environment states $\lstates e
   \subseteq \mathbb{R}^{m_e}$ (see below) to percepts $\pers t \subseteq
-  \mathbb{R}^{m_{per}}$. The function is implemented via a neural
+        \mathbb{R}^{m_{per}}$. \color{red}{We assume without loss of
+        generality the observation function is implemented via a neural
   network $f : \mathbb{R}^{m_{prv} + m_{per} + m_e} \rightarrow
-  \mathbb{R}^{m_{per}}$.
+        \mathbb{R}^{m_{per}}$}.
 
   \item $\acts t$ is a nonempty and finite set of actions.
   
@@ -691,8 +692,7 @@ Computation Tree Logic ($\ctl$), henceforth $\bictl$. The logic
 \end{inparaenum}
 The former extends $\ctl$ by allowing the formulation of properties
 irrespective of the concrete system on which they are evaluated.  The latter
-restricts $\ctl$ to bounded formulae following the undecidability of
-verification for unbounded ones~\cite{Akintunde+20}.
+restricts $\ctl$ to bounded formulae~\cite{Akintunde+20}.
 
 \begin{definition}
 Given a  set $\atprop$ of atomic propositions and a set $\atvar$ of variables,
@@ -706,7 +706,17 @@ where  $p \in \atprop$, $v \in \atvar$ and $k \geq  1$.
 
 The formula $AX^k \varphi$ is read as ``for all paths, $\varphi$ holds at the
 $k$-th step'', and $EX^k \varphi$ as ``there exists a path where $\varphi$
-holds at the $k$-th step''.
+holds at the $k$-th step''. \textcolor{red}{We note that bounded until
+$A(\varphi U^k \psi)$ can be inductively abbreviated as
+in~\cite{Akintunde+20}.}
+ %\begin{align*}
+  %A(\varphi U^1 \psi) &\triangleq \psi \lor (\varphi \land AX^1 \psi) \\
+  %A(\varphi U^k \psi) &\triangleq \psi \lor (\varphi \land AX^1 (A (\varphi U^{k-1} \psi)).
+ %\end{align*}
+ %with the meaning ``there is a path in which $\psi$ holds at some point in the
+ %$k$ following steps and before then $\varphi$ is true along the path. 
+%The dual until, prefixed by the existential operator, can be defined
+%analogously. 
 % We inductively abbreviate bounded until as
 % \begin{align*}
 %  A(\varphi U^1 \psi) &\triangleq \psi \lor (\varphi \land AX^1 \psi) \\
@@ -717,8 +727,17 @@ holds at the $k$-th step''.
 % The dual
 % until, prefixed by the existential operator, can be defined analogously.
 %
-The logic $\bctl$~\cite{Akintunde+22} is the logic obtained from the above BNF, but
-replacing the first clause with $p$ and removing the last clause.
+The logic $\bctl$~\cite{Akintunde+22} is the logic obtained
+from the above BNF, but replacing the first clause with $p$
+and removing the last clause. \textcolor{red}{The restriction of
+the logic to bounded properties follows the undecidability
+of verification for the unbounded case. While the
+parameterised verification results presented in the next
+section still hold should negation be allowed in our syntax,
+verification methods for concrete models, including \venmas
+used in the present contribution, do not support negation,
+since its inclusion may hinder the completeness of
+verification~\cite{Akintunde+22}.}
 
 A $\bictl$ formula is said to be a \emph{sentence} if every variable appearing
 in the formula is in the scope of either a universal or an existential
@@ -743,8 +762,9 @@ associated with the concrete systems.
   denoted $(\msys n, q) \models\varphi$, or simply $q \models \varphi$ when
   $\msys n$ is clear from the context, is defined as:
   \begin{description}
-  \item[$q \models (p, a)$] \ iff \ $q \in \valuation n((p, i))$, for $p \in
-  \atprop$ and $i \in \agents n$; 
+  \item[$q \models (p, a)$] \ iff \ $q \in \valuation n((p,
+      a))$, for $p \in
+  \atprop$ and $a \in \agents n$; 
   \item[$q \models \varphi \lor \psi$] \ iff \ $q \models \varphi$ or $q \models
   \psi$;
   \item[$q \models \varphi \land \psi$] \ iff \ $q \models \varphi$ and $q

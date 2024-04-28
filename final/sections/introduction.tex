@@ -2,7 +2,7 @@ Safety concerns stemming from the increasing development of Multi-agent Systems
 (MAS) have been put under mathematical scrutiny
 %% E: commented out
 % over the past decade
-by automated methods which ascertain that MASs behave correctly. Verification
+by automated methods that ascertain their correct behaviour. Verification
 methods based on SAT and
 BDDs~\cite{KacprzakLomuscioPenczek04b,RaimondiLomuscio05c} have resulted in
 push-button engines such as Verics, MCK and
@@ -28,18 +28,23 @@ approaches cannot
 therefore be used to verify important classes of MAS, where either the systems
 have arbitrarily many participants or the agents are endowed with machine
 learning components. The former class of systems includes open systems, where
-agent can join and leave the system at runtime, and applications designed
-irrespective of the number of participants such as robot swarms or scenarios
+agents can join and leave the system at runtime, and applications designed
+irrespective of the number of participants, such as robot
+swarms and scenarios
 in the Internet of Things. The latter class comprises forthcoming
 neural-symbolic applications such as autonomous vehicles.
 
-More recent methods have addressed the verification of systems with an unbounded
-number of constituents against agent-based
-specifications~\cite{KouvarosLomuscio16a,KouvarosLomuscio15b,KouvarosLomuscio16c}.
-While the different methods focus on different communication primitives for the
-agents, they all rely on either cutoffs or zero-one abstractions whereby
-the unbounded verification problem is reduced to verifying a small
-number of concrete systems or abstractions thereof.  
+More recent methods have addressed the verification of
+systems with an unbounded number of
+constituents~\cite{KouvarosLomuscio16a,KouvarosLomuscio16c}.
+While the different methods focus on different communication
+primitives for the agents, most of them rely on abstractions
+whereby the unbounded verification problem is reduced to
+analysing a finite state-space. The resulting techniques
+formed the backbone of various formal reasoners such as
+those targeting
+fault-tolerance~\cite{KouvarosLomuscioPirovano18} and
+data-aware systems~\cite{BelardinelliKouvarosLomuscio17}.
 
 In a different line of work, verification methods for MASs comprising agents
 with neural components were put forward~\cite{Akintunde+20b,Akintunde+22}. To
@@ -58,7 +63,7 @@ for modelling unbounded neural-symbolic MAS.  We develop an abstraction
 methodology for PNIS whereby we derive sound and complete procedures for the
 verification and emergence identification problems with respect to bounded
 universal and existential CTL formulae.  We utilise an implementation of these
-procedures to solve the verification and emergence identification problems for a
+procedures to  analyse a 
 social dilemma scenario.
 
 % to analyse the temporal and emergent properties of 
@@ -82,19 +87,35 @@ Section~\ref{sec:verification}, which we evaluate in Section~\ref{sec:eval}  on
 a social dilemma scenario. We conclude in Section~\ref{sec:conclusions}.
 
 
-{\bf Related Work.}  The contribution is related to the two lines of work
-discussed above, namely parameterised verification and verification for
-neural-symbolic MAS. Previous models in parameterised verification do not
-include neural components, which require the formulation of novel abstractions.
-The neural components here considered additionally restrict the analysis to
-bounded temporal formulae, thereby however enabling the derivation of sound and
-complete verification methods for both universal and existential properties, as
-opposed for only universal properties that typically concerns previous work.
-Verification methods for MAS with neural components were previously put forward.
-These however take as input MAS with a known number of agents. The main
-theoretical finding of this work is that verification in the unbounded
-case can be reduced to the verification of a small number of bounded models from
-the cited work.
+{\bf Related Work.}  The contribution is related to the two
+lines of work discussed above, namely parameterised
+verification and verification for neural-symbolic MAS.
+Previous models in parameterised verification targeted
+either arbitrarily many agents operating in fixed
+environments~\cite{KouvarosLomuscio16a,FelliGianolaMontali20}
+or a fixed number of agents living in environments of
+arbitrary size~\cite{AminofMuranoRubin16}. Systems
+comprising  homogeneous agents were also analysed within the
+framework of Alternating-time Temporal Logic but in a fixed,
+non-parameterised setting~\cite{PedersenDyrkolbotn13}. All
+of these works do not include neural components, which
+require the formulation of novel abstractions. Also
+differently from previous work, which is typically concerned
+with the analysis of universal properties, the neural
+components here considered restrict the analysis to bounded
+temporal formulae, thereby enabling the derivation of sound
+and complete verification methods for both universal and
+existential (bounded) properties.
+
+Verification methods for MAS with neural components were
+previously put forward~\cite{Akintunde+20b,Akintunde+22}.
+These however take as input MAS with a known number of
+agents. The main theoretical finding of this work is that
+verification in the unbounded case can be reduced to the
+verification of a small number of bounded models from the
+cited works.
+
+
 
 % hese include
 % SAT-based and BDD-based verification methods (Kacprzak,

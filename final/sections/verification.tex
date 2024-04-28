@@ -30,7 +30,7 @@ $\pnis \models \bictlspec$ iff $\pnis \models \varphi[m]$.
 \end{lemma}
 \begin{proof}
 The lemma follows from the inherent symmetry present in systems comprising
-homogeneous agents. The Appendix includes the full proof.
+homogeneous agents.
 \end{proof}
 
 We next construct the \emph{zero-one abstraction} of the systems generated from
@@ -107,11 +107,30 @@ Formally, it is a tuple $\pnis_{ab} = \tuple{\set{1,\ldots,m,zo,e},
 state   and $\valuation{m}_{ab} \colon \atprop \times \set{1, \ldots, m }
 \rightarrow 2^{\globalstates{m}_{ab}}$ is the abstract labelling function
 satisfying $q \in \valuation{m}_{ab}(p,i)$ iff $\ls{i}{q} \in \tlabel i(p)$. 
-The abstract global transition function is defined as in
-Definition~\ref{def:globaltransition} but replacing $\setprojection{\alpha}$ in
-the environment and concrete agents' clauses with $\set{\la{a}{q} \mid a \in
-\set{1,\ldots,n}} \cup \la{zo}{q}$,  and adding analogous conditions for the
-zero-one agent (we refer to the Appendix for the full definition).  
+The abstract global transition function is  defined
+as the concrete one but including the zero-one agent.
+\begin{definition}
+  \label{def:globaltransition}
+  The {\em global transition function} $\globaltr{m}_{zo} : \globalstates{m}_{zo}
+  \times \globalacts{m}_{zo} \rightarrow \globalstates{m}_{zo}$ of the zero-one
+  system $\sys{m}_{zo}$ satisfies $\globaltr{m}_{zo}(q, \alpha) = q'$ iff the
+  following hold:
+  \begin{itemize}
+    \item $\la{e}{\alpha} \in \prot{e}({\ls{e}{q}})$ and $\tr e(\ls{e}{q},
+    \la{e}{q}, A) = q'$, where
+    $A = \set{\la{a}{q} \mid a \in \set{1,\ldots,n}} \cup
+\la{zo}{q}$.
+    \item For all $a \in \set{1,\ldots,m, \it{zo}}$, we have that
+    $\la{a}{\alpha} \in \prot{a}(\ls{a}{q})$, $\tr a (\ls{a}{q}, \la{i}{\alpha},
+    A, \la{e}{\alpha}) = \lprv{a}{q'}$, where  $A = \set{\la{a}{q} \mid a \in
+    \set{1,\ldots,n}} \cup \la{zo}{q}$, and $\obs
+    a((\lprv{a}{q'},\lper{a}{q}),\ls{e}{q'}) = \lper{a}{q'}$.
+  \end{itemize}
+\end{definition}
+%but replacing $\setprojection{\alpha}$ in
+%the environment and concrete agents' clauses with $\set{\la{a}{q} \mid a \in
+%\set{1,\ldots,n}} \cup \la{zo}{q}$,  and adding analogous conditions for the
+%zero-one agent (we refer to the Appendix for the full definition).  
 Given the
 abstract global transition function we can similarly associate an (abstract)
 model  $\masys m = \tuple{\aglobalstates m, \aglobalacts m, \aglobalrel m,
@@ -180,10 +199,10 @@ are evaluated up to bounded temporal depths, they are preserved under bounded
 simulations.
 \end{proof}
 
-We can now show the simulation results pertaining to the abstract and concrete
-models. The proofs of these results can be found in the Appendix. 
-We start by showing that the abstract model simulates every concrete
-model with at least~$m+1$ agents. 
+We can now show the simulation results pertaining to the
+abstract and concrete models. We start by showing that the
+abstract model simulates every concrete model with at
+least~$m+1$ agents. 
 
 \begin{theorem}
 \label{th:ab-concr-sim}
@@ -280,30 +299,30 @@ $\bictlspec$. Otherwise, there is no emergence threshold for $\bictlspec$.
 $\pnis \models \bictlspec$.
 \end{itemize}
 \end{corollary}
-\begin{proof}
-To prove the first clause assume that $\msys n \models \varphi[m]$. By
-Theorem~\ref{th:concr-sim} we have that $\msys{n'} \models \varphi[m]$ for every
-$n' \geq n$. Lemma~\ref{lemma:symmetry} gives that  $\msys{n'} \models
-\bictlspec$ for every $n' \geq n$. Hence, $n$ is an emergence threshold for
-$\bictlspec$. If otherwise we have that  $\msys n \not \models \varphi[m]$, then
-by Theorem~\ref{th:concr-ab-sim} it follows  that $\masys m \not \models
-\varphi[m]$, hence, by Theorem~\ref{th:ab-concr-sim}, $\msys{n'} \not \models
-\varphi[m]$ for every $n' \geq m+1$.  Thus, from Lemma~\ref{lemma:symmetry}, we
-obtain that $\msys{n'} \not \models \bictlspec$ for every $n' \geq m + 1$,
-therefore there is no emergence threshold for $\bictlspec$.
+%\begin{proof}
+%To prove the first clause assume that $\msys n \models \varphi[m]$. By
+%Theorem~\ref{th:concr-sim} we have that $\msys{n'} \models \varphi[m]$ for every
+%$n' \geq n$. Lemma~\ref{lemma:symmetry} gives that  $\msys{n'} \models
+%\bictlspec$ for every $n' \geq n$. Hence, $n$ is an emergence threshold for
+%$\bictlspec$. If otherwise we have that  $\msys n \not \models \varphi[m]$, then
+%by Theorem~\ref{th:concr-ab-sim} it follows  that $\masys m \not \models
+%\varphi[m]$, hence, by Theorem~\ref{th:ab-concr-sim}, $\msys{n'} \not \models
+%\varphi[m]$ for every $n' \geq m+1$.  Thus, from Lemma~\ref{lemma:symmetry}, we
+%obtain that $\msys{n'} \not \models \bictlspec$ for every $n' \geq m + 1$,
+%therefore there is no emergence threshold for $\bictlspec$.
 
-To prove the second clause assume that $\msys i \models \varphi[m]$ for every $i
-\in \set{m,\ldots,n}$.  By Theorem~\ref{th:concr-sim} we have that $\msys{i}
-\models \varphi[m]$ for every $i \geq m$. Lemma~\ref{lemma:symmetry} gives that
-$\msys{i} \models \bictlspec$ for every $i \geq m$. Hence, $\pnis \models
-\bictlspec$.  If otherwise there is $i \in \set{m, \ldots, n}$ such that $\msys
-i \not \models \varphi[i]$, then, by Lemma~\ref{lemma:symmetry}, we have that
-$\msys i \not \models \bictlspec$, which trivially implies that $\pnis \not
-\models \bictlspec$.
-\end{proof}
-% \begin{proof}[Proof Sketch]
-%     The proof is analogous to the proof of Corollary\ref{cor:universal}.
-% \end{proof}
+%To prove the second clause assume that $\msys i \models \varphi[m]$ for every $i
+%\in \set{m,\ldots,n}$.  By Theorem~\ref{th:concr-sim} we have that $\msys{i}
+%\models \varphi[m]$ for every $i \geq m$. Lemma~\ref{lemma:symmetry} gives that
+%$\msys{i} \models \bictlspec$ for every $i \geq m$. Hence, $\pnis \models
+%\bictlspec$.  If otherwise there is $i \in \set{m, \ldots, n}$ such that $\msys
+%i \not \models \varphi[i]$, then, by Lemma~\ref{lemma:symmetry}, we have that
+%$\msys i \not \models \bictlspec$, which trivially implies that $\pnis \not
+%\models \bictlspec$.
+%\end{proof}
+ \begin{proof}[Proof Sketch]
+     The proof is analogous to the proof of Corollary~\ref{cor:universal}.
+ \end{proof}
 
 In summary, Corollaries~\ref{cor:universal} and~\ref{cor:existential} provide
 constructive, sound and complete methodologies for checking universal and 
@@ -311,13 +330,12 @@ existential $\bictl$ formulae for PNIS.
 
 For the case of universal properties,
 verification can be conducted by constructing and checking the abstract model
-and the concrete model with~$m$ agents, where $m$ is the the number of index
+and the concrete model with~$m$ agents, where $m$ is the number of index
 variables present in the specification in question. The specification is satisfied by
 the abstract and concrete models if and only if the specification is satisfied in general
 for any number of agents.  The satisfaction of the specification by the abstract
 model is also connected by biconditional implication with the existence of an
 emergent threshold for the specification.
-
 For the case of  existential properties,
 verification can be performed by enumerating all concrete models, identifying
 the smallest one that simulates the abstract model, and checking all concrete
