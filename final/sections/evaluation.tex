@@ -11,24 +11,28 @@ and collective rationality \cite{VanlangeJPV13}. The  game simulates
 the fundamental forces of a \emph{collective risk dilemma (CRD)}, a type of
 social dilemma where a guaranteed ``tragedy of the commons''
 \cite{Hardin68} is avoided by personal sacrifice by a population of
-agents, or brought on by free riding if all the agents favour a strategy which
-neglects the collective interests of that personal sacrifice \cite{SantosP11}.
+agents, or brought on by free riding if all the agents %favour a strategy that
+neglect the collective interests % of that personal sacrifice
+\cite{SantosP11}.
 %
 Namely, guarding can be considered equivalent to cooperation (acting in
 collective interest), and resting to defection (acting in selfish
 interest).
 
 
-To train a neural observation function, we used deep Q-learning, a type of
+We train a neural observation function using deep Q-learning, a type of
 reinforcement learning (RL) algorithm. During the training, the game was played
-by 3 agents, and the parameters were set as $M_h = 4$, $G_r = -2$, $R_r = 1$
+by 4 agents, and the parameters were set as $M_h = 4$, $G_r = -2$, $R_r = 1$
 and $U_r = -3$. The rewards were assigned to reflect the tension between
 individual and collective interests. All agents shared the same neural network,
-creating a system in which the agents were learning to play against exact
-copies of themselves. We used an experience replay buffer and a separate target
-network which was updated only periodically to stabilise overestimation of the
-Q-values \cite{Mnih+15,HaaseltGS16}. More details about the training can be
-found in the Appendix.
+and thus
+% creating a system in which the agents
+were learning to play against exact copies of themselves.
+%
+\nb{E: commented out experience replay buffer and target network}% We used an experience replay buffer and a separate target network which was
+% updated only periodically to stabilise overestimation of the Q-values
+% \cite{Mnih+15,HaaseltGS16}.
+% More details about the training can be found in the Appendix.
 %
 The produced neural network has two hidden layers of four ReLU activated
 neurons, takes as input a single neuron, representing the normalised health
@@ -39,32 +43,60 @@ points of the agent, and outputs the estimated Q-values of the two actions
 
 \begin{table}
 \centering
-\begin{tabular}{c@{\qquad}rrrrr}
-  \toprule
-  k &\multicolumn{1}{c}{$n=2$} & \multicolumn{1}{c}{$n=3$} & \multicolumn{1}{c}{$n=4$} & \multicolumn{1}{c}{$n=5$} & \multicolumn{1}{c}{$n=6$}\\\midrule
+% \begin{tabular}{c@{\qquad}rrrrr}
+%   \toprule
+%   k &\multicolumn{1}{c}{$n=2$} & \multicolumn{1}{c}{$n=3$} & \multicolumn{1}{c}{$n=4$} & \multicolumn{1}{c}{$n=5$} & \multicolumn{1}{c}{$n=6$}\\\midrule
   
-  2 &              0.09s &     0.13s &   0.53s &    1.15s &              5.09s\\
-  3 & \graycell    1.46s &     0.30s &   1.19s &    3.41s &             17.58s\\
-  4 & \graycell    5.49s &     0.52s &   2.31s &   17.74s & \multicolumn{1}{c}{--}\\
-  5 & \graycell   61.47s &   133.28s &   4.28s &   95.83s & \multicolumn{1}{c}{--}\\
+%   2 &              0.09s &     0.13s &   0.53s &    1.15s &              5.09s\\
+%   3 & \graycell    1.46s &     0.30s &   1.19s &    3.41s &             17.58s\\
+%   4 & \graycell    5.49s &     0.52s &   2.31s &   17.74s & \multicolumn{1}{c}{--}\\
+%   5 & \graycell   61.47s &   133.28s &   4.28s &   95.83s & \multicolumn{1}{c}{--}\\
+%   \bottomrule
+% \end{tabular}
+\begin{tabular}{c@{\quad}rrrr}
+  \toprule
+  &
+    \begin{tabular}{@{}c@{}}
+      $k=2$\\[-0.5mm] ($n=2$)
+    \end{tabular}
+  &
+    \begin{tabular}{@{}c@{}}
+      $k=3$\\[-0.5mm] ($n=3$)
+    \end{tabular}
+  &
+    \begin{tabular}{@{}c@{}}
+      $k=4$\\[-0.5mm] ($n=3$)
+    \end{tabular}
+  &
+    \begin{tabular}{@{}c@{}}
+      $k=5$\\[-0.5mm] ($n=3$)
+    \end{tabular}
+  \\\midrule
+  
+  $i=2$ &  0.09s & \graycell  1.46s & \graycell  5.49s & \graycell  61.47s \\
+  $i=3$ &  0.13s &            0.30s &            0.52s &           133.28s \\[1mm]
+  $i=4$ &  0.53s &            1.19s &            2.31s &             4.28s \\
+  $i=5$ &  1.15s &            3.41s &           17.74s &            95.83s \\
+  $i=6$ &  5.09s &           17.58s & \multicolumn{1}{c}{--} & \multicolumn{1}{c}{--} \\
   \bottomrule
 \end{tabular}
-\caption{ Verification times for $\msys n \models \varphi^k_E[m]$ for $m=2$ and
-  various $k$ and $n$.  Grey cells indicate when the property was not
-  satisfied.  Dashes indicate a 1 hour timeout.  }
+\caption{ Verification times for $\msys{i} \models \varphi^k_E[m]$ for $m=2$
+  and various $k$ and $i$. \textcolor{red}{For each $k$, we indicate the value of $n$ from
+  Corollary~\ref{cor:existential}.} Grey cells indicate when the property was
+  not satisfied.  Dashes indicate a 1 hour timeout.  }
   \label{tab:results-existential}
 \end{table}
 
 Given the learned neural network, we implemented a template agent and a
 zero-one agent for the guarding game. We then used the \venmas toolkit
-developed for verification of NISs~\cite{Akintunde+20b} to verify whether it is
+developed for verification of NIS~\cite{Akintunde+20b} to verify whether it is
 possible for a colony of agents to survive after a number of time steps.
 %
-Specifically, recall from Example~\ref{ex:pnis} the proposition $\mathsf{a}$
-that labels all states with positive health (``alive'') and the proposition
-$\mathsf{d}$ that labels all other states (``dead'').
+Specifically, recall from Example~\ref{ex:pnis} that proposition~$\mathsf{a}$
+labels all states with positive health (``alive'') and proposition $\mathsf{d}$
+labels all other states (``dead'').
 %
-Let $m$ be the number of agent variables. We are interested in verifying two
+Let $m$ be the number of agent variables. We considered two
 specifications (for $v_i \in\atvar$):
 \begin{inparaenum}[\it (i)]
 \item the existential property
@@ -76,47 +108,68 @@ specifications (for $v_i \in\atvar$):
   after $k$ time steps.
 \end{inparaenum}
 %
-The experiments pertaining to the verification of these properties were
-performed on a standard PC running Ubuntu 22.04 with 16GB RAM and processor
-Intel(R) Core i5-4460 CPU @ 3.20GHz. We relied on Gurobi v10.0~\cite{Gurobi+16a}
-to solve the mixed integer linear programs generated by \venmas.
+The experiments %pertaining to the verification of these properties
+were performed on a standard PC running Ubuntu 22.04 with 16GB RAM and
+processor Intel(R) Core i5-4460. We relied on Gurobi
+v10.0~\cite{Gurobi+16a} to solve the mixed integer linear programs generated by
+\venmas.
 
-For the existential property, we consider the case of $m=2$ and are interested
-in finding the minimal number of agents in the colony that is required to
-guarantee that at least two agents can stay alive for a given number of
-steps. We vary the temporal depth $k$ of the property, from 2 till 6, and the
-total number $n$ of agents from 2 to 6, and verify the property against
-concrete NISs $\sys{n}$ composed of $n$ concrete agents.  The outcomes of the
-verification queries are presented in Table~\ref{tab:results-existential}.
+\nb{E: the whole paragraph has been updated}%
+Let $\pnis$ be the parameterised NIS for the guarding example. For the
+existential property, we consider the case of $m=2$ and are interested in
+checking whether at least two agents can stay alive for $k$ time steps
+($\pnis\models\forall_{v_1,v_2}\varphi^k_E$), or whether there is a minimal
+number (an emergence threshold) of agents that is required to guarantee
+that. We vary the temporal depth~$k$ from 2 till 5.  To verify if
+$\pnis\models\forall_{v_1,v_2}\varphi^k_E$, according to
+Corollary~\ref{cor:existential} we need to check whether
+$\msys{i}\models\forall_{v_1,v_2}\varphi^k_E$ for every $i\in\{m,\dots,n\}$,
+where $n$ is the minimal $i$ such that $\msys{i}$ $k$-bounded simulates
+$\masys{m}$. In our case $n=2$ for $k=2$ and $n=3$ for $k\geq 3$.  In
+Table~\ref{tab:results-existential} we present the outcomes of the verification
+queries $\msys{i}\models\forall_{v_1,v_2}\varphi^k_E$ for $i=2,3$, as well as
+for $i=4,5,6$. The latter are not used to reason about parameterised
+verification; instead, they are included to demonstrate the increasing
+computational cost of verifying concrete systems for increasing number of
+agents, empirically justifying the need for parameterised verification.
 %
-For temporal depth $k=2$, we have that $\pnis$ satisfies
-$\forall_{v_1,v_2}\varphi^k_E$. However, this is no longer the case for 3 time
-steps as the system composed of two agents  does not satisfy the property,
-i.e., $\msys{2}\not\models\forall_{v_1,v_2}\varphi^k_E$. On the other hand, we
-can see that $n=3$ is the emergence threshold for
-$\forall_{v_1,v_2}\varphi^k_E$ when $k\geq 3$. This result shows that for the
-colony to be viable there need to be at least 3 agents.
+For temporal depth $k=2$, we have that
+$\pnis\models\forall_{v_1,v_2}\varphi^k_E$. This is no longer the case for at
+least 3 time steps as the system composed of two agents violates the property:
+$\msys{2}\not\models\forall_{v_1,v_2}\varphi^k_E$. On the other hand, we obtain
+that $n=3$ is the emergence threshold for $\forall_{v_1,v_2}\varphi^k_E$ when
+$k\geq 3$, that is, there need to be at least 3 agents for the colony to be
+viable.
 
-For the universal property, we verified $\varphi^k_A[m]$ against $\masys{m}$ for
-temporal depth $k = 1,\dots,6$ and the number of agents $m=2,3$. The
-verification times and results can be found in
-Table~\ref{tab:results-universal}. We observe that due to the presence of the
-zero-one agent, the verification times are longer than the ones observed in
-Table~\ref{tab:results-existential}. We additionally notice that the property is
-not satisfied even after 1 time step.
-%
-The arbitrary selection of a subset of guards that volunteer is a necessary
-artefact of PNIS. Therefore, the evaluation of a universal property like
-$\varphi^k_A[m]$ will h consider paths where nobody is
-guarding even when there are volunteers. Nevertheless, we are able to reason
-about existential properties in a meaningful way, as the only event which would
-incur the tragedy of the commons is the lack of any volunteer guarding in the
-first place. 
-% The arbitrary selection of a subset of guards that volunteer is a
-% necessary artefact of the interpreted systems, but does not affect the
-% stability of the system negatively and allows us to reason about its
-% existential properties, as the only event which would incur the tragedy of the
-% commons is the lack of any volunteer guards in the first place.
+For the universal property, we verified $\varphi^k_A[m]$ against
+\textcolor{red}{the abstract model} $\masys{m}$ for temporal depth
+$k = 1,\dots,6$ and the number of agents $m=2,3$. The verification times and
+results can be found in Table~\ref{tab:results-universal}. We observe that due
+to the presence of the zero-one agent, the verification times are longer than
+the ones observed in Table~\ref{tab:results-existential}. We additionally
+notice that the property is not satisfied even after 1 time step, which is
+expected given that there paths where no agent is guarding even when there are
+volunteers.
+
+\nb{E: new}Our experimental results confirm the intractability of verification for
+concrete models as the number of agents grows, thereby motivating the need for
+the parameterised verification methods that we put forward.
+
+
+
+
+
+% The arbitrary selection of a subset of guards that volunteer is a necessary
+% artefact of PNIS. Therefore, the evaluation of a universal property like
+% $\varphi^k_A[m]$ will consider paths where nobody is guarding even when there
+% are volunteers. Nevertheless, we are able to reason about existential
+% properties in a meaningful way, as the only event which would incur the tragedy
+% of the commons is the lack of any volunteer guarding in the first place.
+% % The arbitrary selection of a subset of guards that volunteer is a
+% % necessary artefact of the interpreted systems, but does not affect the
+% % stability of the system negatively and allows us to reason about its
+% % existential properties, as the only event which would incur the tragedy of the
+% % commons is the lack of any volunteer guards in the first place.
 
 
 \begin{table}

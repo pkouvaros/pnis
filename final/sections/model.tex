@@ -20,7 +20,7 @@ A PNIS consists of the descriptions of an agent template, from which an
 unbounded number of concrete agents may be constructed, and an environment in
 which the agents operate. The agent template is defined by the following. 
 
-\begin{definition}[Agent template.]
+\begin{definition}[Agent template]
 An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 \acts t, \prot t, \tr t }$, where:
 \begin{itemize}[$\bullet$]\itemsep 0cm
@@ -440,13 +440,15 @@ An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 An environment template has a similar description to an agent template but does
 not include a perception mechanism.
 
-\begin{definition}[Agent environment.]
-An {\em agent environment} is a tuple $\ag e = \tuple{\lstates e, \acts e, \prot
-e, \tr e }$, where $\lstates e  \subseteq \mathbb R^{m_e}$ is a nonempty
-(possibly) infinite set of local states, $\acts e$ is a nonempty and finite set
-of actions,  $\prot{e} \colon\lstates{e}\rightarrow 2^{\acts e} \setminus \set{\emptyset}$ is a local
-protocol function, and $\tr e \colon \lstates e \times \acts e \times 2^{\acts t} 
-\rightarrow \lstates e$ is a local transition function.
+\begin{definition}[Agent environment]
+  An {\em agent environment} is a tuple
+  $\ag e = \tuple{\lstates e, \acts e, \prot e, \tr e }$, where
+  $\lstates e \subseteq \mathbb R^{m_e}$ is a nonempty % (possibly) infinite
+  set of local states, $\acts e$ is a nonempty and finite set of actions,
+  $\prot{e} \colon\lstates{e}\rightarrow 2^{\acts e} \setminus \set{\emptyset}$
+  is a local protocol function, and
+  $\tr e \colon \lstates e \times \acts e \times 2^{\acts t} \rightarrow
+  \lstates e$ is a local transition function.
 \end{definition}
 
 Agent and environment templates define the main formal structure we will be
