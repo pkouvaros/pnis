@@ -1,9 +1,9 @@
 Interpreted systems are a standard semantics for describing multi-agent systems
 [Fagin et al., 1995b]. They provide a natural setup to interpret specifications
-in a variety of languages including temporal-epistemic logic and alternating
+in a variety of languages including temporal-epistemic logic and alternating-time
 temporal logic [Fagin et al., 1995a; Lomuscio and Raimondi, 2006].
 Parameterised interpreted systems is a parametric extension of interpreted
-systems put forward to reason about unbounded multi-agent
+systems put forward to reason about \textcolor{red}{unbounded} multi-agent
 systems~\cite{KouvarosLomuscio15b}. The parameter in a system of this kind
 denotes the number of agents composing the system, each homogeneously
 constructed from an agent template. 
@@ -17,43 +17,45 @@ neural-symbolic treatment of the agents follows the Neural Interpreted Systems
 limited to standard non-parametric systems with a pre-defined number of agents.
 
 A PNIS consists of the descriptions of an agent template, from which an
-unbounded number of concrete agents may be constructed, and an environment in
-which the agents operate. The agent template is defined by the following. 
+unbounded number of concrete agents may be constructed, and of an environment in
+which the agents operate. The agent template is defined as follows. 
 
 \begin{definition}[Agent template]
 An {\em agent template} is a tuple $\ag t = \tuple{\lstates t, \init t, \obs t,
 \acts t, \prot t, \tr t }$, where:
 \begin{itemize}[$\bullet$]\itemsep 0cm
-  \item $\lstates t = \prvs t \times \pers t$ is a nonempty (possibly infinite)
-  set of template local states.  Each local state  is a pair $\tuple{\prv t, \per t}$ of
-  a private state $\prv t \in \prvs t \subseteq \mathbb R^{m_{prv}}$ and a
-  percept $\per t \in \pers t \subseteq \mathbb R^{m_{per}}$ that encodes a
-  perception of the environment by the agent.  
+\item $\lstates t = \prvs t \times \pers t$ is a nonempty (possibly infinite)
+  set of template \emph{local states}.  Each local state is a pair
+  $\tuple{\prv t, \per t}$ of a private state
+  $\prv t \in \prvs t \subseteq \mathbb R^{m_{prv}}$ and a percept
+  $\per t \in \pers t \subseteq \mathbb R^{m_{per}}$ that encodes a perception
+  of the environment by the agent.
 
-  \item $\init t \in \lstates t$ is the unique initial template state.
+  \item $\init t \in \lstates t$ is the unique \emph{initial template state}.
   
   \item $\obs t : \lstates t \times \lstates e \rightarrow \pers t$ is an
-  observation function that maps pairs of template local states $\lstates t
+  \emph{observation function} that maps pairs of template local states $\lstates t
   \subseteq \mathbb{R}^{m_{prv} + m_{per}}$ and environment states $\lstates e
   \subseteq \mathbb{R}^{m_e}$ (see below) to percepts $\pers t \subseteq
         \mathbb{R}^{m_{per}}$. \color{red}{We assume without loss of
-        generality the observation function is implemented via a neural
+        generality that the observation function is implemented via a neural
   network $f : \mathbb{R}^{m_{prv} + m_{per} + m_e} \rightarrow
         \mathbb{R}^{m_{per}}$}.
 
-  \item $\acts t$ is a nonempty and finite set of actions.
+  \item $\acts t$ is a nonempty and finite set of \emph{actions}.
   
   \item
     $\prot t : \lstates t \rightarrow 2^{\acts t} \setminus \set{\emptyset}$ is
-    a local protocol function returning actions available at a given local
+    a \emph{local protocol function} returning actions available at a given local
     state.
     % that selects which actions may be performed at a given local state.
 
-  \item $\tr t: \lstates t \times \acts t \times 2^{\acts t} \times \acts e 
-  \rightarrow \prvs t$ is a local transition function  that determines the next
-  private state for an agent instantiated from the template given its current local state, its action, 
-  the set of actions performed by all the agents  and the action of the
-  environment.
+  \item
+    $\tr t: \lstates t \times \acts t \times 2^{\acts t} \times \acts e
+    \rightarrow \prvs t$ is a \emph{local transition function} that determines
+    the next private state for an agent instantiated from the template given
+    its current local state, its action, the set of actions performed by all
+    the agents and the action of the environment.
   
 \end{itemize}  
 \end{definition}
@@ -444,11 +446,12 @@ not include a perception mechanism.
   An {\em agent environment} is a tuple
   $\ag e = \tuple{\lstates e, \acts e, \prot e, \tr e }$, where
   $\lstates e \subseteq \mathbb R^{m_e}$ is a nonempty % (possibly) infinite
-  set of local states, $\acts e$ is a nonempty and finite set of actions,
+  set of \emph{local states}, $\acts e$ is a nonempty and finite set of
+  \emph{actions},
   $\prot{e} \colon\lstates{e}\rightarrow 2^{\acts e} \setminus \set{\emptyset}$
-  is a local protocol function, and
+  is a \emph{local protocol function}, and
   $\tr e \colon \lstates e \times \acts e \times 2^{\acts t} \rightarrow
-  \lstates e$ is a local transition function.
+  \lstates e$ is a \emph{local transition function}.
 \end{definition}
 
 Agent and environment templates define the main formal structure we will be
@@ -456,7 +459,7 @@ using in this paper.
 
 \begin{definition}%[Parameterised Neural Interpreted System]
   A \emph{Parameterised Neural Interpreted System (PNIS)} is a tuple $\mathcal S
-  = \tuple{\ag t, \ag e, \ell}$, where $\tlabel{} : \atprop \rightarrow
+  = \tuple{\ag t, \ag e, \ell}$, where \textcolor{red}{$t$ is an agent template, $e$ is an agent environment, and} $\tlabel{} : \atprop \rightarrow
   2^{\lstates t}$ is a labelling function on the agent  template states for a set
   $\atprop$ of atomic propositions.
 \end{definition}
@@ -512,7 +515,7 @@ We now formally define the concrete NIS.
 
 \begin{definition}[Concrete Neural Interpreted System]
   \label{def:concreteystem}
-Given an PNIS $\mathcal S = \tuple{\ag t, \ag e, \ell_t}$ and $n \geq 1$, a
+Given a PNIS $\mathcal S = \tuple{\ag t, \ag e, \ell}$ and $n \geq 1$, a
 \emph{concrete neural interpreted system}, is a tuple $\sys n = \tuple{ \set{\ag 1,
 \ldots, \ag n, \ag e}, \globalinit n, \valuation n}$, where $\globalinit n =
 \tuple{\init 1, \ldots, \init n, \init e}$ is the initial global state and
