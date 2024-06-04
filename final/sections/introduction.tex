@@ -37,33 +37,35 @@ neural-symbolic applications such as autonomous vehicles.
 More recent methods have addressed the verification of
 systems with an unbounded number of
 constituents~\cite{KouvarosLomuscio16a,KouvarosLomuscio16c}.
-While the different methods focus on different communication
+While the various verification methods focus on different communication
 primitives for the agents, most of them rely on abstractions
 whereby the unbounded verification problem is reduced to
-analysing a finite state-space. The resulting techniques
+analysing a finite state-space. These  abstractions 
 formed the backbone of various formal reasoners such as
 those targeting
 fault-tolerance~\cite{KouvarosLomuscioPirovano18} and
 data-aware systems~\cite{BelardinelliKouvarosLomuscio17}.
 
-In a different line of work, verification methods for MASs comprising agents
+In a different line of work, verification methods for MAS comprising agents
 with neural components were put forward~\cite{Akintunde+20b,Akintunde+22}. To
 deal with the real-valued operational domain of the neural network models, the
 methods recast verification queries for bounded properties into
 Mixed-Integer-Linear-Programming.
 
-While these lines of work independently tackle unbounded and neural-symbolic
+While these two lines of work independently tackle unbounded and neural-symbolic
 MAS, none of the underlying methods can be used for analysis of systems that are
 both unbounded and neural-symbolic.  In this paper we overcome this limitation.
-Specifically, we introduce \emph{Parameterised Neural Interpreted Systems (PNIS)}, a
+Specifically, we introduce \emph{Parameterised
+Neural-symbOlic interpreted Systems (\panos{})}, a
 formal model
 %% E:
 % based on neural interpreted systems 
-for modelling unbounded neural-symbolic MAS.  We develop an abstraction
-methodology for PNIS whereby we derive \textcolor{red}{novel} sound and complete procedures for the
-verification and emergence identification problems with respect to bounded
-universal and existential CTL formulae.  We use these procedures to 
-analyse a social dilemma scenario.
+for modelling unbounded neural-symbolic MAS.  We develop an
+abstraction methodology for \panos{} whereby we derive novel
+sound and complete procedures for the verification and
+emergence identification problems with respect to bounded
+universal and existential CTL formulae.  We use these
+procedures to analyse a social dilemma scenario.
 % utilise an implementation of these procedures to analyse a social dilemma
 % scenario.
 
@@ -82,7 +84,7 @@ analyse a social dilemma scenario.
 % \end{itemize}
 
 The rest of the paper is organised as follows. After discussing related work
-below, we present PNIS in Section~\ref{sec:pnis}, followed by the development of
+below, we present \panos{} in Section~\ref{sec:pnis}, followed by the development of
 the verification and emergence identification procedures in
 Section~\ref{sec:verification}, which we evaluate in Section~\ref{sec:eval}  on
 a social dilemma scenario. We conclude in Section~\ref{sec:conclusions}.
@@ -93,29 +95,73 @@ lines of work discussed above, namely parameterised
 verification and verification for neural-symbolic MAS.
 Previous models in parameterised verification targeted
 either arbitrarily many agents operating in fixed
-environments~\cite{KouvarosLomuscio16a,FelliGianolaMontali20}
+environments~\cite{KouvarosLomuscio16a,KouvarosLomuscio16c,FelliGianolaMontali20}
 or a fixed number of agents living in environments of
-arbitrary size~\cite{AminofMuranoRubin16}. Systems
+arbitrary size~\cite{AminofMuranoRubin16}.  None of these
+models include neural components.  Systems
 comprising  homogeneous agents were also analysed within the
 framework of Alternating-time Temporal Logic but in a fixed,
-non-parameterised setting~\cite{PedersenDyrkolbotn13}. All
-of these works do not include neural components, which
-require the formulation of novel abstractions. Also
-differently from previous work, which is typically concerned
-with the analysis of universal properties, the neural
-components here considered restrict the analysis to bounded
-temporal formulae, thereby enabling the derivation of sound
-and complete verification methods for both universal and
-existential (bounded) properties.
+non-parameterised and purely symbolic setting~\cite{PedersenDyrkolbotn13}.
 
 Existing verification methods for MAS with neural
-components~\cite{Akintunde+20b,Akintunde+22} take as input systems with a known
-number of agents. The main theoretical finding of this work is that
-verification in the unbounded\nb{E: we use bounded/ unbounded in two different
-  ways. One to refer to the temporal bound. The other to refer to the bounded
-  number of agents. Maybe we should rephrase it to avoid confusion} case can be
-reduced to the verification of a small number of bounded models.% from the
-% cited works.
+components~\cite{Akintunde+20b,Akintunde+22} take as input
+systems with a known number of agents. The main theoretical
+finding of this work is that verification for an unbounded
+number of agents can be reduced to the verification  of
+(abstract) systems with a bounded number of agents.
+
+%Allor a fixed number of agents living in 
+%of these works do not include neural components, which
+%require the formulation of novel abstractions. Also
+%differently from previous work, which is typically concerned
+%with the analysis of universal properties, the neural
+%components here considered restrict the analysis to bounded
+%temporal formulae, thereby enabling the derivation of sound
+%and complete verification methods for both universal and
+%existential (bounded) properties.
+
+
+
+%Previous models in
+%parameterised
+%verification~\cite{KouvarosLomuscio16a,FelliGianolaMontali20}
+%do not include neural components, which require the
+%formulation of novel abstractions. Additionally, whereas
+%previous work is  is typically concerned with the analysis
+%of universal properties, the neural components here
+%considered restrict the analysis to bounded temporal
+%formulae, thereby enabling the derivation of sound and
+%complete verification methods for both universal and
+%existential (bounded) properties. In another line work,
+%parameterised verification methods targeted
+%environments of
+%arbitrary size,or a fixed number of agents living in  ~\cite{AminofMuranoRubin16}. 
+
+
+%Previous models in parameterised verification targeted
+%either arbitrarily many agents operating in fixed
+%environments~\cite{KouvarosLomuscio16a,FelliGianolaMontali20}
+%or a fixed number of agents living in environments of
+%arbitrary size~\cite{AminofMuranoRubin16}. Systems
+%comprising  homogeneous agents were also analysed within the
+%framework of Alternating-time Temporal Logic but in a fixed,
+%non-parameterised setting~\cite{PedersenDyrkolbotn13}. Allor a fixed number of agents living in 
+%of these works do not include neural components, which
+%require the formulation of novel abstractions. Also
+%differently from previous work, which is typically concerned
+%with the analysis of universal properties, the neural
+%components here considered restrict the analysis to bounded
+%temporal formulae, thereby enabling the derivation of sound
+%and complete verification methods for both universal and
+%existential (bounded) properties.
+
+
+%the unbounded\nb{E: we use bounded/ unbounded in two different
+  %ways. One to refer to the temporal bound. The other to refer to the bounded
+  %number of agents. Maybe we should rephrase it to avoid confusion} 
+%case can be
+%reduced to the verification of a small number of bounded models.% from the
+%% cited works.
 
 
 

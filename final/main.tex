@@ -10,7 +10,7 @@
 
 % The file ijcai23.sty is a copy from ijcai22.sty
 % The file ijcai22.sty is NOT the same as previous years'
-\usepackage{ijcai23}
+\usepackage{ijcai24}
 
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,mathtools}
@@ -87,7 +87,7 @@
 % PDF Info Is REQUIRED.
 % Please **do not** include Title and Author information
 \pdfinfo{
-/TemplateVersion (IJCAI.2023.0)
+/TemplateVersion (IJCAI.2024.0)
 }
 
 \title{Formal Verification of  Parameterised Neural-symbolic Multi-agent Systems}
@@ -126,17 +126,21 @@ cd586@kent.ac.uk
 
 \begin{abstract}
 
-We study the problem of verifying multi-agent systems composed of arbitrarily
-many neural-symbolic agents. We introduce a novel parameterised model, where the
-parameter denotes the number of agents in the system, each homogeneously
-constructed from an agent template equipped with a neural network-based
-perception unit  and traditionally programmed action selection mechanism. We
-define the verification and emergence identification problems for these models
-against a bounded fragment of CTL. We put forward an abstraction methodology
-that enables us to recast both problems to the problem of checking Neural
-Interpreted Systems with a bounded number of agents. We present an
-implementation and discuss experimental results obtained using a social dilemma
-game based on guarding.
+We study the problem of verifying multi-agent systems
+    composed of arbitrarily many neural-symbolic agents. We
+    introduce a novel parameterised model, where the
+    parameter denotes the number of agents in the system,
+    each homogeneously constructed from an agent template
+    equipped with a neural network-based perception unit
+    and a traditionally programmed action selection
+    mechanism. We define the verification and emergence
+    identification problems for these models against a
+    bounded fragment of CTL. We put forward an abstraction
+    methodology that enables us to recast both problems to
+    the problem of checking Neural Interpreted Systems with
+    a bounded number of agents. We present an implementation
+    and discuss experimental results obtained on a social
+    dilemma game based on guarding.
 
 \end{abstract}
 
@@ -168,8 +172,8 @@ game based on guarding.
 \bibliographystyle{named}
 \bibliography{bib}
 
-\section*{Appendix}
-\input{sections/appendix.tex}
+%\section*{Appendix}
+%\input{sections/appendix.tex}
 
 
 \end{document}

@@ -6,7 +6,7 @@ presented in Example~\ref{ex:agent-template}.
 
 %%%%
 The guarding game is an instance of a social dilemma game, a class of
-MASs characterised by tension between individual
+MAS characterised by tension between individual
 and collective rationality \cite{VanlangeJPV13}. The  game simulates
 the fundamental forces of a \emph{collective risk dilemma (CRD)}, a type of
 social dilemma where a guaranteed ``tragedy of the commons''
@@ -29,7 +29,8 @@ and thus
 % creating a system in which the agents
 were learning to play against exact copies of themselves.
 %
-\nb{E: commented out experience replay buffer and target network}% We used an experience replay buffer and a separate target network which was
+%\nb{E: commented out experience replay buffer and target network}
+%We used an experience replay buffer and a separate target network which was
 % updated only periodically to stabilise overestimation of the Q-values
 % \cite{Mnih+15,HaaseltGS16}.
 % More details about the training can be found in the Appendix.
@@ -80,87 +81,136 @@ points of the agent, and outputs the estimated Q-values of the two actions
   $i=6$ &  5.09s &           17.58s & \multicolumn{1}{c}{--} & \multicolumn{1}{c}{--} \\
   \bottomrule
 \end{tabular}
-\caption{ Verification times for $\msys{i} \models \varphi^k_E[m]$ for $m=2$
-  and various $k$ and $i$. \textcolor{red}{For each $k$, we indicate the value of $n$ from
-  Corollary~\ref{cor:existential}.} Grey cells indicate when the property was
-  not satisfied.  Dashes indicate a 1 hour timeout.  }
+\caption{ Verification times for $\msys{i} \models
+    \varphi^k_E[2]$ for various $k$ and $i$. For
+    each $k$, we indicate the value of $n$ from
+    Corollary~\ref{cor:existential}. Grey cells indicate
+    when the property was not satisfied.  Dashes indicate a
+    1 hour timeout.  }
   \label{tab:results-existential}
 \end{table}
 
-Given the learned neural network, we implemented a template agent and a
-zero-one agent for the guarding game. We then used the \venmas toolkit
-developed for verification of NIS~\cite{Akintunde+20b} to verify whether it is
-possible for a colony of agents to survive after a number of time steps.
-%
-Specifically, recall from Example~\ref{ex:pnis} that proposition~$\mathsf{a}$
-labels all states with positive health (``alive'') and proposition $\mathsf{d}$
-labels all other states (``dead'').
-%
-Let $m$ be the number of agent variables. We considered two
+Given the learned neural network, we implemented a template
+agent and a zero-one agent for the guarding game. We then
+used Corollaries~\ref{cor:universal}
+and~\ref{cor:existential} to verify whether it is possible
+for a colony of agents to survive after a number of time
+steps.  Specifically, recall from Example~\ref{ex:pnis} that
+proposition~$\mathsf{a}$ labels all states with positive
+health (``alive'') and proposition $\mathsf{d}$ labels all
+other states with no health (``dead'').
+We considered two
 specifications (for $v_i \in\atvar$):
-\begin{inparaenum}[\it (i)]
-\item the existential property
-  $\varphi^k_E = EX^k \bigwedge_{i=1}^m(\mathsf{a},v_i)$ 
-  expressing that there is an evolution where at least $m$ agents are alive after
-  $k$ time steps,
-\item the universal property $\varphi^k_A = AX^k \bigwedge_{i=1}^m(\mathsf{a},v_i)$
-  expressing that in every possible evolution at least $m$ agents are alive
-  after $k$ time steps.
-\end{inparaenum}
-%
+\begin{enumerate}
+    \item The existential property $ \forall_{v_1,
+        v_2}\varphi^k_E$, where $\varphi^k_E =   EX^k (
+        (\mathsf{a},v_1) \land (\mathsf{a}, v_2))$. The
+        property expresses that there is an evolution where
+        at least~$2$ agents are alive after $k$ time steps.
+\item The universal property $\forall_{v_1,\ldots,v_m}
+\varphi^k_A$, where $\varphi^k_A  = AX^k
+        \bigwedge_{i=1}^m(\mathsf{a},v_i)$. The property
+        expresses that in every possible evolution at least
+        $m$ agents are alive after $k$ time steps, for $m
+        \in \{2,3\}$.
+\end{enumerate}
+%\begin{inparaenum}[\it (i)]
+%\item the existential property
+    %$\varphi^k_E =  \forall_{v_1, v_2} EX^k \left( (\mathsf{a},v_2)
+    %\land (\mathsf{a}, v_2)\right)$, 
+    %%$\varphi^k_E =  \forall_{v_1, v_2} EX^k \bigwedge_{i=1}^m(\mathsf{a},v_i)$ 
+  %expressing that there is an evolution where at least~$2$ agents are alive after
+  %$k$ time steps,
+%\item the universal property $\varphi^k_A = AX^k \bigwedge_{i=1}^m(\mathsf{a},v_i)$
+  %expressing that in every possible evolution at least $m$ agents are alive
+  %after $k$ time steps.
+%\end{inparaenum}
+
+We used the \venmas toolkit~\cite{Akintunde+20b} for
+checking the conrete and abstract systems prescribed by
+Corollaries~\ref{cor:universal}
+and~\ref{cor:existential}.
 The experiments %pertaining to the verification of these properties
 were performed on a standard PC running Ubuntu 22.04 with 16GB RAM and
 processor Intel(R) Core i5-4460. We relied on Gurobi
 v10.0~\cite{Gurobi+16a} to solve the mixed integer linear programs generated by
 \venmas.
 
-\nb{E: the whole paragraph has been updated}%
-Let $\pnis$ be the parameterised NIS for the guarding example. For the
-existential property, we consider the case of $m=2$ and are interested in
-checking whether at least two agents can stay alive for $k$ time steps
-($\pnis\models\forall_{v_1,v_2}\varphi^k_E$), or whether there is a minimal
-number (an emergence threshold) of agents that is required to guarantee
-that. We vary the temporal depth~$k$ from 2 till 5.  To verify if
-$\pnis\models\forall_{v_1,v_2}\varphi^k_E$, according to
-Corollary~\ref{cor:existential} we need to check whether
-$\msys{i}\models\forall_{v_1,v_2}\varphi^k_E$ for every $i\in\{m,\dots,n\}$,
-where $n$ is the minimal $i$ such that $\msys{i}$ $k$-bounded simulates
-$\masys{m}$. In our case $n=2$ for $k=2$ and $n=3$ for $k\geq 3$.  In
-Table~\ref{tab:results-existential} we present the outcomes of the verification
-queries $\msys{i}\models\forall_{v_1,v_2}\varphi^k_E$ for $i=2,3$, as well as
-for $i=4,5,6$. The latter are not used to reason about parameterised
-verification; instead, they are included to demonstrate the increasing
-computational cost of verifying concrete systems for increasing number of
-agents, empirically justifying the need for parameterised verification.
+Let $\pnis$ be the
+\panos{} for the guarding example. For the existential
+property, we check whether at least two agents can stay
+alive for $k$ time steps ($\pnis\models \varphi^k_E$), and
+whether there is a minimal number (an emergence threshold)
+of agents that can  guarantee that. We vary the
+temporal depth~$k$ from 2 to 5.  
 %
-For temporal depth $k=2$, we have that
-$\pnis\models\forall_{v_1,v_2}\varphi^k_E$. This is no longer the case for at
-least 3 time steps as the system composed of two agents violates the property:
-$\msys{2}\not\models\forall_{v_1,v_2}\varphi^k_E$. On the other hand, we obtain
-that $n=3$ is the emergence threshold for $\forall_{v_1,v_2}\varphi^k_E$ when
-$k\geq 3$, that is, there need to be at least 3 agents for the colony to be
-viable.
-
-For the universal property, we verified $\varphi^k_A[m]$ against
-\textcolor{red}{the abstract model} $\masys{m}$ for temporal depth
-$k = 1,\dots,6$ and the number of agents $m=2,3$. The verification times and
-results can be found in Table~\ref{tab:results-universal}. We observe that due
-to the presence of the zero-one agent, the verification times are longer than
-the ones observed in Table~\ref{tab:results-existential}. We additionally
-notice that the property is not satisfied even after 1 time step, which is
-expected given that there paths where no agent is guarding even when there are
-volunteers.
-
-\nb{E: new}Our experimental results confirm the intractability of verification for
-concrete models as the number of agents grows, thereby motivating the need for
-the parameterised verification methods that we put forward.
+To verify whether
+$\pnis\models\forall_{v_1,v_2}\varphi^k_E$, we use
+Corollary~\ref{cor:existential} and check whether
+$\msys{i}\models\varphi^k_E[2]$ for every
+$i\in\{2,\dots,n\}$, where $n$ is the minimal $i$ such that
+$\msys{i}$ $k$-bounded simulates $\masys{2}$. We have that 
+$n=2$ for $k=2$, and $n=3$ for $k\geq 3$.
 
 
+Table~\ref{tab:results-existential} presents the outcomes of
+the verification queries
+$\msys{i}\models\varphi^k_E[2]$ for $i \in
+\{2, \ldots, 4\}$.
+%
+For $k=2$, since  $\msys{2}
+\models\varphi^2_E[2]$, we conclude that
+$\pnis\models\forall_{v_1,v_2}\varphi^2_E$. This of course
+additionally implies that $n=2$ is an emergence threshold
+for $\forall_{v_1,v_2}\varphi^2_E$. For $k \geq 3$, since
+$\msys{2}\not\models\varphi^k_E[2]$, we
+conclude that
+$\pnis\not\models\forall_{v_1,v_2}\varphi^k_E$. Still, since
+$\msys{3}\models\varphi^k_E[2]$, we obtain
+that $n=3$ is an emergence threshold for
+$\forall_{v_1,v_2}\varphi^k_E$, so there need to be at least
+3 agents present in the colony to ensure a temporal
+evolution whereby the colony is viable.
+The verification results for $i \in \set{4,5,6}$ reported
+by the table (which are not used
+to reason about parameterised verification) demonstrate the
+increasing computational cost of verifying concrete systems
+for increasing number of agents, thereby empirically
+justifying the need for parameterised verification.
 
+
+%This is no
+%longer the case for at least 3 time steps as the system
+%composed of two agents violates the property:
+%$\msys{2}\not\models\forall_{v_1,v_2}\varphi^k_E$. On the
+%other hand, we obtain that $n=3$ is the emergence threshold
+%for $\forall_{v_1,v_2}\varphi^k_E$ when $k\geq 3$, that is,
+%there need to be at least 3 agents for the colony to be
+%viable.
+
+%
+
+Concerning the universal property, we verified
+$\varphi^k_A[m]$ against the abstract model $\masys{m}$ for
+the temporal depths $k \in \set{1,\dots,6}$ and  $m \in
+\set{2,3}$. The verification times and results can be found
+in Table~\ref{tab:results-universal}. We observe that
+because of 
+the presence of the zero-one agent, the verification times
+are longer than the ones observed in
+Table~\ref{tab:results-existential}. We additionally notice
+that the property in question is not satisfied even after 1 time step,
+which is expected given that there exist paths where no agent is
+guarding even when there are volunteers.
+
+In summary, our experimental results confirm the
+intractability of verification for concrete models as the
+number of agents grows, thereby motivating the need for the
+parameterised verification methods that we put forward.
 
 
 % The arbitrary selection of a subset of guards that volunteer is a necessary
-% artefact of PNIS. Therefore, the evaluation of a universal property like
+% artefact of \panos{}. Therefore, the evaluation of a universal property like
 % $\varphi^k_A[m]$ will consider paths where nobody is guarding even when there
 % are volunteers. Nevertheless, we are able to reason about existential
 % properties in a meaningful way, as the only event which would incur the tragedy
@@ -171,9 +221,9 @@ the parameterised verification methods that we put forward.
 % % existential properties, as the only event which would incur the tragedy of the
 % % commons is the lack of any volunteer guards in the first place.
 
-
 \begin{table}
   \centering
+\addtolength{\tabcolsep}{-0.1em}
   \begin{tabular}{@{}crrrrrr@{}}
     \toprule
     % $k$ & \multicolumn{1}{c}{$m = 2$} & \multicolumn{1}{c}{$m = 3$}\\
